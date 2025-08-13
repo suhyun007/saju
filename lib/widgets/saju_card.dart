@@ -1,8 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../screens/saju_input_screen.dart';
+import '../models/saju_info.dart';
+import '../services/saju_service.dart';
 
-class SajuCard extends StatelessWidget {
+class SajuCard extends StatefulWidget {
   const SajuCard({super.key});
+
+  @override
+  State<SajuCard> createState() => _SajuCardState();
+}
+
+class _SajuCardState extends State<SajuCard> {
+  SajuInfo? _sajuInfo;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSajuInfo();
+  }
+
+  Future<void> _loadSajuInfo() async {
+    final sajuInfo = await SajuService.loadSajuInfo();
+    setState(() {
+      _sajuInfo = sajuInfo;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _refreshSajuInfo() async {
+    await _loadSajuInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +87,11 @@ class SajuCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      '생년월일시를 입력해주세요',
+                      _isLoading 
+                          ? '로딩 중...'
+                          : _sajuInfo != null
+                              ? '${_sajuInfo!.yearText} ${_sajuInfo!.monthText} ${_sajuInfo!.dayText} ${_sajuInfo!.timeText}'
+                              : '생년월일시를 입력해주세요',
                       style: GoogleFonts.notoSans(
                         fontSize: 14,
                         color: Colors.white70,
@@ -68,8 +101,18 @@ class SajuCard extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () {
-                  // 사주 입력 화면으로 이동
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SajuInputScreen(),
+                    ),
+                  );
+                  
+                  // 사주 정보가 저장되었으면 새로고침
+                  if (result == true) {
+                    _refreshSajuInfo();
+                  }
                 },
                 icon: const Icon(
                   Icons.edit,
@@ -86,21 +129,51 @@ class SajuCard extends StatelessWidget {
   }
 
   Widget _buildSajuGrid() {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: Colors.white,
+        ),
+      );
+    }
+
+    if (_sajuInfo == null) {
+      return Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: _buildSajuItem('년주', '미입력', 'Year')),
+              const SizedBox(width: 10),
+              Expanded(child: _buildSajuItem('월주', '미입력', 'Month')),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(child: _buildSajuItem('일주', '미입력', 'Day')),
+              const SizedBox(width: 10),
+              Expanded(child: _buildSajuItem('시주', '미입력', 'Hour')),
+            ],
+          ),
+        ],
+      );
+    }
+
     return Column(
       children: [
         Row(
           children: [
-            Expanded(child: _buildSajuItem('년주', '미입력', 'Year')),
+            Expanded(child: _buildSajuItem('년주', _sajuInfo!.yearSaju, 'Year')),
             const SizedBox(width: 10),
-            Expanded(child: _buildSajuItem('월주', '미입력', 'Month')),
+            Expanded(child: _buildSajuItem('월주', _sajuInfo!.monthSaju, 'Month')),
           ],
         ),
         const SizedBox(height: 10),
         Row(
           children: [
-            Expanded(child: _buildSajuItem('일주', '미입력', 'Day')),
+            Expanded(child: _buildSajuItem('일주', _sajuInfo!.daySaju, 'Day')),
             const SizedBox(width: 10),
-            Expanded(child: _buildSajuItem('시주', '미입력', 'Hour')),
+            Expanded(child: _buildSajuItem('시주', _sajuInfo!.hourSaju, 'Hour')),
           ],
         ),
       ],
