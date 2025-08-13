@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../screens/saju_view_screen.dart';
+import '../screens/saju_input_screen.dart';
+import '../models/saju_info.dart';
+import '../services/saju_service.dart';
 
 class FeatureButton extends StatelessWidget {
   final IconData icon;
@@ -85,10 +89,10 @@ class FeatureButton extends StatelessWidget {
     );
   }
 
-  void _handleFeatureTap(BuildContext context) {
+  void _handleFeatureTap(BuildContext context) async {
     switch (title) {
       case '사주 보기':
-        _showSnackBar(context, '사주 입력 화면으로 이동합니다');
+        await _handleSajuView(context);
         break;
       case '운세 분석':
         _showSnackBar(context, '운세 분석 화면으로 이동합니다');
@@ -101,6 +105,32 @@ class FeatureButton extends StatelessWidget {
         break;
       default:
         _showSnackBar(context, '준비 중인 기능입니다');
+    }
+  }
+
+  Future<void> _handleSajuView(BuildContext context) async {
+    // 저장된 사주 정보가 있는지 확인
+    final hasSajuInfo = await SajuService.hasSajuInfo();
+    
+    if (hasSajuInfo) {
+      // 저장된 사주 정보가 있으면 사주 보기 화면으로 이동
+      final sajuInfo = await SajuService.loadSajuInfo();
+      if (sajuInfo != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SajuViewScreen(sajuInfo: sajuInfo),
+          ),
+        );
+      }
+    } else {
+      // 저장된 사주 정보가 없으면 사주 입력 화면으로 이동
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SajuInputScreen(),
+        ),
+      );
     }
   }
 
