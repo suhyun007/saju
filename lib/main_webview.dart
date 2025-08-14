@@ -117,7 +117,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
             onSelected: (value) {
               switch (value) {
                 case 'home':
-                  controller.loadRequest(Uri.parse('http://10.0.2.2:8080'));
+                  controller.loadRequest(Uri.parse('https://saju.vercel.app'));
                   break;
                 case 'devtools':
                   _showDevToolsInfo();
