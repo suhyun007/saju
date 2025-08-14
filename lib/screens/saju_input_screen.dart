@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 import '../models/saju_info.dart';
 import '../services/saju_service.dart';
 
@@ -16,10 +19,44 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   String? _selectedHour;
   String? _selectedMinute;
   String? _selectedGender;
+  late final WebViewController _webController;
+  bool _showWebView = false;
   
   final List<String> _genders = ['남성', '여성'];
   final List<String> _hours = List.generate(24, (index) => index.toString().padLeft(2, '0'));
   final List<String> _minutes = List.generate(60, (index) => index.toString().padLeft(2, '0'));
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeWebView();
+  }
+
+  void _initializeWebView() async {
+    try {
+      if (Platform.isAndroid) {
+        WebViewPlatform.instance = AndroidWebViewPlatform();
+        AndroidWebViewController.enableDebugging(true);
+      }
+
+      _webController = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(NavigationDelegate(
+          onPageStarted: (String url) {
+            print('사주 WebView 로딩 시작: $url');
+          },
+          onPageFinished: (String url) {
+            print('사주 WebView 로딩 완료: $url');
+          },
+          onWebResourceError: (WebResourceError error) {
+            print('사주 WebView 오류: ${error.description}');
+          },
+        ))
+        ..loadFlutterAsset('web/saju_input.html');
+    } catch (e) {
+      print('사주 WebView 초기화 오류: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,41 +81,51 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               
               // 메인 콘텐츠
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        // 안내 메시지
-                        _buildInfoMessage(),
-                        
-                        const SizedBox(height: 30),
-                        
-                        // 생년월일 입력
-                        _buildDateInput(),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // 출생시간 입력
-                        _buildTimeInput(),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // 성별 선택
-                        _buildGenderInput(),
-                        
-                        const SizedBox(height: 30),
-                        
-                        // 저장 버튼
-                        _buildSaveButton(),
-                      ],
-                    ),
-                  ),
-                ),
+                child: _showWebView 
+                  ? _buildWebView()
+                  : _buildMainContent(),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWebView() {
+    return WebViewWidget(controller: _webController);
+  }
+
+  Widget _buildMainContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            // 안내 메시지
+            _buildInfoMessage(),
+            
+            const SizedBox(height: 30),
+            
+            // 생년월일 입력
+            _buildDateInput(),
+            
+            const SizedBox(height: 20),
+            
+            // 출생시간 입력
+            _buildTimeInput(),
+            
+            const SizedBox(height: 20),
+            
+            // 성별 선택
+            _buildGenderInput(),
+            
+            const SizedBox(height: 30),
+            
+            // 저장 버튼
+            _buildSaveButton(),
+          ],
         ),
       ),
     );
@@ -97,11 +144,24 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ),
           ),
           const SizedBox(width: 15),
-          Text(
-            '사주 정보 입력',
-            style: GoogleFonts.notoSans(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              '사주 정보 입력',
+              style: GoogleFonts.notoSans(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _showWebView = !_showWebView;
+              });
+            },
+            icon: Icon(
+              _showWebView ? Icons.apps : Icons.web,
               color: Colors.white,
             ),
           ),
@@ -455,8 +515,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               onPrimary: Colors.white,
               surface: Color(0xFF4A2C1A),
               onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF2C1810),
+            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF2C1810)),
           ),
           child: child!,
         );

@@ -1,7 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../widgets/saju_card.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 import '../widgets/feature_button.dart';
+import '../screens/saju_input_screen.dart';
+import '../screens/webview_screen.dart';
+import '../widgets/kma_weather_chip.dart';
+import '../services/daily_fortune_service.dart';
+import '../services/saju_service.dart';
+import '../models/saju_info.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +19,130 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  DailyFortune? _todayFortune;
+  SajuInfo? _sajuInfo;
+  bool _isLoading = true;
+  late final WebViewController _webController;
+  bool _showWebView = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTodayFortune();
+    _initializeWebView();
+  }
+
+  void _initializeWebView() async {
+    try {
+      if (Platform.isAndroid) {
+        WebViewPlatform.instance = AndroidWebViewPlatform();
+        AndroidWebViewController.enableDebugging(true);
+      }
+
+      _webController = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(NavigationDelegate(
+          onPageStarted: (String url) {
+            print('WebView 로딩 시작: $url');
+          },
+          onPageFinished: (String url) {
+            print('WebView 로딩 완료: $url');
+          },
+          onWebResourceError: (WebResourceError error) {
+            print('WebView 오류: ${error.description}');
+          },
+        ))
+        ..addJavaScriptChannel(
+          'flutter_inappwebview',
+          onMessageReceived: (JavaScriptMessage message) {
+            _handleWebViewMessage(message.message);
+          },
+        )
+        ..loadFlutterAsset('web/home_screen.html');
+    } catch (e) {
+      print('WebView 초기화 오류: $e');
+    }
+  }
+
+  void _handleWebViewMessage(String message) {
+    switch (message) {
+      case 'openSajuInfo':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SajuInputScreen()),
+        );
+        break;
+      case 'openFortuneAnalysis':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WebViewScreen(
+              title: '운세 분석',
+              url: 'https://www.google.com',
+            ),
+          ),
+        );
+        break;
+      case 'openLoveFortune':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WebViewScreen(
+              title: '연애운',
+              url: 'https://www.naver.com',
+            ),
+          ),
+        );
+        break;
+      case 'openCareerFortune':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WebViewScreen(
+              title: '직업운',
+              url: 'https://www.daum.net',
+            ),
+          ),
+        );
+        break;
+      case 'toggleWebView':
+        setState(() {
+          _showWebView = !_showWebView;
+        });
+        break;
+    }
+  }
+
+  Future<void> _loadTodayFortune() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      
+      // 저장된 사주 정보 가져오기
+      final sajuInfo = await SajuService.loadSajuInfo();
+      
+      // 오늘의 운세 가져오기 (API만 사용)
+      final fortune = await DailyFortuneService.getTodayFortune(sajuInfo);
+      
+      if (mounted) {
+        setState(() {
+          _sajuInfo = sajuInfo;
+          _todayFortune = fortune;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('운세 API 호출 실패: $e');
+      if (mounted) {
+        setState(() {
+          _todayFortune = null;
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,34 +166,34 @@ class _HomeScreenState extends State<HomeScreen> {
               
               // 메인 콘텐츠
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      // 환영 메시지
-                      _buildWelcomeMessage(),
-                      
-                      const SizedBox(height: 30),
-                      
-                      // 사주 카드 섹션
-                      _buildSajuCardSection(),
-                      
-                      const SizedBox(height: 30),
-                      
-                      // 기능 버튼들
-                      _buildFeatureButtons(),
-                      
-                      const SizedBox(height: 30),
-                      
-                      // 오늘의 운세
-                      _buildTodayFortune(),
-                    ],
-                  ),
-                ),
+                child: _showWebView 
+                  ? _buildWebView()
+                  : _buildMainContent(),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildWebView() {
+    return WebViewWidget(controller: _webController);
+  }
+
+  Widget _buildMainContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          // 오늘의 운세
+          _buildTodayFortune(),
+          
+          const SizedBox(height: 30),
+          
+          // 기능 버튼들
+          _buildFeatureButtons(),
+        ],
       ),
     );
   }
@@ -87,30 +219,46 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(width: 15),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  '사주 앱',
-                  style: GoogleFonts.notoSans(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '수박 사주',
+                        style: GoogleFonts.notoSans(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          height: 1.1,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  '전통 사주로 운명을 읽어보세요',
-                  style: GoogleFonts.notoSans(
-                    fontSize: 14,
-                    color: Colors.white70,
-                  ),
-                ),
+                const KmaWeatherChip(),
               ],
             ),
           ),
           IconButton(
             onPressed: () {
-              // 설정 메뉴
+              setState(() {
+                _showWebView = !_showWebView;
+              });
+            },
+            icon: Icon(
+              _showWebView ? Icons.apps : Icons.web,
+              color: Colors.white,
+            ),
+          ),
+          IconButton(
+            onPressed: () async {
+              // 설정에서 사주 정보 입력 화면으로 이동
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SajuInputScreen()),
+              );
             },
             icon: const Icon(
               Icons.settings,
@@ -119,57 +267,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildWelcomeMessage() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.amber.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Text(
-            '오늘의 운세를 확인해보세요',
-            style: GoogleFonts.notoSans(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '생년월일시를 입력하시면 정확한 사주를 분석해드립니다',
-            style: GoogleFonts.notoSans(
-              fontSize: 14,
-              color: Colors.white70,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSajuCardSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '나의 사주',
-          style: GoogleFonts.notoSans(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 15),
-        const SajuCard(),
-      ],
     );
   }
 
@@ -196,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: const [
             FeatureButton(
               icon: Icons.calendar_today,
-              title: '사주 보기',
+              title: '사주 정보',
               subtitle: '생년월일시 입력',
               color: Color(0xFF8B4513),
             ),
@@ -225,6 +322,58 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTodayFortune() {
+    if (_isLoading) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.amber.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.amber.withOpacity(0.3)),
+        ),
+        child: const Center(
+          child: Column(
+            children: [
+              CircularProgressIndicator(color: Colors.amber),
+              SizedBox(height: 10),
+              Text(
+                '운세를 불러오는 중...',
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_todayFortune == null) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.amber.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.amber.withOpacity(0.3)),
+        ),
+        child: Column(
+          children: [
+            const Icon(Icons.error, color: Colors.amber, size: 24),
+            const SizedBox(height: 10),
+            Text(
+              '불러올 수 없습니다.',
+              style: GoogleFonts.notoSans(
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _loadTodayFortune,
+              child: const Text('다시 시도'),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -233,9 +382,10 @@ class _HomeScreenState extends State<HomeScreen> {
         border: Border.all(color: Colors.amber.withOpacity(0.3)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(
                 Icons.star,
@@ -251,23 +401,80 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.white,
                 ),
               ),
+              if (_sajuInfo != null) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '개인화',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 10,
+                      color: Colors.amber,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
+          // 100점 만점 점수 표시
           Text(
-            '오늘은 새로운 시작에 좋은 날입니다. 용기를 가지고 도전해보세요.',
+            '${_todayFortune!.score}점 / 100점',
             style: GoogleFonts.notoSans(
-              fontSize: 14,
-              color: Colors.white70,
-              height: 1.5,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.amber,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
+          Center(
+            child: Text(
+              _todayFortune!.message,
+              style: GoogleFonts.notoSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          if (_todayFortune!.advice.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Center(
+              child: Text(
+                _todayFortune!.advice,
+                style: GoogleFonts.notoSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.amber.withOpacity(0.8),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+          const SizedBox(height: 10),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildFortuneItem('행운의 색', '빨간색'),
-              const SizedBox(width: 20),
-              _buildFortuneItem('행운의 숫자', '7'),
+              IconButton(
+                onPressed: _loadTodayFortune,
+                icon: const Icon(Icons.refresh, color: Colors.amber, size: 20),
+                tooltip: '새로고침',
+              ),
+                             Text(
+                 '테스트 모드 - API 시뮬레이션',
+                 style: GoogleFonts.notoSans(
+                   fontSize: 12,
+                   color: Colors.amber.withOpacity(0.7),
+                 ),
+               ),
             ],
           ),
         ],
@@ -275,26 +482,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildFortuneItem(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.notoSans(
-            fontSize: 12,
-            color: Colors.white60,
-          ),
-        ),
-        Text(
-          value,
-          style: GoogleFonts.notoSans(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.amber,
-          ),
-        ),
-      ],
-    );
-  }
+
 }

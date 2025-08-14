@@ -12,15 +12,12 @@ class SajuApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '사주 앱',
+      title: '사주앱',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF8B4513),
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        textTheme: GoogleFonts.notoSansTextTheme(),
+        primarySwatch: Colors.brown,
+        fontFamily: GoogleFonts.notoSansKr().fontFamily,
+        scaffoldBackgroundColor: const Color(0xFF2C1810),
       ),
       home: const HomeScreen(),
     );

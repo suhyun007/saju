@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../screens/saju_input_screen.dart';
 import '../models/saju_info.dart';
 import '../services/saju_service.dart';
 
@@ -78,7 +77,7 @@ class _SajuCardState extends State<SajuCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '사주 정보',
+                      '사주 정보 (설정에서 수정)',
                       style: GoogleFonts.notoSans(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -100,25 +99,7 @@ class _SajuCardState extends State<SajuCard> {
                   ],
                 ),
               ),
-              IconButton(
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SajuInputScreen(),
-                    ),
-                  );
-                  
-                  // 사주 정보가 저장되었으면 새로고침
-                  if (result == true) {
-                    _refreshSajuInfo();
-                  }
-                },
-                icon: const Icon(
-                  Icons.edit,
-                  color: Colors.white,
-                ),
-              ),
+              // 편집 아이콘 제거: 설정(톱니)에서만 수정 가능
             ],
           ),
           const SizedBox(height: 20),
