@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../screens/saju_view_screen.dart';
 import '../screens/saju_input_screen.dart';
-import '../models/saju_info.dart';
+import '../screens/webview_screen.dart';
 import '../services/saju_service.dart';
 
 class FeatureButton extends StatelessWidget {
@@ -91,17 +91,41 @@ class FeatureButton extends StatelessWidget {
 
   void _handleFeatureTap(BuildContext context) async {
     switch (title) {
-      case '사주 보기':
+      case '사주 정보':
         await _handleSajuView(context);
         break;
       case '운세 분석':
-        _showSnackBar(context, '운세 분석 화면으로 이동합니다');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WebViewScreen(
+              title: '운세 분석',
+              url: 'https://www.google.com',
+            ),
+          ),
+        );
         break;
       case '연애운':
-        _showSnackBar(context, '연애운 분석 화면으로 이동합니다');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WebViewScreen(
+              title: '연애운',
+              url: 'https://www.naver.com',
+            ),
+          ),
+        );
         break;
       case '직업운':
-        _showSnackBar(context, '직업운 분석 화면으로 이동합니다');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WebViewScreen(
+              title: '직업운',
+              url: 'https://www.daum.net',
+            ),
+          ),
+        );
         break;
       default:
         _showSnackBar(context, '준비 중인 기능입니다');
