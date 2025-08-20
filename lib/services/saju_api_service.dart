@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/saju_api_response.dart';
 import '../models/saju_info.dart';
@@ -9,6 +10,12 @@ class SajuApiService {
   
   // 사주 계산 API 호출
   static Future<SajuApiResponse> getSajuAnalysis(SajuInfo sajuInfo) async {
+    // 디버그 모드에서는 더미 데이터 사용
+    if (kDebugMode) {
+      print('🔧 디버그 모드: API 호출 대신 더미 데이터 사용');
+      return getSimpleSajuAnalysis(sajuInfo);
+    }
+    
     try {
       print('사주 분석 API 호출 시작: ${sajuInfo.birthDate} ${sajuInfo.gender}');
       
