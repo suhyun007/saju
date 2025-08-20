@@ -49,12 +49,16 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>REVERSED_CLIENT_ID</string>
+			<string>GoogleSignIn</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.186395220147-a5397b6b79a114666478c6</string>
+				<string>com.googleusercontent.apps.186395220147-el5b0giu399inrop8rv040j128lu7ec1</string>
 			</array>
 		</dict>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>이 앱은 사용자의 위치를 지도 기능을 위해 사용합니다.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>이 앱은 항상 위치 정보를 필요로 합니다.</string>
 </dict>
 </plist>
