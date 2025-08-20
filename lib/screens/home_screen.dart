@@ -9,8 +9,10 @@ import '../screens/webview_screen.dart';
 import '../widgets/kma_weather_chip.dart';
 import '../services/daily_fortune_service.dart';
 import '../services/saju_service.dart';
+import '../services/saju_api_service.dart';
 import '../services/auth_service.dart';
 import '../models/saju_info.dart';
+import '../models/saju_api_response.dart';
 import '../models/user_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DailyFortune? _todayFortune;
   SajuInfo? _sajuInfo;
+  SajuApiResponse? _sajuAnalysis;
   bool _isLoading = true;
   late final WebViewController _webController;
   bool _showWebView = false;
@@ -47,6 +50,21 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _currentUser = user;
     });
+  }
+
+  Widget _buildUserInitial() {
+    return Center(
+      child: Text(
+        _currentUser!.displayName.isNotEmpty
+            ? _currentUser!.displayName[0].toUpperCase()
+            : 'U',
+        style: const TextStyle(
+          fontSize: 12,
+          color: Colors.amber,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 
 
@@ -154,12 +172,23 @@ class _HomeScreenState extends State<HomeScreen> {
       // 저장된 사주 정보 가져오기
       final sajuInfo = await SajuService.loadSajuInfo();
       
+      // 사주 분석 데이터 가져오기 (사용 가능한 경우)
+      SajuApiResponse? sajuAnalysis;
+      if (sajuInfo != null) {
+        try {
+          sajuAnalysis = await SajuApiService.getSimpleSajuAnalysis(sajuInfo);
+        } catch (e) {
+          print('사주 분석 로드 실패: $e');
+        }
+      }
+      
       // 오늘의 운세 가져오기 (API만 사용)
       final fortune = await DailyFortuneService.getTodayFortune(sajuInfo);
       
       if (mounted) {
         setState(() {
           _sajuInfo = sajuInfo;
+          _sajuAnalysis = sajuAnalysis;
           _todayFortune = fortune;
           _isLoading = false;
         });
@@ -268,30 +297,40 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _showWebView = !_showWebView;
-              });
-            },
-            icon: Icon(
-              _showWebView ? Icons.apps : Icons.web,
-              color: Colors.white,
+          if (_currentUser != null) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.amber.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.amber.withOpacity(0.5)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.person,
+                    size: 14,
+                    color: Colors.amber,
+                  ),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      _currentUser!.displayName,
+                      style: GoogleFonts.notoSans(
+                        fontSize: 12,
+                        color: Colors.amber,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          IconButton(
-            onPressed: () async {
-              // 설정에서 사주 정보 입력 화면으로 이동
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SajuInputScreen()),
-              );
-            },
-            icon: const Icon(
-              Icons.settings,
-              color: Colors.white,
-            ),
-          ),
+            const SizedBox(width: 8),
+          ],
           IconButton(
             onPressed: () async {
               try {
@@ -327,24 +366,41 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
             icon: _currentUser != null
-                ? CircleAvatar(
-                    radius: 16,
-                    backgroundImage: _currentUser!.photoURL != null
-                        ? NetworkImage(_currentUser!.photoURL!)
-                        : null,
-                    child: _currentUser!.photoURL == null
-                        ? Text(
-                            _currentUser!.displayName.isNotEmpty
-                                ? _currentUser!.displayName[0]
-                                : 'U',
-                            style: const TextStyle(fontSize: 12, color: Colors.white),
+                ? Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.amber.withOpacity(0.2),
+                      border: Border.all(color: Colors.amber, width: 2),
+                    ),
+                    child: _currentUser!.photoURL != null
+                        ? ClipOval(
+                            child: Image.network(
+                              _currentUser!.photoURL!,
+                              width: 24,
+                              height: 24,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return _buildUserInitial();
+                              },
+                            ),
                           )
-                        : null,
+                        : _buildUserInitial(),
                   )
-                : const Icon(
-                    Icons.account_circle,
-                    color: Colors.white,
-                    size: 32,
+                : Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.1),
+                      border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                    ),
+                    child: const Icon(
+                      Icons.account_circle,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
             tooltip: _currentUser != null ? '로그아웃' : 'Google 로그인',
           ),
@@ -505,40 +561,156 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 10),
           // 100점 만점 점수 표시
-          Text(
-            '${_todayFortune!.score}점 / 100점',
-            style: GoogleFonts.notoSans(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.amber,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.amber.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.amber.withOpacity(0.5)),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          Center(
             child: Text(
-              _todayFortune!.message,
+              '${_todayFortune!.score}점 / 100점',
               style: GoogleFonts.notoSans(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                height: 1.5,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.amber,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          if (_todayFortune!.advice.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Center(
-              child: Text(
-                _todayFortune!.advice,
-                style: GoogleFonts.notoSans(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.amber.withOpacity(0.8),
-                  height: 1.4,
+          const SizedBox(height: 15),
+          // 운세 메시지 (주요 내용)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.psychology,
+                      color: Colors.amber,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '오늘의 운세',
+                      style: GoogleFonts.notoSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber,
+                      ),
+                    ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
+                const SizedBox(height: 8),
+                Text(
+                  _todayFortune!.message,
+                  style: GoogleFonts.notoSans(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ],
+            ),
+          ),
+          if (_todayFortune!.advice.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            // 조언 (추가 내용)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.lightbulb,
+                        color: Colors.green,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '오늘의 조언',
+                        style: GoogleFonts.notoSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _todayFortune!.advice,
+                    style: GoogleFonts.notoSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ],
+              ),
+            ),
+          ],
+          // 사주 분석 결과의 운세 내용 추가
+          if (_sajuAnalysis?.data?.fortune != null && _sajuAnalysis!.data!.fortune!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.auto_awesome,
+                        color: Colors.blue,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '사주 분석 운세',
+                        style: GoogleFonts.notoSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _sajuAnalysis!.data!.fortune!,
+                    style: GoogleFonts.notoSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ],
               ),
             ),
           ],
