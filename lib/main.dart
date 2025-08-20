@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'screens/home_screen.dart';
+import 'screens/auth_wrapper.dart';
 
 void main() {
   runApp(const SajuApp());
@@ -19,7 +19,7 @@ class SajuApp extends StatelessWidget {
         fontFamily: GoogleFonts.notoSansKr().fontFamily,
         scaffoldBackgroundColor: const Color(0xFF2C1810),
       ),
-      home: const HomeScreen(),
+      home: const AuthWrapper(),
     );
   }
 }

@@ -66,31 +66,38 @@ class _KmaWeatherChipState extends State<KmaWeatherChip> {
           _showDetailSheet(context, _info!);
         }
       },
-      child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          _info!.locationName,
-          style: GoogleFonts.notoSans(color: Colors.white, fontSize: 12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.2)),
         ),
-        _divider(),
-        Text('미세 먼지 • $skyText', style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 12)),
-        _divider(),
-        Text('${_info!.temperatureCelsius}°C', style: GoogleFonts.notoSans(color: Colors.white, fontSize: 12)),
-        const SizedBox(width: 6),
-        Icon(
-          _info!.pty != 0 ? Icons.umbrella : Icons.wb_sunny_outlined,
-          size: 16,
-          color: Colors.white,
-        )
-      ],
-    ));
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              _info!.pty != 0 ? Icons.umbrella : Icons.wb_sunny_outlined,
+              size: 14,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '${_info!.temperatureCelsius}°C',
+              style: GoogleFonts.notoSans(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              skyText,
+              style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 11),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget _divider() => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Container(width: 1, height: 12, color: Colors.white24),
-      );
+
 }
 
 void _showDetailSheet(BuildContext context, KmaWeatherInfo info) {

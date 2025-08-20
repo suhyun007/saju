@@ -9,7 +9,9 @@ import '../screens/webview_screen.dart';
 import '../widgets/kma_weather_chip.dart';
 import '../services/daily_fortune_service.dart';
 import '../services/saju_service.dart';
+import '../services/auth_service.dart';
 import '../models/saju_info.dart';
+import '../models/user_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,13 +26,30 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   late final WebViewController _webController;
   bool _showWebView = false;
+  UserModel? _currentUser;
 
   @override
   void initState() {
     super.initState();
     _loadTodayFortune();
     _initializeWebView();
+    _loadUserInfo();
+    AuthService.addAuthStateListener(_onAuthStateChanged);
   }
+
+  @override
+  void dispose() {
+    AuthService.removeAuthStateListener(_onAuthStateChanged);
+    super.dispose();
+  }
+
+  void _onAuthStateChanged(UserModel? user) {
+    setState(() {
+      _currentUser = user;
+    });
+  }
+
+
 
   void _initializeWebView() async {
     try {
@@ -110,6 +129,19 @@ class _HomeScreenState extends State<HomeScreen> {
           _showWebView = !_showWebView;
         });
         break;
+    }
+  }
+
+  Future<void> _loadUserInfo() async {
+    try {
+      final user = await AuthService.getUserFromLocal();
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+        });
+      }
+    } catch (e) {
+      print('사용자 정보 로드 실패: $e');
     }
   }
 
@@ -219,24 +251,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(width: 15),
           Expanded(
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '수박 사주',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          height: 1.1,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+                Text(
+                  '수박 사주',
+                  style: GoogleFonts.notoSans(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    height: 1.1,
+                    color: Colors.white,
                   ),
                 ),
+                const SizedBox(height: 8),
                 const KmaWeatherChip(),
               ],
             ),
@@ -264,6 +291,62 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.settings,
               color: Colors.white,
             ),
+          ),
+          IconButton(
+            onPressed: () async {
+              try {
+                if (_currentUser != null) {
+                  // 로그인된 사용자가 있으면 로그아웃
+                  await AuthService.signOut();
+                  setState(() {
+                    _currentUser = null;
+                  });
+                } else {
+                  // 로그인되지 않았으면 Google 로그인
+                  final user = await AuthService.signInWithGoogle();
+                  if (user != null) {
+                    setState(() {
+                      _currentUser = user;
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${user.displayName}님 환영합니다!'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                }
+              } catch (e) {
+                print('로그인/로그아웃 오류: $e');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('오류가 발생했습니다: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            icon: _currentUser != null
+                ? CircleAvatar(
+                    radius: 16,
+                    backgroundImage: _currentUser!.photoURL != null
+                        ? NetworkImage(_currentUser!.photoURL!)
+                        : null,
+                    child: _currentUser!.photoURL == null
+                        ? Text(
+                            _currentUser!.displayName.isNotEmpty
+                                ? _currentUser!.displayName[0]
+                                : 'U',
+                            style: const TextStyle(fontSize: 12, color: Colors.white),
+                          )
+                        : null,
+                  )
+                : const Icon(
+                    Icons.account_circle,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+            tooltip: _currentUser != null ? '로그아웃' : 'Google 로그인',
           ),
         ],
       ),

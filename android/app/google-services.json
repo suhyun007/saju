@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "186395220147",
+    "project_id": "sajuapp-7ba35",
+    "storage_bucket": "sajuapp-7ba35.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:186395220147:android:a5397b6b79a114666478c6",
+        "android_client_info": {
+          "package_name": "com.example.saju_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCai9MCNZTcvkbIk3IW-BIczR8wJaEjOqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
