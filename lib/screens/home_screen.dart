@@ -273,15 +273,22 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             width: 50,
             height: 50,
-            decoration: BoxDecoration(
-              color: Colors.amber.withOpacity(0.2),
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: Colors.amber, width: 2),
-            ),
-            child: const Icon(
-              Icons.auto_awesome,
-              color: Colors.amber,
-              size: 30,
+              child: Image.asset(
+                'assets/icons/Icon-192.png',
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  print('이미지 로드 실패: $error');
+                  return const Icon(
+                    Icons.water_drop,
+                    color: Colors.green,
+                    size: 30,
+                  );
+                },
+              ),
             ),
           ),
           const SizedBox(width: 15),
@@ -289,17 +296,17 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const KmaWeatherChip(),
+                const SizedBox(height: 8),
                 Text(
-                  '수박 사주',
+                  '포춘수박',
                   style: GoogleFonts.notoSans(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     height: 1.1,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 8),
-                const KmaWeatherChip(),
               ],
             ),
           ),

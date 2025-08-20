@@ -51,7 +51,29 @@ class _KmaWeatherChipState extends State<KmaWeatherChip> {
     }
 
     if (_info == null) {
-      return Text('날씨 정보 없음', style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 12));
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.wb_sunny_outlined,
+              size: 14,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '날씨 정보',
+              style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 11),
+            ),
+          ],
+        ),
+      );
     }
 
     final skyText = _info!.pty != 0
