@@ -4,110 +4,82 @@ import '../models/saju_api_response.dart';
 import '../models/saju_info.dart';
 
 class SajuApiService {
-  static const String _baseUrl = 'https://sajugpt.co.kr/api';
-  static const String _alternativeUrl = 'https://sajugpt.co.kr/api/v1';
+  // Vercel에 배포된 새로운 사주 API URL
+  static const String _baseUrl = 'https://saju-server-j9ti.vercel.app/api';
   
   // 사주 계산 API 호출
   static Future<SajuApiResponse> getSajuAnalysis(SajuInfo sajuInfo) async {
     try {
       print('사주 분석 API 호출 시작: ${sajuInfo.birthDate} ${sajuInfo.gender}');
       
+      // 새로운 API 형식에 맞는 요청 데이터
       final requestBody = {
-        'birthDate': sajuInfo.birthDate.toIso8601String(),
+        'birthYear': sajuInfo.birthDate.year,
+        'birthMonth': sajuInfo.birthDate.month,
+        'birthDay': sajuInfo.birthDate.day,
         'birthHour': sajuInfo.birthHour,
         'birthMinute': sajuInfo.birthMinute,
-        'gender': sajuInfo.gender,
+        'gender': sajuInfo.gender == '남성' ? 'male' : 'female',
       };
       
       print('API 요청 데이터: ${jsonEncode(requestBody)}');
+      print('API URL: $_baseUrl/saju');
       
-      // 여러 URL 시도
-      final urls = [
-        '$_baseUrl/saju/calculate',
-        '$_alternativeUrl/saju/calculate',
-        '$_baseUrl/calculate',
-        '$_alternativeUrl/calculate',
-      ];
-      
-      // 리다이렉트를 허용하는 클라이언트 생성
-      final client = http.Client();
-      
-      try {
-        for (final url in urls) {
-          try {
-            print('API URL 시도: $url');
-            
-            final response = await client.post(
-              Uri.parse(url),
-              headers: {
-                'Content-Type': 'application/json',
-                'User-Agent': 'SajuApp/1.0',
-              },
-              body: jsonEncode(requestBody),
-            );
+      final response = await http.post(
+        Uri.parse('$_baseUrl/saju'),
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'SajuApp/1.0',
+        },
+        body: jsonEncode(requestBody),
+      );
 
-            print('API 응답 상태 코드: ${response.statusCode}');
-            print('API 응답 본문: ${response.body}');
-            print('API 응답 헤더: ${response.headers}');
+      print('API 응답 상태 코드: ${response.statusCode}');
+      print('API 응답 본문: ${response.body}');
 
-            if (response.statusCode == 200) {
-              final jsonData = jsonDecode(response.body);
-              final result = SajuApiResponse.fromJson(jsonData);
-              print('API 호출 성공: ${result.success}');
-              return result;
-            } else if (response.statusCode == 308) {
-              // 리다이렉트 처리
-              final location = response.headers['location'];
-              if (location != null) {
-                print('리다이렉트 URL: $location');
-                
-                final redirectResponse = await client.post(
-                  Uri.parse(location),
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'SajuApp/1.0',
-                  },
-                  body: jsonEncode(requestBody),
-                );
-                
-                print('리다이렉트 후 응답 상태 코드: ${redirectResponse.statusCode}');
-                print('리다이렉트 후 응답 본문: ${redirectResponse.body}');
-                
-                if (redirectResponse.statusCode == 200) {
-                  final jsonData = jsonDecode(redirectResponse.body);
-                  final result = SajuApiResponse.fromJson(jsonData);
-                  print('리다이렉트 후 API 호출 성공: ${result.success}');
-                  return result;
-                }
-              }
-              
-              print('리다이렉트 처리 실패, 다음 URL 시도');
-              continue;
-            } else {
-              print('API 호출 실패: ${response.statusCode} - ${response.body}, 다음 URL 시도');
-              continue;
-            }
-          } catch (urlError) {
-            print('URL $url 호출 중 오류: $urlError, 다음 URL 시도');
-            continue;
-          }
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        final result = SajuApiResponse.fromJson(jsonData);
+        print('API 호출 성공: ${result.success}');
+        
+        if (result.success) {
+          print('사주 데이터: ${result.data?.saju}');
+          print('오늘의 운세: ${result.data?.todayFortune?.overall}');
+        } else {
+          print('API 오류: ${result.error}');
         }
         
-        // 모든 URL 시도 실패
-        print('모든 API URL 시도 실패');
+        return result;
+      } else {
+        print('API 호출 실패: ${response.statusCode} - ${response.body}');
         return SajuApiResponse(
           success: false,
-          message: '모든 API 엔드포인트 시도 실패',
+          error: 'API 호출 실패: ${response.statusCode}',
         );
-      } finally {
-        client.close();
       }
     } catch (e) {
       print('사주 분석 API 호출 중 오류: $e');
       return SajuApiResponse(
         success: false,
-        message: '네트워크 오류: $e',
+        error: '네트워크 오류: $e',
       );
+    }
+  }
+
+  // 서버 상태 확인
+  static Future<bool> checkServerStatus() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/saju'),
+        headers: {
+          'User-Agent': 'SajuApp/1.0',
+        },
+      );
+      
+      return response.statusCode == 200;
+    } catch (e) {
+      print('서버 상태 확인 중 오류: $e');
+      return false;
     }
   }
 
@@ -119,10 +91,25 @@ class SajuApiService {
     await Future.delayed(const Duration(seconds: 2)); // API 호출 시뮬레이션
     
     final dummyData = SajuData(
-      yearSaju: _calculateSimpleSaju(sajuInfo.birthDate.year),
-      monthSaju: _calculateSimpleSaju(sajuInfo.birthDate.month),
-      daySaju: _calculateSimpleSaju(sajuInfo.birthDate.day),
-      hourSaju: _calculateSimpleSaju(sajuInfo.birthHour),
+      saju: '庚午甲申',
+      elements: SajuElements(
+        year: '庚',
+        month: '午',
+        day: '甲',
+        hour: '申',
+      ),
+      todayFortune: TodayFortune(
+        overall: '오늘은 새로운 기회가 찾아올 수 있는 날입니다.',
+        wealth: '재정적으로 안정적인 하루가 될 것입니다.',
+        health: '건강에 특별한 문제는 없을 것입니다.',
+        love: '연애운이 좋은 하루입니다.',
+        advice: '긍정적인 마음가짐으로 하루를 보내시기 바랍니다.',
+      ),
+      // 기존 호환성을 위한 필드들
+      yearSaju: '庚',
+      monthSaju: '午',
+      daySaju: '甲',
+      hourSaju: '申',
       yearText: '${sajuInfo.birthDate.year}년',
       monthText: '${sajuInfo.birthDate.month}월',
       dayText: '${sajuInfo.birthDate.day}일',

@@ -51,7 +51,7 @@ class _SajuViewScreenState extends State<SajuViewScreen> {
 
       if (!response.success) {
         setState(() {
-          _errorMessage = response.message;
+          _errorMessage = response.error ?? response.message ?? '알 수 없는 오류가 발생했습니다.';
         });
       }
     } catch (e) {
@@ -338,21 +338,56 @@ class _SajuViewScreenState extends State<SajuViewScreen> {
             ),
           ),
           const SizedBox(height: 15),
+          // 새로운 API 형식의 사주 정보 표시
+          if (data.saju != null) ...[
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.amber.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.amber.withOpacity(0.3)),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    '사주 팔자',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    data.saju!,
+                    style: GoogleFonts.notoSans(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 15),
+          ],
+          
+          // 사주 요소별 상세 정보
           Column(
             children: [
               Row(
                 children: [
-                  Expanded(child: _buildSajuItem('년주', data.yearSaju ?? '미입력', 'Year')),
+                  Expanded(child: _buildSajuItem('년주', data.elements?.year ?? data.yearSaju ?? '미입력', 'Year')),
                   const SizedBox(width: 10),
-                  Expanded(child: _buildSajuItem('월주', data.monthSaju ?? '미입력', 'Month')),
+                  Expanded(child: _buildSajuItem('월주', data.elements?.month ?? data.monthSaju ?? '미입력', 'Month')),
                 ],
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Expanded(child: _buildSajuItem('일주', data.daySaju ?? '미입력', 'Day')),
+                  Expanded(child: _buildSajuItem('일주', data.elements?.day ?? data.daySaju ?? '미입력', 'Day')),
                   const SizedBox(width: 10),
-                  Expanded(child: _buildSajuItem('시주', data.hourSaju ?? '미입력', 'Hour')),
+                  Expanded(child: _buildSajuItem('시주', data.elements?.hour ?? data.hourSaju ?? '미입력', 'Hour')),
                 ],
               ),
             ],
@@ -444,6 +479,8 @@ class _SajuViewScreenState extends State<SajuViewScreen> {
   }
 
   Widget _buildFortuneCard(SajuData data) {
+    final todayFortune = data.todayFortune;
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -473,12 +510,90 @@ class _SajuViewScreenState extends State<SajuViewScreen> {
             ],
           ),
           const SizedBox(height: 15),
+          
+          // 전체 운세
+          if (todayFortune?.overall != null) ...[
+            _buildFortuneSection('전체 운세', todayFortune!.overall!, Icons.psychology),
+            const SizedBox(height: 15),
+          ],
+          
+          // 세부 운세들
+          if (todayFortune != null) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: _buildFortuneSection('💰 재물운', todayFortune.wealth ?? '정보 없음', Icons.attach_money),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildFortuneSection('💪 건강운', todayFortune.health ?? '정보 없음', Icons.favorite),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildFortuneSection('💕 연애운', todayFortune.love ?? '정보 없음', Icons.favorite_border),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildFortuneSection('💡 조언', todayFortune.advice ?? '정보 없음', Icons.lightbulb),
+                ),
+              ],
+            ),
+          ] else ...[
+            // 기존 호환성을 위한 폴백
+            Text(
+              data.fortune ?? '오늘의 운세 정보가 없습니다.',
+              style: GoogleFonts.notoSans(
+                fontSize: 14,
+                color: Colors.white70,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFortuneSection(String title, String content, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: Colors.green,
+                size: 16,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                title,
+                style: GoogleFonts.notoSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           Text(
-            data.fortune ?? '오늘의 운세 정보가 없습니다.',
+            content,
             style: GoogleFonts.notoSans(
-              fontSize: 14,
+              fontSize: 11,
               color: Colors.white70,
-              height: 1.5,
+              height: 1.3,
             ),
           ),
         ],
