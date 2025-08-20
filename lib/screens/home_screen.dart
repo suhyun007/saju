@@ -172,13 +172,19 @@ class _HomeScreenState extends State<HomeScreen> {
       // 저장된 사주 정보 가져오기
       final sajuInfo = await SajuService.loadSajuInfo();
       
-      // 사주 분석 데이터 가져오기 (사용 가능한 경우)
+      // 사주 분석 데이터 가져오기 (실제 API 호출)
       SajuApiResponse? sajuAnalysis;
       if (sajuInfo != null) {
         try {
-          sajuAnalysis = await SajuApiService.getSimpleSajuAnalysis(sajuInfo);
+          sajuAnalysis = await SajuApiService.getSajuAnalysis(sajuInfo);
         } catch (e) {
           print('사주 분석 로드 실패: $e');
+          // API 실패 시 더미 데이터로 폴백
+          try {
+            sajuAnalysis = await SajuApiService.getSimpleSajuAnalysis(sajuInfo);
+          } catch (fallbackError) {
+            print('더미 데이터 로드도 실패: $fallbackError');
+          }
         }
       }
       

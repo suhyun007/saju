@@ -34,11 +34,15 @@ class _SajuViewScreenState extends State<SajuViewScreen> {
         _errorMessage = null;
       });
 
-      // 실제 API 호출 (API가 준비되면 이 메서드 사용)
-      // final response = await SajuApiService.getSajuAnalysis(widget.sajuInfo);
-      
-      // 임시로 더미 데이터 사용
-      final response = await SajuApiService.getSimpleSajuAnalysis(widget.sajuInfo);
+      // 실제 API 호출
+      SajuApiResponse response;
+      try {
+        response = await SajuApiService.getSajuAnalysis(widget.sajuInfo);
+      } catch (e) {
+        print('실제 API 호출 실패, 더미 데이터로 폴백: $e');
+        // API 실패 시 더미 데이터로 폴백
+        response = await SajuApiService.getSimpleSajuAnalysis(widget.sajuInfo);
+      }
 
       setState(() {
         _apiResponse = response;
