@@ -23,10 +23,6 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   String? _selectedHour;
   String? _selectedMinute;
   String? _selectedRegion;
-  double? _selectedLatitude;
-  double? _selectedLongitude;
-  late final WebViewController _webController;
-  bool _showWebView = false;
   
   // Google Maps API Key는 AndroidManifest.xml과 AppDelegate.swift에 설정됨
   // 현재 구현에서는 geolocator와 geocoding 패키지를 사용하므로 직접적인 API 키 사용 불필요
@@ -38,32 +34,23 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeWebView();
+    _loadSavedSajuInfo();
   }
 
-  void _initializeWebView() async {
-    try {
-      if (Platform.isAndroid) {
-        WebViewPlatform.instance = AndroidWebViewPlatform();
-        AndroidWebViewController.enableDebugging(true);
-      }
 
-      _webController = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setNavigationDelegate(NavigationDelegate(
-          onPageStarted: (String url) {
-            print('사주 WebView 로딩 시작: $url');
-          },
-          onPageFinished: (String url) {
-            print('사주 WebView 로딩 완료: $url');
-          },
-          onWebResourceError: (WebResourceError error) {
-            print('사주 WebView 오류: ${error.description}');
-          },
-        ))
-        ..loadFlutterAsset('web/saju_input.html');
-    } catch (e) {
-      print('사주 WebView 초기화 오류: $e');
+
+  Future<void> _loadSavedSajuInfo() async {
+    final sajuInfo = await SajuService.loadSajuInfo();
+    if (sajuInfo != null && mounted) {
+      setState(() {
+        _nameController.text = sajuInfo.name;
+        _selectedGender = sajuInfo.gender;
+        _selectedDate = sajuInfo.birthDate;
+        _selectedHour = sajuInfo.birthHour.toString().padLeft(2, '0');
+        _selectedMinute = sajuInfo.birthMinute.toString().padLeft(2, '0');
+        _selectedRegion = sajuInfo.region;
+        _regionController.text = sajuInfo.region;
+      });
     }
   }
 
@@ -90,19 +77,13 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               
               // 메인 콘텐츠
               Expanded(
-                child: _showWebView 
-                  ? _buildWebView()
-                  : _buildMainContent(),
+                child: _buildMainContent(),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  Widget _buildWebView() {
-    return WebViewWidget(controller: _webController);
   }
 
   Widget _buildMainContent() {
@@ -163,24 +144,11 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ),
           ),
           const SizedBox(width: 15),
-          Expanded(
-            child: Text(
-              '사주 정보 입력',
-              style: GoogleFonts.notoSans(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _showWebView = !_showWebView;
-              });
-            },
-            icon: Icon(
-              _showWebView ? Icons.apps : Icons.web,
+          Text(
+            '사주 정보 입력',
+            style: GoogleFonts.notoSans(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
@@ -622,14 +590,6 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                       ),
                     ),
                   ),
-                  if (_selectedLatitude != null && _selectedLongitude != null)
-                    Text(
-                      '(${_selectedLatitude!.toStringAsFixed(4)}, ${_selectedLongitude!.toStringAsFixed(4)})',
-                      style: GoogleFonts.notoSans(
-                        fontSize: 12,
-                        color: Colors.white70,
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -685,11 +645,8 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     if (result != null) {
       setState(() {
         _selectedRegion = result['address'];
-        _selectedLatitude = result['latitude'];
-        _selectedLongitude = result['longitude'];
         _regionController.text = result['address']; // 입력창에도 지역명 표시
       });
- 
     }
   }
 

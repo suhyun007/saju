@@ -20,6 +20,7 @@ dependencies:
   webview_flutter: ^4.7.0
   google_sign_in: 6.2.1
   flutter_local_notifications: ^17.1.2
+  url_launcher: ^6.2.4
   # google_maps_flutter: ^2.5.3  # Google Maps SDK 주석
   # geolocator: ^10.1.0  # 위치 권한 주석
   # geocoding: ^2.1.1  # 주소 변환 주석

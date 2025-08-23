@@ -5,6 +5,9 @@ import '../services/auth_service.dart';
 import '../models/user_model.dart';
 import '../services/theme_service.dart';
 import '../services/notification_service.dart';
+import '../services/saju_service.dart';
+import '../models/saju_info.dart';
+import 'saju_input_screen.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -15,12 +18,17 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   UserModel? _user;
+  SajuInfo? _sajuInfo;
+  String _selectedHour = '09';
+  String _selectedMinute = '00';
 
   @override
   void initState() {
     super.initState();
     _user = AuthService.currentUser;
     _loadUser();
+    _loadSajuInfo();
+    _loadNotificationTime();
     AuthService.addAuthStateListener(_onAuthChanged);
     // 페이지 로드 시 알림 권한 상태 새로고침
     NotificationService.refreshPermissionStatus();
@@ -43,6 +51,23 @@ class _MyPageState extends State<MyPage> {
     if (!mounted) return;
     setState(() {
       _user = local ?? _user;
+    });
+  }
+
+  Future<void> _loadSajuInfo() async {
+    final sajuInfo = await SajuService.loadSajuInfo();
+    if (!mounted) return;
+    setState(() {
+      _sajuInfo = sajuInfo;
+    });
+  }
+
+  Future<void> _loadNotificationTime() async {
+    final timeData = await NotificationService.getNotificationTime();
+    if (!mounted) return;
+    setState(() {
+      _selectedHour = timeData['hour']!.toString().padLeft(2, '0');
+      _selectedMinute = timeData['minute']!.toString().padLeft(2, '0');
     });
   }
 
@@ -81,8 +106,6 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
-  
-
   void _showNotificationSheet() async {
     showModalBottomSheet(
       context: context,
@@ -99,41 +122,256 @@ class _MyPageState extends State<MyPage> {
           child: ValueListenableBuilder<bool>(
             valueListenable: NotificationService.enabledNotifier,
             builder: (context, enabled, _) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SwitchListTile(
-                    value: enabled,
-                    activeColor: Colors.amber,
-                    title: Text('알림 사용', style: GoogleFonts.notoSans(color: Colors.white, fontWeight: FontWeight.w600)),
-                    subtitle: Text(
-                      enabled ? '알림이 활성화되어 있습니다.' : '알림이 비활성화되어 있습니다.',
-                      style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 12),
-                    ),
-                    onChanged: (value) async {
-                      // 단순한 토글 - 권한 확인 없이 바로 설정 변경
-                      await NotificationService.setEnabled(value, userAction: true);
-                      setState(() {});
-                      
-                      if (value) {
-                        // 켜짐으로 설정했을 때만 테스트 알림 보내기
-                        await NotificationService.showTestNotification();
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: enabled ? () => NotificationService.showTestNotification() : null,
-                          icon: const Icon(Icons.notifications_active),
-                          label: const Text('테스트 알림 보내기'),
+                      SwitchListTile(
+                        value: enabled,
+                        activeColor: Colors.amber,
+                        title: Text('알림 사용', style: GoogleFonts.notoSans(color: Colors.white, fontWeight: FontWeight.w600)),
+                        subtitle: Text(
+                          enabled ? '알림이 활성화되어 있습니다.' : '알림이 비활성화되어 있습니다.',
+                          style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 12),
                         ),
+                        secondary: Text(
+                          enabled ? 'ON' : 'OFF',
+                          style: GoogleFonts.notoSans(
+                            color: enabled ? Colors.amber : Colors.grey[400],
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        onChanged: (value) async {
+                          if (value) {
+                            // ON으로 바꾸려고 할 때 시스템 권한 확인
+                            final systemPermission = await NotificationService.hasPermission();
+                            if (!systemPermission) {
+                              // 시스템 권한이 없으면 권한 요청 다이얼로그 표시
+                              if (mounted) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('알림 권한 필요'),
+                                    content: const Text('알림을 받으려면 설정에서 알림 권한을 허용해주세요.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('취소'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          print('=== 설정으로 이동 버튼 클릭됨 ===');
+                                          Navigator.pop(context);
+                                          print('=== 다이얼로그 닫힘 ===');
+                                          print('=== openAppSettings 호출 시도 ===');
+                                          openAppSettings();
+                                          print('=== openAppSettings 호출 완료 ===');
+                                        },
+                                        child: const Text('설정으로 이동'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              return; // 토글 변경하지 않음
+                            }
+                          }
+                          
+                          // 권한이 있거나 OFF로 바꾸는 경우 정상 처리
+                          await NotificationService.setEnabled(value, userAction: true);
+                          setState(() {});
+                          
+                          if (value) {
+                            // 켜짐으로 설정했을 때만 테스트 알림 보내기
+                            await NotificationService.showTestNotification();
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      // 알림 시간 표시 (ON일 때만)
+                      if (enabled)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                              Text(
+                                '알림 시간: ',
+                                style: const TextStyle(color: Colors.white, fontSize: 16),
+                              ),
+                              // 시간 선택 드롭다운
+                              Container(
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                                child: DropdownButton<String>(
+                                  value: _selectedHour,
+                                  dropdownColor: const Color(0xFF2C1810),
+                                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                                  underline: Container(),
+                                  items: List.generate(24, (index) {
+                                    final hour = index.toString().padLeft(2, '0');
+                                    return DropdownMenuItem<String>(
+                                      value: hour,
+                                      child: Text(hour),
+                                    );
+                                  }),
+                                  onChanged: (String? value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _selectedHour = value;
+                                      });
+                                    }
+                                  },
+                                ),
+                              ),
+                              Text(
+                                ' : ',
+                                style: const TextStyle(color: Colors.white, fontSize: 16),
+                              ),
+                              // 분 선택 드롭다운
+                              Container(
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                                child: DropdownButton<String>(
+                                  value: _selectedMinute,
+                                  dropdownColor: const Color(0xFF2C1810),
+                                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                                  underline: Container(),
+                                  items: List.generate(60, (index) {
+                                    final minute = index.toString().padLeft(2, '0');
+                                    return DropdownMenuItem<String>(
+                                      value: minute,
+                                      child: Text(minute),
+                                    );
+                                  }),
+                                  onChanged: (String? value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _selectedMinute = value;
+                                      });
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          ),
+                        ),
+                      // 알림이 켜져있을 때만 확인 버튼 표시
+                      if (enabled)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                              onPressed: () async {
+                                // 알림 시간 저장
+                                await NotificationService.updateNotificationTime(
+                                  int.parse(_selectedHour),
+                                  int.parse(_selectedMinute),
+                                );
+                                
+                                // 알림 권한 확인 및 요청 (앱 내부 설정이 켜져있고 시스템 권한도 있을 때만)
+                                final systemPermission = await NotificationService.hasPermission();
+                                final appEnabled = NotificationService.enabledNotifier.value;
+                                
+                                print('=== 알림 권한 상태 ===');
+                                print('시스템 권한: $systemPermission');
+                                print('앱 내부 설정: $appEnabled');
+                                print('====================');
+                                
+                                // 시스템 권한이 없으면 권한 요청 다이얼로그 표시
+                                print('=== 권한 확인 결과 ===');
+                                print('systemPermission: $systemPermission');
+                                print('appEnabled: $appEnabled');
+                                print('====================');
+                                
+                                if (!systemPermission) {
+                                  print('권한 요청 다이얼로그 표시 시도');
+                                  if (mounted) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('알림 권한 필요'),
+                                        content: const Text('설정 > 앱 > 사주앱 > 알림에서 "알림 허용"을 켜주세요.'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              print('취소 버튼 클릭됨');
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('취소'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              print('=== 설정으로 이동 버튼 클릭됨 ===');
+                                              Navigator.pop(context);
+                                              print('=== 다이얼로그 닫힘 ===');
+                                              print('=== openAppSettings 호출 시도 ===');
+                                              openAppSettings();
+                                              print('=== openAppSettings 호출 완료 ===');
+                                            },
+                                            child: const Text('설정으로 이동'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                  return;
+                                }
+                                
+                                // 앱 내부 알림 설정이 꺼져있으면 알림을 보내지 않음
+                                if (!appEnabled) {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('알림이 비활성화되어 있습니다. 알림을 켜고 다시 시도해주세요.'),
+                                        backgroundColor: Colors.orange,
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
+                                  return;
+                                }
+                                
+                                // 테스트 푸시 알림 보내기
+                                await NotificationService.showFortuneNotification();
+                                
+                                // 바텀 시트 닫기
+                                Navigator.pop(context);
+                                
+                                // 성공 메시지 표시
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('알림 시간이 $_selectedHour:$_selectedMinute로 저장되었습니다.'),
+                                      backgroundColor: Colors.amber,
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.check),
+                              label: const Text('확인'),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
+                  );
+                },
               );
             },
           ),
@@ -410,7 +648,7 @@ class _MyPageState extends State<MyPage> {
                     ),
                     const SizedBox(width: 15),
                     Text(
-                      '환경설정',
+                      '마이페이지',
                       style: GoogleFonts.notoSans(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -425,13 +663,32 @@ class _MyPageState extends State<MyPage> {
                 child: ListView(
                   padding: const EdgeInsets.all(20),
                   children: [
+                    const SizedBox(height: 20),
                     _Section(
-                      title: '계정',
+                      title: '관리',
                       children: [
                         _Tile(
+                          icon: Icons.calendar_today,
+                          title: _sajuInfo != null ? '${_sajuInfo!.name}님' : '사주정보',
+                          subtitle: _sajuInfo != null
+                              ? '${_sajuInfo!.yearText} ${_sajuInfo!.monthText} ${_sajuInfo!.dayText} ${_sajuInfo!.timeText}'
+                              : '사주정보를 입력해 주세요',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SajuInputScreen(),
+                              ),
+                            ).then((_) {
+                              _loadSajuInfo(); // 사주정보 화면에서 돌아올 때 새로고침
+                            });
+                          },
+                        ),
+                        _Tile(
                           icon: Icons.person,
-                          title: '프로필',
-                          subtitle: _user == null ? '구글에서 로그인' : '로그인됨',
+                          title: _user == null ? '프로필' : (_user!.displayName ?? '사용자'),
+                          subtitle: _user == null ? '구글에서 로그인' : (_user!.email ?? '이메일 없음'),
+                          iconBackgroundColor: _user != null ? Colors.amber : null,
                           onTap: () {
                             if (_user == null) {
                               _signIn();
@@ -468,7 +725,7 @@ class _MyPageState extends State<MyPage> {
                             return _Tile(
                               icon: Icons.notifications,
                               title: '알림',
-                              subtitle: enabled ? '켜짐' : '꺼짐',
+                              subtitle: enabled ? 'ON' : 'OFF',
                               onTap: _showNotificationSheet,
                             );
                           },
@@ -497,6 +754,8 @@ class _MyPageState extends State<MyPage> {
     );
   }
 }
+
+
 
 class _Section extends StatelessWidget {
   final String title;
@@ -536,11 +795,13 @@ class _Tile extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final Color? iconBackgroundColor;
   const _Tile({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.iconBackgroundColor,
   });
 
   @override
@@ -562,7 +823,7 @@ class _Tile extends StatelessWidget {
               height: 36,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.08),
+                color: iconBackgroundColor ?? Colors.white.withOpacity(0.08),
                 border: Border.all(color: Colors.white.withOpacity(0.12)),
               ),
               child: Icon(icon, color: Colors.white, size: 18),

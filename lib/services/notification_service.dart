@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NotificationService {
   static const String _enabledKey = 'notifications_enabled';
   static const String _userDisabledKey = 'notifications_user_disabled';
+  static const String _hourKey = 'notification_hour';
+  static const String _minuteKey = 'notification_minute';
   static final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
   static final ValueNotifier<bool> enabledNotifier = ValueNotifier<bool>(false);
 
@@ -27,20 +30,41 @@ class NotificationService {
       importance: Importance.defaultImportance,
     ));
 
-    // 저장된 알림 설정 로드 (처음 설치 시에는 켜짐으로 설정)
+    // 저장된 알림 설정 로드 및 시스템 권한 확인
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedEnabled = prefs.getBool(_enabledKey);
       
+      // 시스템 권한 확인
+      final systemPermission = await hasPermission();
+      print('=== 앱 실행 시 알림 상태 ===');
+      print('시스템 권한: $systemPermission');
+      print('앱 내부 설정: $savedEnabled');
+      print('==========================');
+      
       if (savedEnabled == null) {
-        // 처음 설치된 경우 - 켜짐으로 설정
-        await prefs.setBool(_enabledKey, true);
-        enabledNotifier.value = true;
-        print('NotificationService: 처음 설치 - 알림을 켜짐으로 설정');
+        // 처음 설치된 경우 - 시스템 권한에 따라 설정
+        if (systemPermission) {
+          await prefs.setBool(_enabledKey, true);
+          enabledNotifier.value = true;
+          print('NotificationService: 처음 설치 - 시스템 권한 있음, 알림을 켜짐으로 설정');
+        } else {
+          await prefs.setBool(_enabledKey, false);
+          enabledNotifier.value = false;
+          print('NotificationService: 처음 설치 - 시스템 권한 없음, 알림을 꺼짐으로 설정');
+        }
       } else {
-        // 기존 설정 로드
-        enabledNotifier.value = savedEnabled;
-        print('NotificationService: 저장된 알림 설정 로드: $savedEnabled');
+        // 기존 설정 로드 후 시스템 권한 확인
+        if (savedEnabled && !systemPermission) {
+          // 앱 내부는 켜져있지만 시스템 권한이 없는 경우 - 강제로 OFF
+          await prefs.setBool(_enabledKey, false);
+          enabledNotifier.value = false;
+          print('NotificationService: 시스템 권한 없음으로 인해 앱 내부 설정을 OFF로 강제 변경');
+        } else {
+          // 정상적인 경우
+          enabledNotifier.value = savedEnabled;
+          print('NotificationService: 저장된 알림 설정 로드: $savedEnabled');
+        }
       }
     } catch (e) {
       print('NotificationService: 설정 로드 실패: $e');
@@ -193,7 +217,20 @@ class NotificationService {
 
   // 설정으로 이동하는 함수
   static Future<void> openAppSettings() async {
-    await openAppSettings();
+    const url = 'app-settings:';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+      print('NotificationService: 앱 설정으로 이동 완료');
+    } else {
+      print('NotificationService: 설정 화면을 열 수 없습니다.');
+      // fallback: 권한 요청
+      try {
+        await Permission.notification.request();
+        print('NotificationService: fallback - 권한 요청');
+      } catch (e) {
+        print('NotificationService: 권한 요청도 실패: $e');
+      }
+    }
   }
 
   // 권한 상태를 자세히 확인하는 함수
@@ -205,6 +242,60 @@ class NotificationService {
   static Future<void> onAppResumed() async {
     print('NotificationService: 앱이 포그라운드로 돌아옴 - 권한 상태 확인');
     await refreshPermissionStatus();
+  }
+
+  // 알림 시간 가져오기
+  static Future<Map<String, int>> getNotificationTime() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final hour = prefs.getInt(_hourKey) ?? 9;
+      final minute = prefs.getInt(_minuteKey) ?? 0;
+      return {'hour': hour, 'minute': minute};
+    } catch (e) {
+      print('NotificationService: 알림 시간 로드 실패: $e');
+      return {'hour': 9, 'minute': 0};
+    }
+  }
+
+  // 알림 시간 업데이트
+  static Future<void> updateNotificationTime(int hour, int minute) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_hourKey, hour);
+      await prefs.setInt(_minuteKey, minute);
+      print('NotificationService: 알림 시간 업데이트: $hour:$minute');
+    } catch (e) {
+      print('NotificationService: 알림 시간 저장 실패: $e');
+    }
+  }
+
+  // 운세 알림 보내기
+  static Future<void> showFortuneNotification() async {
+    print('NotificationService: 운세 알림 시도');
+    if (!enabledNotifier.value) {
+      print('NotificationService: 알림이 비활성화되어 있음');
+      return;
+    }
+    // 권한 확인 우회 (임시)
+    print('NotificationService: 권한 확인 우회하고 바로 알림 전송 시도');
+
+    const androidDetails = AndroidNotificationDetails(
+      'fortune_channel',
+      'Fortune Notifications',
+      channelDescription: 'Channel for daily fortune notifications',
+      importance: Importance.defaultImportance,
+      priority: Priority.defaultPriority,
+    );
+    const iosDetails = DarwinNotificationDetails();
+    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+
+    await _plugin.show(
+      1002,
+      '오늘의 운세가 도착했어요!',
+      '지금 확인해보세요',
+      details,
+    );
+    print('NotificationService: 운세 알림 전송 완료');
   }
 }
 

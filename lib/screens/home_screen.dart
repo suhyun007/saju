@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 18,
               ),
             ),
-            tooltip: '환경설정',
+            tooltip: '마이페이지',
           ),
         ],
       ),
