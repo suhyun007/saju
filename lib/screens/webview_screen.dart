@@ -29,6 +29,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   void _initializeWebView() async {
     try {
+      print('webview_screen.dart');
       // 안드로이드 WebView 초기화
       if (Platform.isAndroid) {
         WebViewPlatform.instance = AndroidWebViewPlatform();

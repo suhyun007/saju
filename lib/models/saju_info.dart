@@ -1,25 +1,31 @@
 class SajuInfo {
+  final String name;
   final DateTime birthDate;
   final int birthHour;
   final int birthMinute;
   final String gender;
+  final String region;
   final DateTime createdAt;
 
   SajuInfo({
+    required this.name,
     required this.birthDate,
     required this.birthHour,
     required this.birthMinute,
     required this.gender,
+    required this.region,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
   // JSON 직렬화를 위한 메서드
   Map<String, dynamic> toJson() {
     return {
+      'name': name,
       'birthDate': birthDate.toIso8601String(),
       'birthHour': birthHour,
       'birthMinute': birthMinute,
       'gender': gender,
+      'region': region,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -27,10 +33,12 @@ class SajuInfo {
   // JSON에서 객체 생성
   factory SajuInfo.fromJson(Map<String, dynamic> json) {
     return SajuInfo(
+      name: json['name'] ?? '',
       birthDate: DateTime.parse(json['birthDate']),
       birthHour: json['birthHour'],
       birthMinute: json['birthMinute'],
       gender: json['gender'],
+      region: json['region'] ?? '',
       createdAt: DateTime.parse(json['createdAt']),
     );
   }

@@ -92,6 +92,7 @@ class SajuApiService {
 
   // 간단한 사주 정보 조회 (API가 없을 경우를 대비한 대체 메서드)
   static Future<SajuApiResponse> getSimpleSajuAnalysis(SajuInfo sajuInfo) async {
+    print('saju_api_service.dart 호출');
     print('더미 데이터 사주 분석 시작: ${sajuInfo.birthDate} ${sajuInfo.gender}');
     
     // 실제 API가 없을 경우를 대비한 더미 데이터

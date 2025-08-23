@@ -13,25 +13,33 @@ dependencies:
   intl: ^0.18.1
   shared_preferences: ^2.2.2
   http: ^1.1.0
+  dio: ^5.0.0
   permission_handler: ^11.0.1
   audioplayers: ^5.2.1
   path_provider: ^2.1.1
-  geolocator: ^10.1.0
-  geocoding: ^2.2.0
   webview_flutter: ^4.7.0
   google_sign_in: 6.2.1
-
+  flutter_local_notifications: ^17.1.2
+  # google_maps_flutter: ^2.5.3  # Google Maps SDK 주석
+  # geolocator: ^10.1.0  # 위치 권한 주석
+  # geocoding: ^2.1.1  # 주소 변환 주석
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
 
 flutter:
   uses-material-design: true
-  
   assets:
     - assets/icons/
+    - assets/design/
     - web/
     - web/icons/
   

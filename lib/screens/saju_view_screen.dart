@@ -41,6 +41,7 @@ class _SajuViewScreenState extends State<SajuViewScreen> {
       } catch (e) {
         print('실제 API 호출 실패, 더미 데이터로 폴백: $e');
         // API 실패 시 더미 데이터로 폴백
+        print('saju_view_screen.dart 호출');
         response = await SajuApiService.getSimpleSajuAnalysis(widget.sajuInfo);
       }
 

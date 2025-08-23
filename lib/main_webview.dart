@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:io';
-
 void main() {
   runApp(const SajuWebViewApp());
 }

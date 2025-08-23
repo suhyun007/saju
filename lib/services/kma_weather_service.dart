@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart' as geocoding;
-
 import 'package:http/http.dart' as http;
 
 class KmaWeatherInfo {
@@ -31,67 +28,7 @@ class KmaWeatherService {
 
   static Future<({double lat, double lon, String city, String region})>
       _fetchApproxLocation() async {
-    // 1) GPS 우선 - 정확한 위치 기반
-    try {
-      // 위치 서비스가 활성화되어 있는지 확인
-      if (!await Geolocator.isLocationServiceEnabled()) {
-        throw Exception('위치 서비스가 비활성화되어 있습니다.');
-      }
-      
-      final permission = await Geolocator.checkPermission();
-      LocationPermission granted = permission;
-      if (permission == LocationPermission.denied) {
-        granted = await Geolocator.requestPermission();
-      }
-      
-      if (granted == LocationPermission.always || granted == LocationPermission.whileInUse) {
-        // 높은 정확도로 현재 위치 가져오기
-        final pos = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-          timeLimit: const Duration(seconds: 10),
-        );
-        
-        String city = '현재 위치';
-        String region = '';
-        
-        try {
-          // 시스템 언어 설정 확인
-          final systemLocale = ui.window.locale.languageCode;
-          final localeIdentifier = systemLocale == 'ko' ? 'ko_KR' : 'en_US';
-          
-          final placemarks = await geocoding.placemarkFromCoordinates(
-            pos.latitude, 
-            pos.longitude, 
-            localeIdentifier: localeIdentifier
-          );
-          
-          if (placemarks.isNotEmpty) {
-            final p = placemarks.first;
-            region = p.administrativeArea ?? '';
-            city = p.locality ?? p.subLocality ?? p.administrativeArea ?? '현재 위치';
-            
-            // 영어로 나온 경우 한국어로 변환
-            if (systemLocale == 'ko') {
-              region = _translateRegionToKorean(region);
-              city = _translateCityToKorean(city);
-            }
-          }
-        } catch (e) {
-          // 주소 변환 실패 시에도 GPS 좌표는 사용
-          print('주소 변환 실패, GPS 좌표 사용: ${pos.latitude}, ${pos.longitude}');
-          print('에러: $e');
-          
-          // GPS 좌표로 대략적인 지역 추정
-          city = _estimateLocationFromGPS(pos.latitude, pos.longitude);
-        }
-        
-        return (lat: pos.latitude, lon: pos.longitude, city: city, region: region);
-      }
-    } catch (e) {
-      print('GPS 위치 조회 실패: $e');
-    }
-
-    // 2) IP 기반 Fallback - 실제 위치 기반
+    // IP 기반 위치 조회
     try {
       final uri = Uri.parse('https://ipapi.co/json');
       final res = await http.get(uri).timeout(const Duration(seconds: 8));
@@ -123,22 +60,8 @@ class KmaWeatherService {
       print('IP 기반 위치 조회 실패: $e');
     }
     
-    // 3) 마지막 Fallback - 사용자에게 위치 권한 요청
-    try {
-      final permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        await Geolocator.requestPermission();
-      }
-      
-      // 권한이 있으면 현재 위치 가져오기
-      if (await Geolocator.isLocationServiceEnabled()) {
-        final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-        return (lat: pos.latitude, lon: pos.longitude, city: '현재 위치', region: '');
-      }
-    } catch (_) {}
-    
-    // 모든 방법이 실패한 경우에만 기본값 사용
-    return (lat: 37.5665, lon: 126.9780, city: '위치 정보 없음', region: '');
+    // IP 기반 조회가 실패한 경우 기본값 사용
+    return (lat: 37.5665, lon: 126.9780, city: '서울특별시', region: '서울');
   }
 
   // 위경도 → 기상청 격자 (DFS)

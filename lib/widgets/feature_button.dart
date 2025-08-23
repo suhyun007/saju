@@ -24,6 +24,7 @@ class FeatureButton extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         // 각 기능별 화면으로 이동
+        print('feature_button.dart > build 호출');
         _handleFeatureTap(context);
       },
       child: Container(
@@ -90,8 +91,10 @@ class FeatureButton extends StatelessWidget {
   }
 
   void _handleFeatureTap(BuildContext context) async {
+    print('feature_button.dart 호출');
     switch (title) {
       case '사주 정보':
+        print('feature_button.dart 호출');
         await _handleSajuView(context);
         break;
       case '운세 분석':
@@ -112,17 +115,6 @@ class FeatureButton extends StatelessWidget {
             builder: (context) => const WebViewScreen(
               title: '연애운',
               url: 'https://www.naver.com',
-            ),
-          ),
-        );
-        break;
-      case '직업운':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const WebViewScreen(
-              title: '직업운',
-              url: 'https://www.daum.net',
             ),
           ),
         );
