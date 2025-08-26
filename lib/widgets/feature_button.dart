@@ -10,6 +10,7 @@ class FeatureButton extends StatelessWidget {
   final String title;
   final String subtitle;
   final Color color;
+  final VoidCallback? onReturn;
 
   const FeatureButton({
     super.key,
@@ -17,6 +18,7 @@ class FeatureButton extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.color,
+    this.onReturn,
   });
 
   @override
@@ -93,7 +95,7 @@ class FeatureButton extends StatelessWidget {
   void _handleFeatureTap(BuildContext context) async {
     print('feature_button.dart 호출');
     switch (title) {
-      case '사주 정보':
+      case '출생 정보':
         print('feature_button.dart 호출');
         await _handleSajuView(context);
         break;
@@ -125,28 +127,36 @@ class FeatureButton extends StatelessWidget {
   }
 
   Future<void> _handleSajuView(BuildContext context) async {
-    // 저장된 사주 정보가 있는지 확인
+    // 저장된 출생 정보가 있는지 확인
     final hasSajuInfo = await SajuService.hasSajuInfo();
     
     if (hasSajuInfo) {
-      // 저장된 사주 정보가 있으면 사주 보기 화면으로 이동
+      // 저장된 출생 정보가 있으면 사주 보기 화면으로 이동
       final sajuInfo = await SajuService.loadSajuInfo();
       if (sajuInfo != null) {
-        Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => SajuViewScreen(sajuInfo: sajuInfo),
           ),
         );
+        // 화면에서 돌아왔을 때 홈 화면 새로고침을 위한 콜백 호출
+        if (context.mounted && onReturn != null) {
+          onReturn!();
+        }
       }
     } else {
-      // 저장된 사주 정보가 없으면 사주 입력 화면으로 이동
-      Navigator.push(
+      // 저장된 출생 정보가 없으면 사주 입력 화면으로 이동
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => const SajuInputScreen(),
         ),
       );
+              // 화면에서 돌아왔을 때 홈 화면 새로고침을 위한 콜백 호출
+        if (context.mounted && onReturn != null) {
+          onReturn!();
+        }
     }
   }
 

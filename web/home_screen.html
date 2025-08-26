@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>포춘수박</title>
+    <title> AstroStar</title>
     <style>
         * {
             margin: 0;
@@ -206,7 +206,7 @@
     <div class="header">
         <div class="logo">✨</div>
         <div class="title-section">
-            <div class="app-title">포춘수박</div>
+            <div class="app-title"> AstroStar</div>
             <div class="weather-chip">서울 22°C 맑음</div>
         </div>
         <div class="header-buttons">
@@ -232,7 +232,7 @@
         <div class="feature-grid">
             <button class="feature-btn" onclick="openSajuInfo()">
                 <div class="feature-icon">📅</div>
-                <div class="feature-title">사주 정보</div>
+                <div class="feature-title">출생 정보</div>
                 <div class="feature-subtitle">생년월일시 입력</div>
             </button>
             
@@ -293,20 +293,20 @@
                 } else {
                     fortuneContent.innerHTML = `
                         <div class="error">
-                            <div>사주 정보를 먼저 입력해주세요</div>
-                            <button class="retry-btn" onclick="openSajuInfo()">사주 정보 입력</button>
+                            <div>출생 정보를 먼저 입력해주세요</div>
+                            <button class="retry-btn" onclick="openSajuInfo()">출생 정보 입력</button>
                         </div>
                     `;
                 }
             }, 1000);
         }
 
-        // 사주 정보 화면 열기
+        // 출생 정보 화면 열기
         function openSajuInfo() {
             if (window.flutter_inappwebview) {
                 window.flutter_inappwebview.callHandler('openSajuInfo');
             } else {
-                console.log('사주 정보 화면 열기 요청');
+                console.log('출생 정보 화면 열기 요청');
                 // 웹에서 테스트용
                 alert('111');
                 window.location.href = 'saju_input.html';

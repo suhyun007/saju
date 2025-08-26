@@ -15,6 +15,6 @@ void main() {
     await tester.pumpWidget(const SajuApp());
 
     // Verify that the app title is displayed.
-    expect(find.text('포춘수박'), findsOneWidget);
+    expect(find.text(' AstroStar'), findsOneWidget);
   });
 }

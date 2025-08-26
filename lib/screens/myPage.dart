@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../services/auth_service.dart';
 import '../models/user_model.dart';
 import '../services/theme_service.dart';
 import '../services/notification_service.dart';
 import '../services/saju_service.dart';
+import '../services/friend_service.dart';
 import '../models/saju_info.dart';
+import '../models/friend_info.dart';
+import '../utils/zodiac_utils.dart';
 import 'saju_input_screen.dart';
+import 'privacy_policy_screen.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -19,6 +24,7 @@ class MyPage extends StatefulWidget {
 class _MyPageState extends State<MyPage> {
   UserModel? _user;
   SajuInfo? _sajuInfo;
+  FriendInfo? _friendInfo;
   String _selectedHour = '09';
   String _selectedMinute = '00';
 
@@ -28,6 +34,7 @@ class _MyPageState extends State<MyPage> {
     _user = AuthService.currentUser;
     _loadUser();
     _loadSajuInfo();
+    _loadFriendInfo();
     _loadNotificationTime();
     AuthService.addAuthStateListener(_onAuthChanged);
     // 페이지 로드 시 알림 권한 상태 새로고침
@@ -60,6 +67,22 @@ class _MyPageState extends State<MyPage> {
     setState(() {
       _sajuInfo = sajuInfo;
     });
+    print('=== 사주정보 로드 ===');
+    print('사주정보: ${sajuInfo?.name}');
+    print('별자리: ${sajuInfo?.zodiacSign}');
+    print('==================');
+  }
+
+  Future<void> _loadFriendInfo() async {
+    final friendInfo = await FriendService.loadFriendInfo();
+    if (!mounted) return;
+    setState(() {
+      _friendInfo = friendInfo;
+    });
+    print('=== 친구정보 로드 ===');
+    print('친구정보: ${friendInfo?.name}');
+    print('별자리: ${friendInfo?.zodiacSign}');
+    print('==================');
   }
 
   Future<void> _loadNotificationTime() async {
@@ -165,9 +188,9 @@ class _MyPageState extends State<MyPage> {
                                           print('=== 설정으로 이동 버튼 클릭됨 ===');
                                           Navigator.pop(context);
                                           print('=== 다이얼로그 닫힘 ===');
-                                          print('=== openAppSettings 호출 시도 ===');
-                                          openAppSettings();
-                                          print('=== openAppSettings 호출 완료 ===');
+                                          print('=== navigateToAppSettings 호출 시도 ===');
+                                          NotificationService.navigateToAppSettings();
+                                          print('=== navigateToAppSettings 호출 완료 ===');
                                         },
                                         child: const Text('설정으로 이동'),
                                       ),
@@ -319,9 +342,9 @@ class _MyPageState extends State<MyPage> {
                                               print('=== 설정으로 이동 버튼 클릭됨 ===');
                                               Navigator.pop(context);
                                               print('=== 다이얼로그 닫힘 ===');
-                                              print('=== openAppSettings 호출 시도 ===');
-                                              openAppSettings();
-                                              print('=== openAppSettings 호출 완료 ===');
+                                              print('=== navigateToAppSettings 호출 시도 ===');
+                                              NotificationService.navigateToAppSettings();
+                                              print('=== navigateToAppSettings 호출 완료 ===');
                                             },
                                             child: const Text('설정으로 이동'),
                                           ),
@@ -671,8 +694,9 @@ class _MyPageState extends State<MyPage> {
                           icon: Icons.calendar_today,
                           title: _sajuInfo != null ? '${_sajuInfo!.name}님' : '사주정보',
                           subtitle: _sajuInfo != null
-                              ? '${_sajuInfo!.yearText} ${_sajuInfo!.monthText} ${_sajuInfo!.dayText} ${_sajuInfo!.timeText}'
+                              ? '${_sajuInfo!.yearText} ${_sajuInfo!.monthText} ${_sajuInfo!.dayText} ${_sajuInfo!.timeText}${_sajuInfo!.zodiacSign != null ? ' • ${_sajuInfo!.zodiacSign}' : ''}'
                               : '사주정보를 입력해 주세요',
+                          zodiacSign: _sajuInfo?.zodiacSign,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -684,6 +708,24 @@ class _MyPageState extends State<MyPage> {
                             });
                           },
                         ),
+                        // _Tile(
+                        //   icon: _friendInfo != null ? Icons.person : Icons.person_add,
+                        //   title: _friendInfo != null ? '친구: ${_friendInfo!.name}' : '친구 정보 등록',
+                        //   subtitle: _friendInfo != null
+                        //       ? '${_friendInfo!.yearText} ${_friendInfo!.monthText} ${_friendInfo!.dayText} ${_friendInfo!.timeText}${_friendInfo!.zodiacSign != null ? ' • ${_friendInfo!.zodiacSign}' : ''}'
+                        //       : '친구 정보를 입력해 주세요',
+                        //   zodiacSign: _friendInfo?.zodiacSign,
+                        //   onTap: () {
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //         builder: (context) => const SajuInputScreen(isFriendInfo: true),
+                        //       ),
+                        //     ).then((_) {
+                        //       _loadFriendInfo(); // 친구정보 화면에서 돌아올 때 새로고침
+                        //     });
+                        //   },
+                        // ),
                         _Tile(
                           icon: Icons.person,
                           title: _user == null ? '프로필' : (_user!.displayName ?? '사용자'),
@@ -739,8 +781,15 @@ class _MyPageState extends State<MyPage> {
                         _Tile(
                           icon: Icons.info_outline,
                           title: '앱 정보',
-                          subtitle: '버전, 약관, 오픈소스 라이선스',
-                          onTap: () {},
+                          subtitle: '개인정보보호방침',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const PrivacyPolicyScreen(),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -796,12 +845,14 @@ class _Tile extends StatelessWidget {
   final String subtitle;
   final VoidCallback onTap;
   final Color? iconBackgroundColor;
+  final String? zodiacSign;
   const _Tile({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
     this.iconBackgroundColor,
+    this.zodiacSign,
   });
 
   @override
@@ -826,7 +877,23 @@ class _Tile extends StatelessWidget {
                 color: iconBackgroundColor ?? Colors.white.withOpacity(0.08),
                 border: Border.all(color: Colors.white.withOpacity(0.12)),
               ),
-              child: Icon(icon, color: Colors.white, size: 18),
+              child: zodiacSign != null
+                  ? Builder(
+                      builder: (context) {
+                        final imagePath = ZodiacUtils.getZodiacImagePath(zodiacSign!);
+                        print('=== 별자리 아이콘 로드 ===');
+                        print('별자리: $zodiacSign');
+                        print('이미지 경로: $imagePath');
+                        print('========================');
+                        return SvgPicture.asset(
+                          imagePath,
+                          width: 20,
+                          height: 20,
+                          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                        );
+                      },
+                    )
+                  : Icon(icon, color: Colors.white, size: 18),
             ),
             const SizedBox(width: 12),
             Expanded(

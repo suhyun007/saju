@@ -5,6 +5,8 @@ class SajuInfo {
   final int birthMinute;
   final String gender;
   final String region;
+  final String? status;
+  final String? zodiacSign;
   final DateTime createdAt;
 
   SajuInfo({
@@ -14,6 +16,8 @@ class SajuInfo {
     required this.birthMinute,
     required this.gender,
     required this.region,
+    this.status,
+    this.zodiacSign,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -26,6 +30,8 @@ class SajuInfo {
       'birthMinute': birthMinute,
       'gender': gender,
       'region': region,
+      'status': status,
+      'zodiacSign': zodiacSign,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -39,6 +45,8 @@ class SajuInfo {
       birthMinute: json['birthMinute'],
       gender: json['gender'],
       region: json['region'] ?? '',
+      status: json['status'],
+      zodiacSign: json['zodiacSign'],
       createdAt: DateTime.parse(json['createdAt']),
     );
   }
@@ -49,7 +57,7 @@ class SajuInfo {
   String get dayText => '${birthDate.day}일';
   String get timeText => '${birthHour.toString().padLeft(2, '0')}:${birthMinute.toString().padLeft(2, '0')}';
   
-  // 간단한 사주 정보 (실제로는 더 복잡한 계산이 필요)
+  // 간단한 출생 정보 (실제로는 더 복잡한 계산이 필요)
   String get yearSaju => _calculateSaju(birthDate.year);
   String get monthSaju => _calculateSaju(birthDate.month);
   String get daySaju => _calculateSaju(birthDate.day);

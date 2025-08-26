@@ -4,11 +4,19 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import '../models/saju_info.dart';
+import '../models/friend_info.dart';
 import '../services/saju_service.dart';
+import '../services/friend_service.dart';
+import '../utils/zodiac_utils.dart';
 import 'location_picker_screen.dart';
 
 class SajuInputScreen extends StatefulWidget {
-  const SajuInputScreen({super.key});
+  final bool isFriendInfo;
+  
+  const SajuInputScreen({
+    super.key,
+    this.isFriendInfo = false,
+  });
 
   @override
   State<SajuInputScreen> createState() => _SajuInputScreenState();
@@ -23,13 +31,16 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   String? _selectedHour;
   String? _selectedMinute;
   String? _selectedRegion;
+  String? _selectedStatus;
   
   // Google Maps API Key는 AndroidManifest.xml과 AppDelegate.swift에 설정됨
   // 현재 구현에서는 geolocator와 geocoding 패키지를 사용하므로 직접적인 API 키 사용 불필요
   
-  final List<String> _genders = ['남성', '여성'];
+  final List<String> _genders
+   = ['남성', '여성'];
   final List<String> _hours = List.generate(24, (index) => index.toString().padLeft(2, '0'));
   final List<String> _minutes = List.generate(60, (index) => index.toString().padLeft(2, '0'));
+  final List<String> _statuses = ['기혼', '연애 중', '연애희망', '관심없음'];
 
   @override
   void initState() {
@@ -40,17 +51,34 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
 
 
   Future<void> _loadSavedSajuInfo() async {
-    final sajuInfo = await SajuService.loadSajuInfo();
-    if (sajuInfo != null && mounted) {
-      setState(() {
-        _nameController.text = sajuInfo.name;
-        _selectedGender = sajuInfo.gender;
-        _selectedDate = sajuInfo.birthDate;
-        _selectedHour = sajuInfo.birthHour.toString().padLeft(2, '0');
-        _selectedMinute = sajuInfo.birthMinute.toString().padLeft(2, '0');
-        _selectedRegion = sajuInfo.region;
-        _regionController.text = sajuInfo.region;
-      });
+    if (widget.isFriendInfo) {
+      final friendInfo = await FriendService.loadFriendInfo();
+      if (friendInfo != null && mounted) {
+        setState(() {
+          _nameController.text = friendInfo.name;
+          _selectedGender = friendInfo.gender;
+          _selectedDate = friendInfo.birthDate;
+          _selectedHour = friendInfo.birthHour.toString().padLeft(2, '0');
+          _selectedMinute = friendInfo.birthMinute.toString().padLeft(2, '0');
+          _selectedRegion = friendInfo.region;
+          _regionController.text = friendInfo.region;
+          _selectedStatus = friendInfo.status;
+        });
+      }
+    } else {
+      final sajuInfo = await SajuService.loadSajuInfo();
+      if (sajuInfo != null && mounted) {
+        setState(() {
+          _nameController.text = sajuInfo.name;
+          _selectedGender = sajuInfo.gender;
+          _selectedDate = sajuInfo.birthDate;
+          _selectedHour = sajuInfo.birthHour.toString().padLeft(2, '0');
+          _selectedMinute = sajuInfo.birthMinute.toString().padLeft(2, '0');
+          _selectedRegion = sajuInfo.region;
+          _regionController.text = sajuInfo.region;
+          _selectedStatus = sajuInfo.status;
+        });
+      }
     }
   }
 
@@ -108,7 +136,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             
             const SizedBox(height: 20),
             
-            // 출생일 입력
+            // 출생일자 입력
             _buildDateInput(),
             
             const SizedBox(height: 20),
@@ -120,6 +148,11 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             
             // 태어난 지역 선택
             _buildRegionInput(),
+            
+            const SizedBox(height: 20),
+            
+            // 나의 상태 선택
+            _buildStatusInput(),
             
             const SizedBox(height: 30),
             
@@ -145,7 +178,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           ),
           const SizedBox(width: 15),
           Text(
-            '사주 정보 입력',
+            widget.isFriendInfo ? '친구 정보 입력' : '출생 정보 입력',
             style: GoogleFonts.notoSans(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -174,7 +207,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            '정확한 점성술 분석을 위해\n실제 출생 정보를 입력해주세요',
+            '정확한 점성술 분석을 위해\n정확한 출생정보를 입력해주세요',
             style: GoogleFonts.notoSans(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -245,11 +278,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             ),
-            onChanged: (value) {
-              setState(() {
-                // 이름이 변경될 때마다 UI 업데이트
-              });
-            },
+
           ),
         ],
       ),
@@ -276,7 +305,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               ),
               const SizedBox(width: 10),
               Text(
-                '출생일',
+                '출생일자',
                 style: GoogleFonts.notoSans(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -466,7 +495,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.white.withOpacity(0.3)),
       ),
       child: Column(
@@ -493,7 +522,6 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           const SizedBox(height: 15),
           Row(
             children: _genders.map((gender) {
-              print('saju_input_screen.dart > _buildGenderInput 호출');
               final isSelected = _selectedGender == gender;
               return Expanded(
                 child: GestureDetector(
@@ -504,7 +532,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   },
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 5),
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: isSelected 
                           ? Colors.amber.withOpacity(0.3)
@@ -623,6 +651,77 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     );
   }
 
+  Widget _buildStatusInput() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.favorite_outline,
+                color: Colors.amber,
+                size: 24,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                '나의 상태',
+                style: GoogleFonts.notoSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          Row(
+            children: _statuses.map((status) {
+              final isSelected = _selectedStatus == status;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedStatus = status;
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: isSelected 
+                          ? Colors.amber.withOpacity(0.3)
+                          : Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isSelected ? Colors.amber : Colors.white.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Text(
+                      status,
+                      style: GoogleFonts.notoSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: isSelected ? Colors.amber : Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
     Future<void> _searchPlace() async {
     // 바텀시트로 지역 검색 화면 표시
     final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -657,7 +756,8 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         _selectedDate != null &&
         _selectedHour != null &&
         _selectedMinute != null &&
-        _selectedRegion != null;
+        _selectedRegion != null &&
+        _selectedStatus != null;
 
     return SizedBox(
       width: double.infinity,
@@ -673,7 +773,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           elevation: isFormValid ? 5 : 0,
         ),
         child: Text(
-          '사주 정보 저장',
+          widget.isFriendInfo ? '친구 정보 저장' : '출생 정보 저장',
           style: GoogleFonts.notoSans(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -707,6 +807,23 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       setState(() {
         _selectedDate = picked;
       });
+      
+      // 날짜가 선택되면 별자리 정보를 스낵바로 표시
+      final zodiacSign = ZodiacUtils.getZodiacSign(picked);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '별자리: $zodiacSign (${ZodiacUtils.getZodiacPeriod(zodiacSign)})',
+              style: GoogleFonts.notoSans(fontSize: 16, color: Colors.white),
+            ),
+            backgroundColor: Colors.amber,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
     }
   }
 
@@ -722,7 +839,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     }
     
     if (_selectedDate == null) {
-      _showSnackBar('출생일을 선택해주세요.');
+      _showSnackBar('출생일자을 선택해주세요.');
       return;
     }
     
@@ -741,25 +858,57 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       return;
     }
 
-    // 사주 정보 생성
-    final sajuInfo = SajuInfo(
-      name: _nameController.text.trim(),
-      birthDate: _selectedDate!,
-      birthHour: int.parse(_selectedHour!),
-      birthMinute: int.parse(_selectedMinute!),
-      gender: _selectedGender!,
-      region: _selectedRegion!,
-    );
+    if (_selectedStatus == null) {
+      _showSnackBar('나의 상태를 선택해주세요.');
+      return;
+    }
 
-    // 사주 정보 저장
-    final success = await SajuService.saveSajuInfo(sajuInfo);
-    
-    if (success) {
-      _showSnackBar('사주 정보가 저장되었습니다!');
-      // 홈 화면으로 돌아가기
-      Navigator.pop(context, true); // true를 전달하여 홈 화면에서 새로고침하도록 함
+    if (widget.isFriendInfo) {
+      // 친구 정보 생성
+      final zodiacSign = ZodiacUtils.getZodiacSign(_selectedDate!);
+      final friendInfo = FriendInfo(
+        name: _nameController.text.trim(),
+        birthDate: _selectedDate!,
+        birthHour: int.parse(_selectedHour!),
+        birthMinute: int.parse(_selectedMinute!),
+        gender: _selectedGender!,
+        region: _selectedRegion!,
+        status: _selectedStatus!,
+        zodiacSign: zodiacSign,
+      );
+
+      // 친구 정보 저장
+      final success = await FriendService.saveFriendInfo(friendInfo);
+      
+      if (success) {
+        _showSnackBar('친구 정보가 저장되었습니다! (별자리: $zodiacSign)');
+        Navigator.pop(context, true);
+      } else {
+        _showSnackBar('친구 정보 저장에 실패했습니다.');
+      }
     } else {
-      _showSnackBar('사주 정보 저장에 실패했습니다.');
+      // 내 정보 생성
+      final zodiacSign = ZodiacUtils.getZodiacSign(_selectedDate!);
+      final sajuInfo = SajuInfo(
+        name: _nameController.text.trim(),
+        birthDate: _selectedDate!,
+        birthHour: int.parse(_selectedHour!),
+        birthMinute: int.parse(_selectedMinute!),
+        gender: _selectedGender!,
+        region: _selectedRegion!,
+        status: _selectedStatus!,
+        zodiacSign: zodiacSign,
+      );
+
+      // 내 정보 저장
+      final success = await SajuService.saveSajuInfo(sajuInfo);
+      
+      if (success) {
+        _showSnackBar('출생 정보가 저장되었습니다! (별자리: $zodiacSign)');
+        Navigator.pop(context, true);
+      } else {
+        _showSnackBar('출생 정보 저장에 실패했습니다.');
+      }
     }
   }
 

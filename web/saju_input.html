@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사주 정보 입력</title>
+    <title>출생 정보 입력</title>
     <style>
         * {
             margin: 0;
@@ -179,7 +179,7 @@
 <body>
     <div class="header">
         <button class="back-btn" onclick="goBack()">←</button>
-        <div class="title">사주 정보 입력</div>
+        <div class="title">출생 정보 입력</div>
         <button class="webview-btn" onclick="toggleWebView()">🌐</button>
     </div>
 
@@ -188,14 +188,14 @@
             <div class="info-icon">ℹ</div>
             <div class="info-text">
                 정확한 사주 분석을 위해<br>
-                실제 출생 정보를 입력해주세요
+                정확한 출생정보를 입력해주세요
             </div>
         </div>
 
         <div class="input-group">
             <div class="input-label">
                 <i>📅</i>
-                출생일
+                출생일자
             </div>
             <input type="date" class="date-input" id="birthDate" placeholder="생년월일을 선택해주세요">
         </div>
@@ -227,7 +227,7 @@
         </div>
 
         <button class="save-btn" onclick="saveSajuInfo()">
-            사주 정보 저장
+            출생 정보 저장
         </button>
     </div>
 
@@ -267,7 +267,7 @@
             }
         }
 
-        // 사주 정보 저장
+        // 출생 정보 저장
         function saveSajuInfo() {
             const birthDate = document.getElementById('birthDate').value;
             const birthHour = document.getElementById('birthHour').value;
@@ -289,8 +289,8 @@
             // 로컬 스토리지에 저장
             localStorage.setItem('sajuInfo', JSON.stringify(sajuInfo));
             
-            alert('사주 정보가 저장되었습니다!');
-            console.log('사주 정보 저장됨:', sajuInfo);
+            alert('출생 정보가 저장되었습니다!');
+            console.log('출생 정보 저장됨:', sajuInfo);
         }
 
         // 뒤로가기
@@ -315,7 +315,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             createTimeOptions();
             
-            // 저장된 사주 정보 불러오기
+            // 저장된 출생 정보 불러오기
             const savedInfo = localStorage.getItem('sajuInfo');
             if (savedInfo) {
                 const info = JSON.parse(savedInfo);

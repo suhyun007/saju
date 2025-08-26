@@ -21,6 +21,7 @@ dependencies:
   google_sign_in: 6.2.1
   flutter_local_notifications: ^17.1.2
   url_launcher: ^6.2.4
+  flutter_svg: ^2.0.9
   # google_maps_flutter: ^2.5.3  # Google Maps SDK 주석
   # geolocator: ^10.1.0  # 위치 권한 주석
   # geocoding: ^2.1.1  # 주소 변환 주석
@@ -30,17 +31,27 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
 
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icons/app_icon.png"
+  image_path: "assets/icons/zodiac_wheel_icon_256.png"
+
+flutter_native_splash:
+  color: "#1a1a2e"
+  image: assets/icons/zodiac_wheel_icon_256.png
+  android_12:
+    image: assets/icons/zodiac_wheel_icon_256.png
+    color: "#1a1a2e"
+  web: false
 
 flutter:
   uses-material-design: true
   assets:
     - assets/icons/
     - assets/design/
+    - assets/data/
     - web/
     - web/icons/
   

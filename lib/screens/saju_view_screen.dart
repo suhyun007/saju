@@ -331,7 +331,7 @@ class _SajuViewScreenState extends State<SajuViewScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '사주 정보',
+            '출생 정보',
             style: GoogleFonts.notoSans(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -339,7 +339,7 @@ class _SajuViewScreenState extends State<SajuViewScreen> {
             ),
           ),
           const SizedBox(height: 15),
-          // 새로운 API 형식의 사주 정보 표시
+          // 새로운 API 형식의 출생 정보 표시
           if (data.saju != null) ...[
             Container(
               padding: const EdgeInsets.all(15),

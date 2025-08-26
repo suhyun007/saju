@@ -200,15 +200,36 @@ class NotificationService {
       final prefs = await SharedPreferences.getInstance();
       final savedEnabled = prefs.getBool(_enabledKey);
       
+      // 시스템 권한 확인
+      final systemPermission = await hasPermission();
+      print('=== 앱 재개 시 알림 상태 ===');
+      print('시스템 권한: $systemPermission');
+      print('앱 내부 설정: $savedEnabled');
+      print('==========================');
+      
       if (savedEnabled == null) {
-        // 처음 설치된 경우 - 켜짐으로 설정
-        await prefs.setBool(_enabledKey, true);
-        enabledNotifier.value = true;
-        print('NotificationService: 처음 설치 - 알림을 켜짐으로 설정');
+        // 처음 설치된 경우 - 시스템 권한에 따라 설정
+        if (systemPermission) {
+          await prefs.setBool(_enabledKey, true);
+          enabledNotifier.value = true;
+          print('NotificationService: 처음 설치 - 시스템 권한 있음, 알림을 켜짐으로 설정');
+        } else {
+          await prefs.setBool(_enabledKey, false);
+          enabledNotifier.value = false;
+          print('NotificationService: 처음 설치 - 시스템 권한 없음, 알림을 꺼짐으로 설정');
+        }
       } else {
-        // 기존 설정 로드
-        enabledNotifier.value = savedEnabled;
-        print('NotificationService: 저장된 설정 로드: $savedEnabled');
+        // 기존 설정 로드 후 시스템 권한 확인
+        if (savedEnabled && !systemPermission) {
+          // 앱 내부는 켜져있지만 시스템 권한이 없는 경우 - 강제로 OFF
+          await prefs.setBool(_enabledKey, false);
+          enabledNotifier.value = false;
+          print('NotificationService: 시스템 권한 없음으로 인해 앱 내부 설정을 OFF로 강제 변경');
+        } else {
+          // 정상적인 경우
+          enabledNotifier.value = savedEnabled;
+          print('NotificationService: 저장된 알림 설정 로드: $savedEnabled');
+        }
       }
     } catch (e) {
       print('NotificationService: 설정 로드 실패: $e');
@@ -216,19 +237,37 @@ class NotificationService {
   }
 
   // 설정으로 이동하는 함수
-  static Future<void> openAppSettings() async {
-    const url = 'app-settings:';
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-      print('NotificationService: 앱 설정으로 이동 완료');
-    } else {
-      print('NotificationService: 설정 화면을 열 수 없습니다.');
-      // fallback: 권한 요청
+  static Future<void> navigateToAppSettings() async {
+    if (Platform.isAndroid) {
+      // Android에서는 시스템 설정으로 이동
       try {
-        await Permission.notification.request();
-        print('NotificationService: fallback - 권한 요청');
+        await openAppSettings();
+        print('NotificationService: Android 앱 설정으로 이동 완료');
       } catch (e) {
-        print('NotificationService: 권한 요청도 실패: $e');
+        print('NotificationService: Android 앱 설정 이동 실패: $e');
+        // fallback: 권한 요청
+        try {
+          await Permission.notification.request();
+          print('NotificationService: fallback - 권한 요청');
+        } catch (e2) {
+          print('NotificationService: 권한 요청도 실패: $e2');
+        }
+      }
+    } else {
+      // iOS에서는 app-settings: URL 사용
+      const url = 'app-settings:';
+      if (await canLaunchUrl(Uri.parse(url))) {
+        await launchUrl(Uri.parse(url));
+        print('NotificationService: iOS 앱 설정으로 이동 완료');
+      } else {
+        print('NotificationService: iOS 설정 화면을 열 수 없습니다.');
+        // fallback: 권한 요청
+        try {
+          await Permission.notification.request();
+          print('NotificationService: fallback - 권한 요청');
+        } catch (e) {
+          print('NotificationService: 권한 요청도 실패: $e');
+        }
       }
     }
   }

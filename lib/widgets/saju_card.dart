@@ -77,7 +77,7 @@ class _SajuCardState extends State<SajuCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '사주 정보 (설정에서 수정)',
+                      '출생 정보 (설정에서 수정)',
                       style: GoogleFonts.notoSans(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
