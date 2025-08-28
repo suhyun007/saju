@@ -1,11 +1,136 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/saju_service.dart';
+import '../models/saju_info.dart';
+import '../models/saju_api_response.dart';
+import '../services/saju_api_service.dart';
 
-class YearScreen extends StatelessWidget {
+class YearScreen extends StatefulWidget {
   const YearScreen({super.key});
 
   @override
+  State<YearScreen> createState() => _YearScreenState();
+}
+
+class _YearScreenState extends State<YearScreen> {
+  SajuInfo? _sajuInfo;
+  YearFortune? _yearFortune;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadYearFortune();
+  }
+
+  Future<void> _loadYearFortune() async {
+    try {
+      final sajuInfo = await SajuService.loadSajuInfo();
+      if (sajuInfo != null) {
+        setState(() {
+          _sajuInfo = sajuInfo;
+          _yearFortune = _createYearFortuneFromSajuInfo(sajuInfo);
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('올해의 운세 로드 실패: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  YearFortune _createYearFortuneFromSajuInfo(SajuInfo sajuInfo) {
+    return YearFortune(
+      overall: sajuInfo.yearFortune['overall'] ?? '올해의 새로운 기회가 찾아올 수 있는 날입니다. 주변을 잘 살펴보세요.',
+      love: sajuInfo.yearFortune['love'] ?? '올해의는 로맨틱한 기운이 가득한 날입니다. 소중한 사람과의 시간을 가져보세요.',
+      health: sajuInfo.yearFortune['health'] ?? '올해의는 건강에 특별한 문제는 없을 것입니다. 적절한 운동을 해보세요.',
+      study: sajuInfo.yearFortune['study'] ?? '올해의는 집중력이 높은 하루입니다. 중요한 업무나 공부에 집중하면 좋은 결과를 얻을 수 있습니다.',
+      wealth: sajuInfo.yearFortune['wealth'] ?? '올해의는 재정적으로 안정적인 하루가 될 것입니다. 투자나 큰지출은 신중하게 결정하세요.',
+      luckyItem: sajuInfo.yearFortune['luckyItem'] ?? '올해의는 살구색, 모자, 남쪽, 7, 11, 맛집',
+      yearOutfit: sajuInfo.yearFortune['yearOutfit'] ?? '올해의는 편안한 캐주얼 복장',
+      advice: sajuInfo.yearFortune['advice'] ?? '올해의는 긍정적인 마음가짐으로 하루를 보내시기 바랍니다.',
+    );
+  }
+
+  // 텍스트를 첫 번째 마침표까지만 자르는 메서드
+  String _truncateAtFirstPeriod(String text) {
+    final periodIndex = text.indexOf('.');
+    if (periodIndex == -1) {
+      return text; // 마침표가 없으면 전체 텍스트 반환
+    }
+    return text.substring(0, periodIndex + 1); // 마침표 포함해서 반환
+  }
+
+  // 텍스트를 두 번째 마침표까지만 자르고 ..을 붙이는 메서드
+  String _truncateAtSecondPeriod(String text) {
+    if (text.length <= 35) {
+      return text; // 35자 이하면 그대로 반환
+    }
+    
+    final firstPeriodIndex = text.indexOf('.');
+    if (firstPeriodIndex == -1) {
+      return text; // 마침표가 없으면 전체 텍스트 반환
+    }
+    
+    final secondPeriodIndex = text.indexOf('.', firstPeriodIndex + 1);
+    if (secondPeriodIndex == -1) {
+      return text; // 두 번째 마침표가 없으면 전체 텍스트 반환
+    }
+    
+    return '${text.substring(0, secondPeriodIndex + 1)}..'; // 두 번째 마침표까지 + ..
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF2C1810),
+              Color(0xFF4A2C1A),
+              Color(0xFF8B4513),
+            ],
+          ),
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: Colors.amber,
+          ),
+        ),
+      );
+    }
+
+    if (_yearFortune == null) {
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF2C1810),
+              Color(0xFF4A2C1A),
+              Color(0xFF8B4513),
+            ],
+          ),
+        ),
+        child: const Center(
+          child: Text(
+            '출생 정보를 먼저 입력해주세요.',
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ),
+      );
+    }
+
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -19,62 +144,65 @@ class YearScreen extends StatelessWidget {
         ),
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 헤더
+            // 점수 표시
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: Colors.amber.withOpacity(0.1),
+                color: Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
               ),
               child: Column(
                 children: [
-                  const Icon(
-                    Icons.calendar_today,
-                    color: Colors.amber,
-                    size: 40,
-                  ),
-                  const SizedBox(height: 10),
                   Text(
-                    '이번해 운세',
+                    _truncateAtFirstPeriod(_yearFortune!.overall!),
                     style: GoogleFonts.notoSans(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                       color: Colors.white,
+                      height: 1.4,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '올해의 운세를 확인해보세요',
-                    style: GoogleFonts.notoSans(
-                      fontSize: 14,
-                      color: Colors.white70,
+                  const SizedBox(height: 20),
+                  
+                  // 올해의 운세 자세히 보기 버튼
+                  Container(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/year-detail');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        '올해의 운세 자세히 보기',
+                        style: GoogleFonts.notoSans(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             
-            const SizedBox(height: 30),
-            
-            // 연간 운세 카드들
-            _buildFortuneCard(
-              '연간 전체운',
-              '올해는 변화와 성장의 해가 될 것입니다. 새로운 도전과 기회가 많이 찾아올 것이니 준비를 잘 하세요.',
-              Icons.star,
-              Colors.amber,
-            ),
-            
             const SizedBox(height: 20),
             
             _buildFortuneCard(
-              '연간 사랑운',
-              '로맨틱한 관계에서 중요한 발전이 있을 수 있는 해입니다. 진정한 사랑을 찾거나 기존 관계가 더욱 깊어질 수 있습니다.',
+              '애정운',
+              _truncateAtSecondPeriod(_yearFortune!.love!),
               Icons.favorite,
               Colors.pink,
             ),
@@ -82,8 +210,8 @@ class YearScreen extends StatelessWidget {
             const SizedBox(height: 20),
             
             _buildFortuneCard(
-              '연간 금전운',
-              '재정적으로 안정적이고 성장하는 한 해가 될 것입니다. 새로운 수입원이나 투자 기회를 잘 활용하세요.',
+              '재물운',
+              _truncateAtSecondPeriod(_yearFortune!.wealth!),
               Icons.attach_money,
               Colors.green,
             ),
@@ -91,8 +219,8 @@ class YearScreen extends StatelessWidget {
             const SizedBox(height: 20),
             
             _buildFortuneCard(
-              '연간 건강운',
-              '건강 관리에 더욱 신경 쓰는 것이 좋겠습니다. 규칙적인 운동과 건강한 생활습관을 유지하세요.',
+              '건강운',
+              _truncateAtSecondPeriod(_yearFortune!.health!),
               Icons.health_and_safety,
               Colors.blue,
             ),
@@ -100,72 +228,13 @@ class YearScreen extends StatelessWidget {
             const SizedBox(height: 20),
             
             _buildFortuneCard(
-              '연간 학업/직장운',
-              '업무나 학업에서 큰 성과를 거둘 수 있는 해입니다. 새로운 프로젝트나 학습에 적극적으로 도전하세요.',
+              '학업/직장운',
+              _truncateAtSecondPeriod(_yearFortune!.study!),
               Icons.work,
               Colors.purple,
             ),
             
-            const SizedBox(height: 20),
-            
-            _buildFortuneCard(
-              '연간 인연운',
-              '새로운 인연이나 기존 관계의 발전이 기대됩니다. 네트워킹 활동에 적극적으로 참여하세요.',
-              Icons.people,
-              Colors.orange,
-            ),
-            
-            const SizedBox(height: 20),
-            
-            _buildFortuneCard(
-              '연간 여행운',
-              '새로운 곳을 여행하거나 새로운 경험을 할 수 있는 기회가 많을 것입니다. 여행 계획을 세워보세요.',
-              Icons.flight,
-              Colors.cyan,
-            ),
-            
             const SizedBox(height: 30),
-            
-            // 연간 조언
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.amber.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.amber.withOpacity(0.3)),
-              ),
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.lightbulb,
-                    color: Colors.amber,
-                    size: 24,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '올해 조언',
-                    style: GoogleFonts.notoSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '변화와 성장의 해입니다. 새로운 도전을 두려워하지 말고, 주변 사람들과의 관계를 소중히 하세요.',
-                    style: GoogleFonts.notoSans(
-                      fontSize: 14,
-                      color: Colors.white,
-                      height: 1.4,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 20),
             
             // 하단 안내
             Container(
@@ -206,7 +275,7 @@ class YearScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Column(
@@ -241,7 +310,7 @@ class YearScreen extends StatelessWidget {
           Text(
             content,
             style: GoogleFonts.notoSans(
-              fontSize: 14,
+              fontSize: 16,
               color: Colors.white,
               height: 1.4,
             ),

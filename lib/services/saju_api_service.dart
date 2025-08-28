@@ -27,6 +27,7 @@ class SajuApiService {
         'birthHour': sajuInfo.birthHour,
         'birthMinute': sajuInfo.birthMinute,
         'gender': sajuInfo.gender == '남성' ? 'male' : 'female',
+        'location': sajuInfo.region,
       };
       
       print('API 요청 데이터: ${jsonEncode(requestBody)}');
@@ -107,11 +108,19 @@ class SajuApiService {
         hour: '申',
       ),
       todayFortune: TodayFortune(
-        overall: '오늘은 새로운 기회가 찾아올 수 있는 날입니다.',
-        wealth: '재정적으로 안정적인 하루가 될 것입니다.',
-        health: '건강에 특별한 문제는 없을 것입니다.',
-        love: '연애운이 좋은 하루입니다.',
+        overall: '오늘은 새로운 기회가 찾아올 수 있는 날입니다. 주변을 잘 살펴보세요.',
+        wealth: '재정적으로 안정적인 하루가 될 것입니다. 투자나 큰지출은 신중하게 결정하세요.',
+        health: '건강에 특별한 문제는 없을 것입니다. 적절한 운동을 해보세요.',
+        love: '로맨틱한 기운이 가득한 날입니다. 소중한 사람과의 시간을 가져보세요.',
+        study: '집중력이 높은 하루입니다. 중요한 업무나 공부에 집중하면 좋은 결과를 얻을 수 있습니다.',
+        luckyItem: '살구색, 모자, 남쪽, 7, 11, 맛집',
+        todayOutfit: '편안한 캐주얼 복장',
         advice: '긍정적인 마음가짐으로 하루를 보내시기 바랍니다.',
+        overallScore: 70,
+        studyCore: 30,
+        healthScore: 80,
+        loveScore: 50,
+        wealthScore: 60,
       ),
       // 기존 호환성을 위한 필드들
       yearSaju: '庚',
@@ -135,8 +144,4 @@ class SajuApiService {
     );
   }
 
-  static String _calculateSimpleSaju(int value) {
-    final sajuList = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계'];
-    return sajuList[value % 10];
-  }
 }

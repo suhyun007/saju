@@ -22,6 +22,8 @@ dependencies:
   flutter_local_notifications: ^17.1.2
   url_launcher: ^6.2.4
   flutter_svg: ^2.0.9
+  fl_chart: ^0.66.2
+  share_plus: ^10.0.0
   # google_maps_flutter: ^2.5.3  # Google Maps SDK 주석
   # geolocator: ^10.1.0  # 위치 권한 주석
   # geocoding: ^2.1.1  # 주소 변환 주석

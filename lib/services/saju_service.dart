@@ -50,4 +50,52 @@ class SajuService {
     final sajuInfo = await loadSajuInfo();
     return sajuInfo != null;
   }
+
+  // 오늘의 운세 데이터 업데이트
+  static Future<bool> updateTodayFortune(Map<String, dynamic> fortuneData) async {
+    try {
+      final sajuInfo = await loadSajuInfo();
+      if (sajuInfo == null) return false;
+      
+      sajuInfo.todayFortune.addAll(fortuneData);
+      sajuInfo.todayFortune['lastFortuneDate'] = sajuInfo.currentTodayDate;
+      
+      return await saveSajuInfo(sajuInfo);
+    } catch (e) {
+      print('오늘의 운세 업데이트 실패: $e');
+      return false;
+    }
+  }
+
+  // 이달의 운세 데이터 업데이트
+  static Future<bool> updateMonthFortune(Map<String, dynamic> fortuneData) async {
+    try {
+      final sajuInfo = await loadSajuInfo();
+      if (sajuInfo == null) return false;
+      
+      sajuInfo.monthFortune.addAll(fortuneData);
+      sajuInfo.monthFortune['lastFortuneDate'] = sajuInfo.currentMonthDate;
+      
+      return await saveSajuInfo(sajuInfo);
+    } catch (e) {
+      print('이달의 운세 업데이트 실패: $e');
+      return false;
+    }
+  }
+
+  // 올해의 운세 데이터 업데이트
+  static Future<bool> updateYearFortune(Map<String, dynamic> fortuneData) async {
+    try {
+      final sajuInfo = await loadSajuInfo();
+      if (sajuInfo == null) return false;
+      
+      sajuInfo.yearFortune.addAll(fortuneData);
+      sajuInfo.yearFortune['lastFortuneDate'] = sajuInfo.currentYearDate;
+      
+      return await saveSajuInfo(sajuInfo);
+    } catch (e) {
+      print('올해의 운세 업데이트 실패: $e');
+      return false;
+    }
+  }
 }

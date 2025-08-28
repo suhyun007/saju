@@ -21,6 +21,33 @@ class SajuInfo {
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
+  // 텍스트 형태의 날짜/시간 getter들
+  String get yearText => '${birthDate.year}년';
+  String get monthText => '${birthDate.month}월';
+  String get dayText => '${birthDate.day}일';
+  String get timeText => '${birthHour.toString().padLeft(2, '0')}:${birthMinute.toString().padLeft(2, '0')}';
+
+  // 현재 날짜 형식 getter들
+  String get currentTodayDate => '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}';
+  String get currentMonthDate => '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}';
+  String get currentYearDate => '${DateTime.now().year}';
+
+  // 날짜 비교 메서드들
+  bool get isTodayFortuneExpired {
+    final lastDate = todayFortune['lastFortuneDate'] ?? '';
+    return lastDate != currentTodayDate;
+  }
+
+  bool get isMonthFortuneExpired {
+    final lastDate = monthFortune['lastFortuneDate'] ?? '';
+    return lastDate != currentMonthDate;
+  }
+
+  bool get isYearFortuneExpired {
+    final lastDate = yearFortune['lastFortuneDate'] ?? '';
+    return lastDate != currentYearDate;
+  }
+
   // JSON 직렬화를 위한 메서드
   Map<String, dynamic> toJson() {
     return {
@@ -33,12 +60,15 @@ class SajuInfo {
       'status': status,
       'zodiacSign': zodiacSign,
       'createdAt': createdAt.toIso8601String(),
+      'todayFortune': todayFortune,
+      'monthFortune': monthFortune,
+      'yearFortune': yearFortune,
     };
   }
 
   // JSON에서 객체 생성
   factory SajuInfo.fromJson(Map<String, dynamic> json) {
-    return SajuInfo(
+    final sajuInfo = SajuInfo(
       name: json['name'] ?? '',
       birthDate: DateTime.parse(json['birthDate']),
       birthHour: json['birthHour'],
@@ -49,23 +79,64 @@ class SajuInfo {
       zodiacSign: json['zodiacSign'],
       createdAt: DateTime.parse(json['createdAt']),
     );
+    
+    // 운세 데이터 로드
+    if (json['todayFortune'] != null) {
+      sajuInfo.todayFortune = Map<String, dynamic>.from(json['todayFortune']);
+    }
+    if (json['monthFortune'] != null) {
+      sajuInfo.monthFortune = Map<String, dynamic>.from(json['monthFortune']);
+    }
+    if (json['yearFortune'] != null) {
+      sajuInfo.yearFortune = Map<String, dynamic>.from(json['yearFortune']);
+    }
+    
+    return sajuInfo;
   }
 
-  // 사주 계산을 위한 간단한 메서드들
-  String get yearText => '${birthDate.year}년';
-  String get monthText => '${birthDate.month}월';
-  String get dayText => '${birthDate.day}일';
-  String get timeText => '${birthHour.toString().padLeft(2, '0')}:${birthMinute.toString().padLeft(2, '0')}';
-  
-  // 간단한 출생 정보 (실제로는 더 복잡한 계산이 필요)
-  String get yearSaju => _calculateSaju(birthDate.year);
-  String get monthSaju => _calculateSaju(birthDate.month);
-  String get daySaju => _calculateSaju(birthDate.day);
-  String get hourSaju => _calculateSaju(birthHour);
+  // 오늘의 운세
+  Map<String, dynamic> todayFortune = {
+    'overall': '', // 전체운
+    'love': '', // 애정운
+    'health': '', // 건강운
+    'study': '', // 학업운
+    'wealth': '', // 재물운
+    'business': '', // 사업운
+    'advice': '', // 조언
+    'luckyItem': '', // 행운의 아이템
+    'overallScore': '',//오늘의 총운 점수
+    'studyCore': '',//오늘의 학업/직장 점수
+    'healthScore': '',//오늘의 건강운 점수  
+    'loveScore': '',//오늘의 애정운 점수
+    'wealthScore': '',//오늘의 재물운 점수
+    'serverResponse': '', // 서버 결과값
+    'lastFortuneDate': '', // 20250101 형식
+  };
+  // 이달의 운세
+  Map<String, dynamic> monthFortune = {
+    'overall': '', // 전체운
+    'love': '', // 애정운
+    'health': '', // 건강운
+    'study': '', // 학업운
+    'wealth': '', // 재물운
+    'business': '', // 사업운
+    'advice': '', // 조언
+    'luckyItem': '', // 행운의 아이템
+    'serverResponse': '', // 서버 결과값
+    'lastFortuneDate': '', // 202501 형식
+  };
 
-  // 간단한 사주 계산 (실제로는 음력 변환과 천간지지 계산이 필요)
-  String _calculateSaju(int value) {
-    final sajuList = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계'];
-    return sajuList[value % 10];
-  }
+  // 올해의 운세
+  Map<String, dynamic> yearFortune = {
+    'overall': '', // 전체운
+    'love': '', // 애정운
+    'health': '', // 건강운
+    'study': '', // 학업운
+    'wealth': '', // 재물운
+    'business': '', // 사업운
+    'advice': '', // 조언
+    'luckyItem': '', // 행운의 아이템
+    'serverResponse': '', // 서버 결과값
+    'lastFortuneDate': '', // 2025 형식
+  };
 }
