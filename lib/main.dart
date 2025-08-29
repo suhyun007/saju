@@ -61,6 +61,8 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: ThemeService.themeModeNotifier,
       builder: (context, mode, _) {
+        print('=== MaterialApp 빌드 ===');
+        print('현재 테마 모드: $mode');
         return MaterialApp(
           title: '사주앱',
           debugShowCheckedModeBanner: false,

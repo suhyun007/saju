@@ -157,7 +157,7 @@ class _SplashScreenState extends State<SplashScreen>
                           fontSize: 54,
                           fontWeight: FontWeight.w600,
                           fontStyle: FontStyle.italic,
-                          color: Color(0xFFF5E6D3),
+                          color: Color(0xFFE6F3FF),
                           letterSpacing: 4,
                           
                         ),
@@ -177,7 +177,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 child: ClipRRect(
                                   //borderRadius: BorderRadius.circular(30),
                                   child: Image.asset(
-                                    'assets/icons/zodiac_wheel_icon_256.png',
+                                    'assets/icons/zodiac_wheel_icon_512.png',
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -189,7 +189,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xFFd6c2a5),
+                                  color: Color(0xFFE6F3FF), // 흰색이 많이 포함된 하늘색
                                   letterSpacing: 0.5,
                                   height: 1.5,
                                   shadows: [
@@ -218,7 +218,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFFd6c2a5),
+                                    color: Color(0xFFE6F3FF), // 흰색이 많이 포함된 하늘색
                                     letterSpacing: 1,
                                     shadows: [
                                       Shadow(
@@ -237,7 +237,14 @@ class _SplashScreenState extends State<SplashScreen>
                                 width: 350,
                                 height: 54,
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFF4C430),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(0xFF4A90E2), // 파란색
+                                      Color(0xFF9B59B6), // 보라색
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
                                   borderRadius: BorderRadius.circular(28),
                                 ),
                                 child: Material(
@@ -260,7 +267,7 @@ class _SplashScreenState extends State<SplashScreen>
                                               style: const TextStyle(
                                                 fontSize: 21,
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.black,
+                                                color: Colors.white,
                                                 letterSpacing: 1,
                                               ),
                                             ),

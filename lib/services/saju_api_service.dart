@@ -28,6 +28,7 @@ class SajuApiService {
         'birthMinute': sajuInfo.birthMinute,
         'gender': sajuInfo.gender == '남성' ? 'male' : 'female',
         'location': sajuInfo.region,
+        'status': sajuInfo.status,
       };
       
       print('API 요청 데이터: ${jsonEncode(requestBody)}');
