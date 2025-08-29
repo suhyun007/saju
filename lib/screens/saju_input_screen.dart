@@ -116,7 +116,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
 
   Widget _buildMainContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
       child: Form(
         key: _formKey,
         child: Column(
@@ -158,6 +158,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             
             // 저장 버튼
             _buildSaveButton(),
+            
+            // 하단 여백 추가 (오버플로우 방지)
+            const SizedBox(height: 50),
           ],
         ),
       ),
@@ -729,7 +732,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       isScrollControlled: true, // 전체 화면 높이 사용
       backgroundColor: Colors.transparent, // 배경 투명
       builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.5, // 화면의 1/3 높이
+        height: MediaQuery.of(context).size.height * 0.8, // 화면의 80% 높이로 증가
         decoration: const BoxDecoration(
           color: Color(0xFF2C1810), // 배경색
           borderRadius: BorderRadius.only(

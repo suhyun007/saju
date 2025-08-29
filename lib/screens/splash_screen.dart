@@ -5,6 +5,7 @@ import 'dart:math';
 import 'auth_wrapper.dart';
 import 'saju_input_screen.dart';
 import 'home_screen.dart';
+import 'saju_navigator.dart';
 import '../services/saju_service.dart';
 import '../services/splash_text_service.dart';
 
@@ -92,9 +93,9 @@ class _SplashScreenState extends State<SplashScreen>
       final sajuInfo = await SajuService.loadSajuInfo();
       
       if (mounted) {
-        // 출생 정보가 있으면 홈 화면으로, 없으면 입력 화면으로
+        // 출생 정보가 있으면 SajuNavigator로, 없으면 입력 화면으로
         final targetScreen = sajuInfo != null 
-            ? const HomeScreen() 
+            ? const SajuNavigator() 
             : const SajuInputScreen();
         
         Navigator.of(context).pushReplacement(

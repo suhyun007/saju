@@ -5,14 +5,16 @@ import 'home_screen.dart';
 import 'myPage.dart';
 
 class SajuNavigator extends StatefulWidget {
-  const SajuNavigator({super.key});
+  final int initialIndex;
+  
+  const SajuNavigator({super.key, this.initialIndex = 0});
 
   @override
   State<SajuNavigator> createState() => _SajuNavigatorState();
 }
 
 class _SajuNavigatorState extends State<SajuNavigator> {
-  int _currentIndex = 0;
+  int _currentIndex = 0; // 기본값
 
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -20,9 +22,30 @@ class _SajuNavigatorState extends State<SajuNavigator> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
+
+  Widget _buildMyPageWithBackHandler() {
+    return WillPopScope(
+      onWillPop: () async {
+        // 뒤로가기 시 홈 화면으로 전환
+        setState(() {
+          _currentIndex = 0;
+        });
+        return false; // 기본 뒤로가기 동작 방지
+      },
+      child: const MyPage(),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: _currentIndex == 1 
+          ? _buildMyPageWithBackHandler()
+          : _screens[_currentIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

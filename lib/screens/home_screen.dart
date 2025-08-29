@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      // bottomNavigationBar 제거 - SajuNavigator에서 처리
     );
   }
 
@@ -141,66 +141,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return WebViewWidget(controller: _webController);
   }
 
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            const Color(0xFF2C1810).withOpacity(0.95),
-            const Color(0xFF2C1810),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-              child: BottomNavigationBar(
-          currentIndex: 0, // Home이 첫 번째이므로 0
-          onTap: (index) {
-            if (index == 1) {
-              // My 페이지로 이동
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MyPage()),
-              );
-            }
-          },
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          selectedItemColor: Colors.amber,
-          unselectedItemColor: Colors.white.withOpacity(0.6),
-          selectedLabelStyle: GoogleFonts.notoSans(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
-          unselectedLabelStyle: GoogleFonts.notoSans(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'My',
-          ),
-        ],
-      ),
-    );
-  }
+  // _buildBottomNavigationBar 메서드 제거 - SajuNavigator에서 처리
 
   Widget _buildTabBar() {
     return Container(
@@ -285,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  ' AstroStar',
+                  'AstroStar',
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,

@@ -13,6 +13,7 @@ import '../models/friend_info.dart';
 import '../utils/zodiac_utils.dart';
 import 'saju_input_screen.dart';
 import 'privacy_policy_screen.dart';
+import 'saju_navigator.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -666,7 +667,20 @@ class _MyPageState extends State<MyPage> {
                 child: Row(
                   children: [
                     IconButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        print('=== 마이페이지 뒤로가기 버튼 클릭됨 ===');
+                        print('현재 context: $context');
+                        print('Navigator.canPop: ${Navigator.canPop(context)}');
+                        
+                        // 홈 화면으로 이동
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SajuNavigator(initialIndex: 0),
+                          ),
+                        );
+                        print('=== 홈 화면으로 이동 완료 ===');
+                      },
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     const SizedBox(width: 15),
