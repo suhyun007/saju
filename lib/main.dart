@@ -25,7 +25,9 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    print('=== SajuApp initState 시작 ===');
     WidgetsBinding.instance.addObserver(this);
+    print('=== WidgetsBindingObserver 등록 완료 ===');
   }
 
   @override
@@ -36,9 +38,26 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // 앱이 포그라운드로 돌아왔을 때 알림 권한 상태 확인
-      NotificationService.onAppResumed();
+    print('=== AppLifecycleState 변경: $state ===');
+    
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print('=== 앱이 포그라운드로 돌아옴 ===');
+        // 앱이 포그라운드로 돌아왔을 때 알림 권한 상태 확인
+        NotificationService.onAppResumed();
+        break;
+      case AppLifecycleState.inactive:
+        print('=== 앱이 비활성화됨 ===');
+        break;
+      case AppLifecycleState.paused:
+        print('=== 앱이 백그라운드로 이동됨 ===');
+        break;
+      case AppLifecycleState.detached:
+        print('=== 앱이 완전히 종료됨 ===');
+        break;
+      case AppLifecycleState.hidden:
+        print('=== 앱이 숨겨짐 ===');
+        break;
     }
   }
 

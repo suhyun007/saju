@@ -114,11 +114,28 @@ class NotificationService {
       print('NotificationService: Android 권한 상태: $status');
       return status.isGranted;
     } else if (Platform.isIOS || Platform.isMacOS) {
-      // iOS permission check
+      // iOS permission check - 더 정확한 확인
       final perm = await Permission.notification.status;
       print('NotificationService: iOS 권한 상태: $perm');
       
-      // iOS에서는 권한 상태를 정확히 확인
+      // iOS에서는 권한 상태를 더 정확히 확인
+      if (perm.isGranted) {
+        // 실제로 알림을 보낼 수 있는지 테스트
+        final canSend = await _testNotificationPermission();
+        print('NotificationService: iOS 실제 알림 테스트 결과: $canSend');
+        return canSend;
+      } else if (perm.isDenied) {
+        // 권한이 거부된 경우 - 알림을 OFF로 설정
+        print('NotificationService: iOS 권한이 거부됨 - 알림을 OFF로 설정');
+        await setEnabled(false, userAction: false);
+        return false;
+      } else if (perm.isPermanentlyDenied) {
+        // 영구적으로 거부된 경우 (설정에서 OFF)
+        print('NotificationService: iOS 권한이 영구적으로 거부됨 (설정에서 OFF)');
+        await setEnabled(false, userAction: false);
+        return false;
+      }
+      
       return perm.isGranted;
     }
     return true;
@@ -167,11 +184,9 @@ class NotificationService {
       print('NotificationService: 알림이 비활성화되어 있음');
       return;
     }
-    final permissionGranted = await hasPermission();
-    if (!permissionGranted) {
-      print('NotificationService: 권한이 없어서 알림을 보낼 수 없음');
-      return;
-    }
+
+    // iOS에서는 권한 확인을 우회하고 바로 알림 시도
+    print('NotificationService: 권한 확인 우회하고 바로 알림 전송 시도');
 
     const androidDetails = AndroidNotificationDetails(
       'test_channel',
@@ -280,7 +295,42 @@ class NotificationService {
   // 앱이 포그라운드로 돌아왔을 때 호출할 함수
   static Future<void> onAppResumed() async {
     print('NotificationService: 앱이 포그라운드로 돌아옴 - 권한 상태 확인');
-    await refreshPermissionStatus();
+    
+    try {
+      // iOS에서는 권한 상태를 먼저 확인
+      if (Platform.isIOS || Platform.isMacOS) {
+        final permissionStatus = await Permission.notification.status;
+        print('NotificationService: iOS 권한 상태: $permissionStatus');
+        
+        if (permissionStatus.isDenied) {
+          // 권한이 거부된 경우 - 알림을 OFF로 설정
+          print('NotificationService: iOS 권한이 거부됨 - 앱 내부 설정을 OFF로 변경');
+          await setEnabled(false, userAction: false);
+        } else if (permissionStatus.isPermanentlyDenied) {
+          // 설정에서 영구적으로 거부된 경우
+          print('NotificationService: 설정에서 알림이 OFF됨 - 앱 내부 설정을 OFF로 변경');
+          await setEnabled(false, userAction: false);
+        } else {
+          // 실제 알림을 보내서 테스트
+          final canSendNotification = await _testNotificationPermission();
+          print('NotificationService: iOS 실제 알림 테스트 결과: $canSendNotification');
+          
+          if (!canSendNotification) {
+            // 실제로 알림을 보낼 수 없으면 앱 내부 설정을 OFF로 변경
+            await setEnabled(false, userAction: false);
+            print('NotificationService: 실제 알림 불가능으로 인해 앱 내부 설정을 OFF로 변경');
+          } else {
+            // 실제로 알림을 보낼 수 있으면 현재 설정 유지
+            print('NotificationService: 실제 알림 가능 - 현재 설정 유지');
+          }
+        }
+      } else {
+        // Android에서는 기존 방식 사용
+        await refreshPermissionStatus();
+      }
+    } catch (e) {
+      print('NotificationService: onAppResumed 오류: $e');
+    }
   }
 
   // 알림 시간 가져오기

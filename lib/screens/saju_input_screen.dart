@@ -913,7 +913,11 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       
       if (success) {
         _showSnackBar('출생 정보가 저장되었습니다! (별자리: $zodiacSign)');
-        Navigator.pop(context, true);
+        // 홈 화면으로 이동
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false, // 모든 이전 화면 제거
+        );
       } else {
         _showSnackBar('출생 정보 저장에 실패했습니다.');
       }

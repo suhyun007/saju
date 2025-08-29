@@ -22,7 +22,7 @@ class MyPage extends StatefulWidget {
   State<MyPage> createState() => _MyPageState();
 }
 
-class _MyPageState extends State<MyPage> {
+class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
   UserModel? _user;
   SajuInfo? _sajuInfo;
   FriendInfo? _friendInfo;
@@ -32,6 +32,7 @@ class _MyPageState extends State<MyPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _user = AuthService.currentUser;
     _loadUser();
     _loadSajuInfo();
@@ -44,8 +45,20 @@ class _MyPageState extends State<MyPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     AuthService.removeAuthStateListener(_onAuthChanged);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // 앱이 포그라운드로 돌아왔을 때 알림 상태 새로고침
+      print('=== MyPage: 앱이 포그라운드로 돌아옴 - 알림 상태 새로고침 ===');
+      NotificationService.onAppResumed();
+      // UI 새로고침
+      setState(() {});
+    }
   }
 
   void _onAuthChanged(UserModel? user) {
@@ -169,10 +182,26 @@ class _MyPageState extends State<MyPage> {
                         ),
                         onChanged: (value) async {
                           if (value) {
-                            // ON으로 바꾸려고 할 때 시스템 권한 확인
-                            final systemPermission = await NotificationService.hasPermission();
-                            if (!systemPermission) {
-                              // 시스템 권한이 없으면 권한 요청 다이얼로그 표시
+                            // ON으로 바꾸려고 할 때 - iOS에서는 실제 알림을 보내서 테스트
+                            print('=== 알림 ON 시도 ===');
+                            
+                            try {
+                              // 먼저 설정을 변경
+                              await NotificationService.setEnabled(value, userAction: true);
+                              setState(() {});
+                              
+                              // 테스트 알림 시도
+                              print('=== 테스트 알림 전송 시도 ===');
+                              await NotificationService.showTestNotification();
+                              
+                              // 성공하면 완료
+                              print('=== 알림 설정 완료 ===');
+                            } catch (e) {
+                              print('=== 알림 설정 실패: $e ===');
+                              // 실패하면 설정을 되돌리고 권한 요청 다이얼로그 표시
+                              await NotificationService.setEnabled(false, userAction: true);
+                              setState(() {});
+                              
                               if (mounted) {
                                 showDialog(
                                   context: context,
@@ -188,10 +217,7 @@ class _MyPageState extends State<MyPage> {
                                         onPressed: () {
                                           print('=== 설정으로 이동 버튼 클릭됨 ===');
                                           Navigator.pop(context);
-                                          print('=== 다이얼로그 닫힘 ===');
-                                          print('=== navigateToAppSettings 호출 시도 ===');
                                           NotificationService.navigateToAppSettings();
-                                          print('=== navigateToAppSettings 호출 완료 ===');
                                         },
                                         child: const Text('설정으로 이동'),
                                       ),
@@ -199,17 +225,12 @@ class _MyPageState extends State<MyPage> {
                                   ),
                                 );
                               }
-                              return; // 토글 변경하지 않음
                             }
-                          }
-                          
-                          // 권한이 있거나 OFF로 바꾸는 경우 정상 처리
-                          await NotificationService.setEnabled(value, userAction: true);
-                          setState(() {});
-                          
-                          if (value) {
-                            // 켜짐으로 설정했을 때만 테스트 알림 보내기
-                            await NotificationService.showTestNotification();
+                          } else {
+                            // OFF로 바꾸는 경우
+                            print('=== 알림 OFF 설정 ===');
+                            await NotificationService.setEnabled(value, userAction: true);
+                            setState(() {});
                           }
                         },
                       ),
