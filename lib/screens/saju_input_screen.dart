@@ -9,6 +9,8 @@ import '../services/saju_service.dart';
 import '../services/friend_service.dart';
 import '../utils/zodiac_utils.dart';
 import 'location_picker_screen.dart';
+import 'home_screen.dart';
+import 'splash_screen.dart';
 
 class SajuInputScreen extends StatefulWidget {
   final bool isFriendInfo;
@@ -173,7 +175,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       child: Row(
         children: [
           IconButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              // 일반적인 뒤로가기
+              Navigator.pop(context);
+            },
             icon: const Icon(
               Icons.arrow_back,
               color: Colors.white,

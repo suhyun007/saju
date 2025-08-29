@@ -93,32 +93,27 @@ class _SplashScreenState extends State<SplashScreen>
       final sajuInfo = await SajuService.loadSajuInfo();
       
       if (mounted) {
-        // 출생 정보가 있으면 SajuNavigator로, 없으면 입력 화면으로
+        // 출생 정보가 있으면 HomeScreen으로, 없으면 입력 화면으로
         final targetScreen = sajuInfo != null 
-            ? const SajuNavigator() 
+            ? const HomeScreen() 
             : const SajuInputScreen();
         
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => targetScreen,
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 500),
-          ),
-        );
+        // 사주정보가 있으면 pushReplacement, 없으면 push 사용
+        if (sajuInfo != null) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => targetScreen),
+          );
+        } else {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => targetScreen),
+          );
+        }
       }
     } catch (e) {
       // 에러 발생 시 입력 화면으로 이동
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const SajuInputScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 500),
-          ),
+          MaterialPageRoute(builder: (context) => const SajuInputScreen()),
         );
       }
     } finally {

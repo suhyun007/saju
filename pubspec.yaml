@@ -15,7 +15,7 @@ dependencies:
   http: ^1.1.0
   dio: ^5.0.0
   permission_handler: ^11.0.1
-  audioplayers: ^5.2.1
+  # audioplayers: ^5.2.1  # 크래시 원인으로 제거
   path_provider: ^2.1.1
   webview_flutter: ^4.7.0
   google_sign_in: 6.2.1

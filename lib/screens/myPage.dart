@@ -672,14 +672,9 @@ class _MyPageState extends State<MyPage> {
                         print('현재 context: $context');
                         print('Navigator.canPop: ${Navigator.canPop(context)}');
                         
-                        // 홈 화면으로 이동
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SajuNavigator(initialIndex: 0),
-                          ),
-                        );
-                        print('=== 홈 화면으로 이동 완료 ===');
+                        // 단순히 뒤로가기
+                        Navigator.pop(context);
+                        print('=== Navigator.pop 호출 완료 ===');
                       },
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                     ),
