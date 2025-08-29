@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tzdata;
 
 class NotificationService {
   static const String _enabledKey = 'notifications_enabled';
@@ -13,6 +17,39 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
   static final ValueNotifier<bool> enabledNotifier = ValueNotifier<bool>(false);
 
+  // 알림 제목 (세련된 톤으로 통일)
+  static const String _dailyTitle = '별빛 소통';
+
+  // 랜덤 바디 메시지 후보들
+  static const List<String> _dailyBodyCandidates = [
+    '기분 좋은 하루의 시작을 알려드릴게요',
+    '오늘의 운세, 잠깐 확인해볼까요?',
+    '당신을 위한 작은 힌트가 도착했어요',
+    '오늘 운세가 살짝 미소짓고 있어요',
+    '별이 전하는 오늘의 메시지',
+    '행운의 타이밍, 지금 체크하세요',
+    '오늘 하루, 별자리 가이드 열렸어요',
+    '하루를 여는 작은 영감 한 스푼',
+    '오늘의 키워드, 지금 만나보세요',
+    '당신의 오늘, 별이 응원해요',
+    '운세 업데이트! 좋은 징조가 보여요',
+    '마음이 가벼워지는 오늘의 조언',
+    '행운 포인트가 깜빡! 확인해요',
+    '오늘 더 반짝이도록, 운세 ON',
+    '하루의 흐름, 부드럽게 시작해요',
+    '지금, 당신을 위한 한 줄 운세',
+    '오늘의 길, 별이 살짝 비춰줘요',
+    '스스로에게 건네는 작은 행운',
+    '좋은 하루를 여는 열쇠, 여기요',
+    '오늘의 기분 전환, 운세 한 컵',
+    '오늘도 별이 당신 편이에요',
+  ];
+
+  static String _pickDailyBody() {
+    final rand = Random();
+    return _dailyBodyCandidates[rand.nextInt(_dailyBodyCandidates.length)];
+  }
+
   static Future<void> init() async {
     print('NotificationService: 초기화 시작');
     
@@ -21,6 +58,10 @@ class NotificationService {
     const initSettings = InitializationSettings(android: androidInit, iOS: iosInit);
     await _plugin.initialize(initSettings);
 
+    // Timezone init for scheduling (default to Asia/Seoul)
+    tzdata.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
+
     // Ensure Android channel exists
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
@@ -28,6 +69,13 @@ class NotificationService {
       'Test Notifications',
       description: 'Channel for test notifications',
       importance: Importance.defaultImportance,
+    ));
+    // Channel for fortune notifications
+    await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
+      'fortune_channel',
+      'Fortune Notifications',
+      description: 'Channel for daily fortune notifications',
+      importance: Importance.max,
     ));
 
     // 저장된 알림 설정 로드 및 시스템 권한 확인
@@ -113,39 +161,63 @@ class NotificationService {
       final status = await Permission.notification.status;
       print('NotificationService: Android 권한 상태: $status');
       return status.isGranted;
-    } else if (Platform.isIOS || Platform.isMacOS) {
-      // iOS permission check - 더 정확한 확인
-      final perm = await Permission.notification.status;
-      print('NotificationService: iOS 권한 상태: $perm');
-      
-      // iOS에서는 권한 상태를 더 정확히 확인
-      if (perm.isGranted) {
-        // 실제로 알림을 보낼 수 있는지 테스트
-        final canSend = await _testNotificationPermission();
-        print('NotificationService: iOS 실제 알림 테스트 결과: $canSend');
-        return canSend;
-      } else if (perm.isDenied) {
-        // 권한이 거부된 경우 - 알림을 OFF로 설정
-        print('NotificationService: iOS 권한이 거부됨 - 알림을 OFF로 설정');
-        await setEnabled(false, userAction: false);
-        return false;
-      } else if (perm.isPermanentlyDenied) {
-        // 영구적으로 거부된 경우 (설정에서 OFF)
-        print('NotificationService: iOS 권한이 영구적으로 거부됨 (설정에서 OFF)');
-        await setEnabled(false, userAction: false);
-        return false;
-      }
-      
-      return perm.isGranted;
+    } else {
+      final status = await getPermissionStatus();
+      print('NotificationService: iOS/macOS 권한 상태(네이티브): $status');
+      return status.isGranted;
     }
-    return true;
   }
 
-  // 실제 알림을 보내서 권한이 있는지 테스트
+  // 설정에서 알림이 허용되어 있는지 확인 (앱 내부 설정과 무관)
+  static Future<bool> isSystemNotificationEnabled() async {
+    if (Platform.isAndroid) {
+      final status = await Permission.notification.status;
+      print('NotificationService: Android 시스템 알림 상태: $status');
+      return status.isGranted;
+    } else {
+      final status = await getPermissionStatus();
+      print('NotificationService: iOS/macOS 시스템 알림 상태(네이티브): $status');
+      return status.isGranted;
+    }
+  }
+
+  // iOS 설정에서 알림이 ON/OFF인지 확인하는 함수
+  static Future<bool> isIOSNotificationEnabledInSettings() async {
+    if (Platform.isIOS || Platform.isMacOS) {
+      final perm = await Permission.notification.status;
+      print('NotificationService: iOS 설정에서 알림 상태 확인: $perm');
+      
+      // iOS 설정에서 알림이 ON인지 확인
+      if (perm.isGranted) {
+        print('NotificationService: iOS 설정에서 알림이 ON으로 설정됨');
+        return true;
+      } else if (perm.isDenied) {
+        print('NotificationService: iOS 설정에서 알림이 OFF로 설정됨 (denied)');
+        return false;
+      } else if (perm.isPermanentlyDenied) {
+        print('NotificationService: iOS 설정에서 알림이 OFF로 설정됨 (permanently denied)');
+        return false;
+      } else {
+        print('NotificationService: iOS 설정에서 알림 상태를 알 수 없음: $perm');
+        return false;
+      }
+    }
+    return true; // Android는 기본적으로 true
+  }
+
+  // 실제 알림을 보내서 권한이 있는지 테스트 (알림 없이 권한만 확인)
   static Future<bool> _testNotificationPermission() async {
     try {
-      print('NotificationService: 실제 알림 테스트 시작');
+      print('NotificationService: 권한 확인 시작 (알림 없이)');
       
+      // iOS에서는 permission_handler 결과만 사용
+      if (Platform.isIOS || Platform.isMacOS) {
+        final perm = await Permission.notification.status;
+        print('NotificationService: iOS 권한 상태 확인: $perm');
+        return perm.isGranted;
+      }
+      
+      // Android에서는 기존 방식 사용
       const androidDetails = AndroidNotificationDetails(
         'test_channel',
         'Test Notifications',
@@ -153,8 +225,7 @@ class NotificationService {
         importance: Importance.defaultImportance,
         priority: Priority.defaultPriority,
       );
-      const iosDetails = DarwinNotificationDetails();
-      const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+      const details = NotificationDetails(android: androidDetails);
 
       await _plugin.show(
         9999, // 다른 ID 사용
@@ -195,7 +266,11 @@ class NotificationService {
       importance: Importance.defaultImportance,
       priority: Priority.defaultPriority,
     );
-    const iosDetails = DarwinNotificationDetails();
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentSound: true,
+      presentBadge: true,
+    );
     const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     await _plugin.show(
@@ -289,7 +364,85 @@ class NotificationService {
 
   // 권한 상태를 자세히 확인하는 함수
   static Future<PermissionStatus> getPermissionStatus() async {
+    // Prefer native UNUserNotificationCenter via MethodChannel on iOS
+    if (Platform.isIOS || Platform.isMacOS) {
+      final MethodChannel channel = const MethodChannel('app.notificationStatus');
+      try {
+        final String status = await channel.invokeMethod('getAuthorizationStatus');
+        // Map native statuses to PermissionStatus
+        switch (status) {
+          case 'authorized':
+          case 'provisional':
+          case 'ephemeral':
+            return PermissionStatus.granted;
+          case 'denied':
+            return PermissionStatus.denied;
+          case 'notDetermined':
+            return PermissionStatus.denied;
+          default:
+            return await Permission.notification.status;
+        }
+      } catch (_) {
+        return await Permission.notification.status;
+      }
+    }
     return await Permission.notification.status;
+  }
+
+  // iOS에서 더 정확한 권한 상태 확인 (실제 테스트 포함)
+  static Future<Map<String, dynamic>> getDetailedPermissionStatus() async {
+    if (Platform.isIOS || Platform.isMacOS) {
+      final perm = await Permission.notification.status;
+      print('NotificationService: iOS 권한 상태 상세 확인: $perm');
+      
+      // 실제 알림 테스트로 권한 확인
+      final canSendTest = await _testNotificationPermission();
+      
+      return {
+        'permissionStatus': perm,
+        'canSendNotification': canSendTest,
+        'isGranted': perm.isGranted,
+        'isDenied': perm.isDenied,
+        'isPermanentlyDenied': perm.isPermanentlyDenied,
+      };
+    } else {
+      final perm = await Permission.notification.status;
+      return {
+        'permissionStatus': perm,
+        'canSendNotification': perm.isGranted,
+        'isGranted': perm.isGranted,
+        'isDenied': perm.isDenied,
+        'isPermanentlyDenied': perm.isPermanentlyDenied,
+      };
+    }
+  }
+
+  // iOS에서 UNUserNotificationCenter를 직접 사용하여 권한 확인
+  static Future<bool> checkIOSNotificationPermissionDirectly() async {
+    if (Platform.isIOS || Platform.isMacOS) {
+      try {
+        // flutter_local_notifications의 iOS 구현을 통해 직접 확인
+        final iosPlugin = _plugin.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+        if (iosPlugin != null) {
+          final result = await iosPlugin.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+          print('NotificationService: iOS 직접 권한 확인 결과: $result');
+          return result ?? false;
+        }
+      } catch (e) {
+        print('NotificationService: iOS 직접 권한 확인 실패: $e');
+      }
+    }
+    return false;
+  }
+
+  // 실제 알림 테스트만으로 권한 확인 (가장 정확한 방법)
+  static Future<bool> checkPermissionByTest() async {
+    print('NotificationService: 실제 알림 테스트로 권한 확인 시작');
+    return await _testNotificationPermission();
   }
 
   // 앱이 포그라운드로 돌아왔을 때 호출할 함수
@@ -297,36 +450,17 @@ class NotificationService {
     print('NotificationService: 앱이 포그라운드로 돌아옴 - 권한 상태 확인');
     
     try {
-      // iOS에서는 권한 상태를 먼저 확인
-      if (Platform.isIOS || Platform.isMacOS) {
-        final permissionStatus = await Permission.notification.status;
-        print('NotificationService: iOS 권한 상태: $permissionStatus');
-        
-        if (permissionStatus.isDenied) {
-          // 권한이 거부된 경우 - 알림을 OFF로 설정
-          print('NotificationService: iOS 권한이 거부됨 - 앱 내부 설정을 OFF로 변경');
-          await setEnabled(false, userAction: false);
-        } else if (permissionStatus.isPermanentlyDenied) {
-          // 설정에서 영구적으로 거부된 경우
-          print('NotificationService: 설정에서 알림이 OFF됨 - 앱 내부 설정을 OFF로 변경');
-          await setEnabled(false, userAction: false);
-        } else {
-          // 실제 알림을 보내서 테스트
-          final canSendNotification = await _testNotificationPermission();
-          print('NotificationService: iOS 실제 알림 테스트 결과: $canSendNotification');
-          
-          if (!canSendNotification) {
-            // 실제로 알림을 보낼 수 없으면 앱 내부 설정을 OFF로 변경
-            await setEnabled(false, userAction: false);
-            print('NotificationService: 실제 알림 불가능으로 인해 앱 내부 설정을 OFF로 변경');
-          } else {
-            // 실제로 알림을 보낼 수 있으면 현재 설정 유지
-            print('NotificationService: 실제 알림 가능 - 현재 설정 유지');
-          }
-        }
+      // 시스템에서 알림이 허용되어 있는지 확인
+      final systemEnabled = await isSystemNotificationEnabled();
+      print('NotificationService: 시스템 알림 허용 여부: $systemEnabled');
+      
+      if (!systemEnabled) {
+        // 시스템에서 알림이 OFF된 경우 - 앱 내부 설정도 OFF로 변경
+        print('NotificationService: 시스템에서 알림이 OFF됨 - 앱 내부 설정을 OFF로 변경');
+        await setEnabled(false, userAction: false);
       } else {
-        // Android에서는 기존 방식 사용
-        await refreshPermissionStatus();
+        // 시스템에서 알림이 허용된 경우 - 현재 설정 유지
+        print('NotificationService: 시스템에서 알림이 허용됨 - 현재 설정 유지');
       }
     } catch (e) {
       print('NotificationService: onAppResumed 오류: $e');
@@ -375,16 +509,60 @@ class NotificationService {
       importance: Importance.defaultImportance,
       priority: Priority.defaultPriority,
     );
-    const iosDetails = DarwinNotificationDetails();
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentSound: true,
+      presentBadge: true,
+    );
     const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     await _plugin.show(
       1002,
-      '오늘의 운세가 도착했어요!',
-      '지금 확인해보세요',
+      _dailyTitle,
+      _pickDailyBody(),
       details,
     );
     print('NotificationService: 운세 알림 전송 완료');
+  }
+
+  // 매일 지정 시간에 알림 스케줄
+  static Future<void> scheduleDailyFortuneNotification() async {
+    final time = await getNotificationTime();
+    final hour = time['hour'] ?? 9;
+    final minute = time['minute'] ?? 0;
+
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    if (scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+
+    const androidDetails = AndroidNotificationDetails(
+      'fortune_channel',
+      'Fortune Notifications',
+      channelDescription: 'Channel for daily fortune notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentSound: true,
+      presentBadge: true,
+    );
+    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+
+    await _plugin.zonedSchedule(
+      2001,
+      _dailyTitle,
+      _pickDailyBody(),
+      scheduled,
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+
+    print('NotificationService: 스케줄 등록 완료 ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}');
   }
 }
 

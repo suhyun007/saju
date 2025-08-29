@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -28,6 +29,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
   FriendInfo? _friendInfo;
   String _selectedHour = '09';
   String _selectedMinute = '00';
+  Timer? _permissionCheckTimer;
 
   @override
   void initState() {
@@ -39,12 +41,15 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     _loadFriendInfo();
     _loadNotificationTime();
     AuthService.addAuthStateListener(_onAuthChanged);
-    // 페이지 로드 시 알림 권한 상태 새로고침
-    NotificationService.refreshPermissionStatus();
+    // 페이지 로드 시 시스템 알림 상태 확인 및 업데이트
+    _checkAndUpdateNotificationStatus();
+    
+    // 주기 새로고침 제거: 포그라운드 복귀 시에만 동기화
   }
 
   @override
   void dispose() {
+    _permissionCheckTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     AuthService.removeAuthStateListener(_onAuthChanged);
     super.dispose();
@@ -55,9 +60,36 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       // 앱이 포그라운드로 돌아왔을 때 알림 상태 새로고침
       print('=== MyPage: 앱이 포그라운드로 돌아옴 - 알림 상태 새로고침 ===');
-      NotificationService.onAppResumed();
-      // UI 새로고침
-      setState(() {});
+      _checkAndUpdateNotificationStatus();
+    }
+  }
+
+  // 시스템 알림 상태를 확인하고 앱 내부 설정을 업데이트
+  Future<void> _checkAndUpdateNotificationStatus() async {
+    try {
+      print('=== MyPage: 시스템 알림 상태 확인 시작 ===');
+      // 현재 앱 내부 설정 및 저장된 알림 시간 로그
+      final currentEnabled = NotificationService.enabledNotifier.value;
+      print('=== MyPage: 현재 앱 내부 알림 설정: $currentEnabled ===');
+      final timeData = await NotificationService.getNotificationTime();
+      print('=== MyPage: 저장된 알림 시간 ===');
+      print('hour: ${timeData['hour']}, minute: ${timeData['minute']}');
+      print('===========================');
+
+      // 네이티브 권한 상태만 사용
+      final status = await NotificationService.getPermissionStatus();
+      print('=== MyPage: 네이티브 권한 상태: $status ===');
+
+      if (status.isGranted) {
+        print('=== MyPage: iOS 설정에서 알림 허용됨 - 현재 설정 유지 ===');
+      } else {
+        print('=== MyPage: iOS 설정에서 알림 거부됨 - 앱 내부 설정 OFF ===');
+        await NotificationService.setEnabled(false, userAction: false);
+        if (mounted) setState(() {});
+        print('=== MyPage: 앱 내부 설정을 OFF로 변경 완료 ===');
+      }
+    } catch (e) {
+      print('=== MyPage: 알림 상태 확인 오류: $e ===');
     }
   }
 
@@ -101,6 +133,10 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
 
   Future<void> _loadNotificationTime() async {
     final timeData = await NotificationService.getNotificationTime();
+    // 진입 시 저장된 알림 시간 로깅
+    print('=== MyPage: 저장된 알림 시간 ===');
+    print('hour: ${timeData['hour']}, minute: ${timeData['minute']}');
+    print('===========================');
     if (!mounted) return;
     setState(() {
       _selectedHour = timeData['hour']!.toString().padLeft(2, '0');
@@ -144,6 +180,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
   }
 
   void _showNotificationSheet() async {
+    print('=== _showNotificationSheet 함수 호출됨 ===');
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -182,52 +219,32 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                         ),
                         onChanged: (value) async {
                           if (value) {
-                            // ON으로 바꾸려고 할 때 - iOS에서는 실제 알림을 보내서 테스트
+                            // ON 시도: 먼저 iOS 권한 상태 확인
                             print('=== 알림 ON 시도 ===');
-                            
-                            try {
-                              // 먼저 설정을 변경
-                              await NotificationService.setEnabled(value, userAction: true);
-                              setState(() {});
-                              
-                              // 테스트 알림 시도
-                              print('=== 테스트 알림 전송 시도 ===');
-                              await NotificationService.showTestNotification();
-                              
-                              // 성공하면 완료
-                              print('=== 알림 설정 완료 ===');
-                            } catch (e) {
-                              print('=== 알림 설정 실패: $e ===');
-                              // 실패하면 설정을 되돌리고 권한 요청 다이얼로그 표시
-                              await NotificationService.setEnabled(false, userAction: true);
-                              setState(() {});
-                              
+                            final status = await NotificationService.getPermissionStatus();
+                            print('=== iOS 권한 상태: $status ===');
+                            if (status == PermissionStatus.denied || status == PermissionStatus.permanentlyDenied) {
                               if (mounted) {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
                                     title: const Text('알림 권한 필요'),
-                                    content: const Text('알림을 받으려면 설정에서 알림 권한을 허용해주세요.'),
+                                    content: const Text('앱설정 > 알림에서 "알림 허용"을 켜주세요.'),
                                     actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text('취소'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          print('=== 설정으로 이동 버튼 클릭됨 ===');
-                                          Navigator.pop(context);
-                                          NotificationService.navigateToAppSettings();
-                                        },
-                                        child: const Text('설정으로 이동'),
-                                      ),
+                                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
+                                      TextButton(onPressed: () { Navigator.pop(context); NotificationService.navigateToAppSettings(); }, child: const Text('설정으로 이동')),
                                     ],
                                   ),
                                 );
                               }
+                              return; // 시스템 OFF → 내부 토글 변경 금지
                             }
+                            // 권한 허용 → 내부 설정만 ON
+                            await NotificationService.setEnabled(true, userAction: true);
+                            setState(() {});
+                            print('=== 시스템 허용: 내부 알림 ON 완료 ===');
                           } else {
-                            // OFF로 바꾸는 경우
+                            // OFF로 바꾸는 경우 - 항상 가능
                             print('=== 알림 OFF 설정 ===');
                             await NotificationService.setEnabled(value, userAction: true);
                             setState(() {});
@@ -328,29 +345,25 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                   int.parse(_selectedMinute),
                                 );
                                 
-                                // 알림 권한 확인 및 요청 (앱 내부 설정이 켜져있고 시스템 권한도 있을 때만)
-                                final systemPermission = await NotificationService.hasPermission();
+                                // iOS 권한을 네이티브 기준으로 확인
+                                final permissionStatus = await NotificationService.getPermissionStatus();
                                 final appEnabled = NotificationService.enabledNotifier.value;
-                                
+
                                 print('=== 알림 권한 상태 ===');
-                                print('시스템 권한: $systemPermission');
+                                print('iOS 권한 상태: $permissionStatus');
                                 print('앱 내부 설정: $appEnabled');
                                 print('====================');
-                                
-                                // 시스템 권한이 없으면 권한 요청 다이얼로그 표시
-                                print('=== 권한 확인 결과 ===');
-                                print('systemPermission: $systemPermission');
-                                print('appEnabled: $appEnabled');
-                                print('====================');
-                                
-                                if (!systemPermission) {
+
+                                // 권한이 OFF면 설정 이동 안내
+                                if (permissionStatus == PermissionStatus.denied ||
+                                    permissionStatus == PermissionStatus.permanentlyDenied) {
                                   print('권한 요청 다이얼로그 표시 시도');
                                   if (mounted) {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
                                         title: const Text('알림 권한 필요'),
-                                        content: const Text('설정 > 앱 > 사주앱 > 알림에서 "알림 허용"을 켜주세요.'),
+                                        content: const Text('앱설정 > 알림에서 "알림 허용"을 켜주세요.'),
                                         actions: [
                                           TextButton(
                                             onPressed: () {
@@ -391,9 +404,10 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                   return;
                                 }
                                 
-                                // 테스트 푸시 알림 보내기
-                                await NotificationService.showFortuneNotification();
-                                
+                                // 매일 알림 스케줄 등록
+                                await NotificationService.scheduleDailyFortuneNotification();
+                                print('=== 알림 스케줄 등록 완료 ===');
+
                                 // 바텀 시트 닫기
                                 Navigator.pop(context);
                                 
