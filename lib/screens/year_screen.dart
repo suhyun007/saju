@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/saju_service.dart';
 import '../models/saju_info.dart';
 import '../models/saju_api_response.dart';
-import '../services/saju_api_service.dart';
+
 
 class YearScreen extends StatefulWidget {
   const YearScreen({super.key});
@@ -88,20 +88,25 @@ class _YearScreenState extends State<YearScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final cardBg = isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
+    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
+    
     if (_isLoading) {
       return Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF2C1810),
-              Color(0xFF4A2C1A),
-              Color(0xFF8B4513),
+              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
             ],
           ),
         ),
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator(
             color: Colors.amber,
           ),
@@ -111,35 +116,35 @@ class _YearScreenState extends State<YearScreen> {
 
     if (_yearFortune == null) {
       return Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF2C1810),
-              Color(0xFF4A2C1A),
-              Color(0xFF8B4513),
+              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
             ],
           ),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             '출생 정보를 먼저 입력해주세요.',
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(color: textColor, fontSize: 16),
           ),
         ),
       );
     }
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFF2C1810),
-            Color(0xFF4A2C1A),
-            Color(0xFF8B4513),
+            Theme.of(context).scaffoldBackgroundColor,
+            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
           ],
         ),
       ),
@@ -153,9 +158,9 @@ class _YearScreenState extends State<YearScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: cardBg,
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                border: Border.all(color: border),
               ),
               child: Column(
                 children: [
@@ -163,7 +168,7 @@ class _YearScreenState extends State<YearScreen> {
                     _truncateAtFirstPeriod(_yearFortune!.overall!),
                     style: GoogleFonts.notoSans(
                       fontSize: 16,
-                      color: Colors.white,
+                      color: textColor,
                       height: 1.4,
                     ),
                     textAlign: TextAlign.center,
@@ -178,8 +183,8 @@ class _YearScreenState extends State<YearScreen> {
                         Navigator.pushNamed(context, '/year-detail');
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
-                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -200,66 +205,67 @@ class _YearScreenState extends State<YearScreen> {
             
             const SizedBox(height: 20),
             
-            _buildFortuneCard(
-              '애정운',
-              _truncateAtSecondPeriod(_yearFortune!.love!),
-              Icons.favorite,
-              Colors.pink,
-            ),
-            
-            const SizedBox(height: 20),
-            
-            _buildFortuneCard(
-              '재물운',
-              _truncateAtSecondPeriod(_yearFortune!.wealth!),
-              Icons.attach_money,
-              Colors.green,
-            ),
-            
-            const SizedBox(height: 20),
-            
-            _buildFortuneCard(
-              '건강운',
-              _truncateAtSecondPeriod(_yearFortune!.health!),
-              Icons.health_and_safety,
-              Colors.blue,
-            ),
-            
-            const SizedBox(height: 20),
-            
-            _buildFortuneCard(
-              '학업/직장운',
-              _truncateAtSecondPeriod(_yearFortune!.study!),
-              Icons.work,
-              Colors.purple,
-            ),
-            
-            const SizedBox(height: 30),
-            
-            // 하단 안내
+            // 통합된 운세 박스
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                color: cardBg,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: border),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.info_outline,
-                    color: Colors.amber,
-                    size: 24,
+                  // 애정운
+                  _buildFortuneSection(
+                    '애정운',
+                    _truncateAtSecondPeriod(_yearFortune!.love!),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '운세는 참고용이며, 실제 삶의 결정은 본인의 판단에 따라 결정하세요.',
-                    style: GoogleFonts.notoSans(
-                      fontSize: 12,
-                      color: Colors.white70,
-                    ),
-                    textAlign: TextAlign.center,
+                  
+                  const SizedBox(height: 20),
+                  
+                  // 재물운
+                  _buildFortuneSection(
+                    '재물운',
+                    _truncateAtSecondPeriod(_yearFortune!.wealth!),
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // 건강운
+                  _buildFortuneSection(
+                    '건강운',
+                    _truncateAtSecondPeriod(_yearFortune!.health!),
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // 학업/직장운
+                  _buildFortuneSection(
+                    '학업/직장운',
+                    _truncateAtSecondPeriod(_yearFortune!.study!),
+                  ),
+                  
+                  const SizedBox(height: 30),
+                  
+                  // 하단 안내
+                  Column(
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        color: Colors.amber,
+                        size: 20,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '운세는 참고용이며, 실제 삶의 결정은 본인의 판단에 따라 결정하세요.',
+                        style: GoogleFonts.notoSans(
+                          fontSize: 13,
+                          color: textColor.withOpacity(0.7),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -270,38 +276,58 @@ class _YearScreenState extends State<YearScreen> {
     );
   }
 
+  Widget _buildFortuneSection(String title, String content) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.notoSans(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          content,
+          style: GoogleFonts.notoSans(
+            fontSize: 16,
+            color: textColor,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildFortuneCard(String title, String content, IconData icon, Color color) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final cardBg = isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
+    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: cardBg,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
               Text(
                 title,
                 style: GoogleFonts.notoSans(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: textColor,
                 ),
               ),
             ],
@@ -311,7 +337,7 @@ class _YearScreenState extends State<YearScreen> {
             content,
             style: GoogleFonts.notoSans(
               fontSize: 16,
-              color: Colors.white,
+              color: textColor,
               height: 1.4,
             ),
           ),

@@ -49,7 +49,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: const Center(
           child: CircularProgressIndicator(
             color: Colors.amber,
@@ -60,37 +60,38 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
 
     if (_sajuInfo == null) {
       return Scaffold(
-        backgroundColor: const Color(0xFF1A1A1A),
-        body: const Center(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: Center(
           child: Text(
             '출생 정보를 먼저 입력해주세요.',
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
           ),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onBackground),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           '오늘의 운세',
+          textAlign: TextAlign.left,
           style: GoogleFonts.notoSans(
-            color: Colors.white,
-            fontSize: 22,
+            color: Theme.of(context).colorScheme.onBackground,
+            fontSize: 25,
             fontWeight: FontWeight.w600,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.white),
+            icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onBackground),
             onPressed: () => _shareFortune(),
           ),
         ],
@@ -174,9 +175,9 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             Text(
               title,
               style: GoogleFonts.notoSans(
-                fontSize: 22,
+                fontSize: 21,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
             const SizedBox(width: 12),
@@ -198,16 +199,18 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Colors.white.withOpacity(0.1) 
+                : Theme.of(context).colorScheme.surface.withOpacity(0.5),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
           ),
           child: Text(
             description,
             style: GoogleFonts.notoSans(
-              fontSize: 19,
+              fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Colors.white.withOpacity(0.8),
+              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
               height: 1.5,
             ),
           ),
@@ -228,9 +231,9 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             Text(
               title,
               style: GoogleFonts.notoSans(
-                fontSize: 22,
+                fontSize: 21,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
           ],
@@ -241,16 +244,18 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Colors.white.withOpacity(0.1) 
+                : Theme.of(context).colorScheme.surface.withOpacity(0.5),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
           ),
           child: Text(
             description,
             style: GoogleFonts.notoSans(
-              fontSize: 19,
+              fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Colors.white.withOpacity(0.8),
+              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
               height: 1.3,
             ),
           ),

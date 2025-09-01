@@ -22,7 +22,6 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" image="LaunchBackground" translatesAutoresizingMaskIntoConstraints="NO" id="tWc-Dq-wcI">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
-                            
                         </subviews>
                         <color key="backgroundColor" red="0.10196078431372549" green="0.10196078431372549" blue="0.1803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -30,7 +29,6 @@
                             <constraint firstItem="tWc-Dq-wcI" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="SdS-ul-q2q"/>
                             <constraint firstAttribute="trailing" secondItem="tWc-Dq-wcI" secondAttribute="trailing" id="Swv-Gf-Rwn"/>
                             <constraint firstItem="tWc-Dq-wcI" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="kV7-tw-vXt"/>
-                            
                         </constraints>
                     </view>
                 </viewController>

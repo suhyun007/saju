@@ -67,14 +67,14 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
       brightness: Brightness.light,
       primarySwatch: Colors.brown,
       fontFamily: GoogleFonts.notoSansKr().fontFamily,
-      scaffoldBackgroundColor: const Color(0xFF1A1A2E),
+      scaffoldBackgroundColor: Colors.white,
     );
 
     final darkTheme = ThemeData(
       brightness: Brightness.dark,
       primarySwatch: Colors.brown,
       fontFamily: GoogleFonts.notoSansKr().fontFamily,
-      scaffoldBackgroundColor: const Color(0xFF1A1A2E),
+      scaffoldBackgroundColor: Colors.black,
     );
 
     return ValueListenableBuilder<ThemeMode>(
@@ -95,13 +95,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
             '/month-detail': (context) => const MonthDetailScreen(),
             '/year-detail': (context) => const YearDetailScreen(),
           },
-          // 깜빡임 방지를 위한 설정
-          builder: (context, child) {
-            return Container(
-              color: const Color(0xFF1A1A2E),
-              child: child!,
-            );
-          },
+          // builder 제거: 테마의 scaffoldBackgroundColor 사용
         );
       },
     );

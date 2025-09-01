@@ -1,14 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_android/webview_flutter_android.dart';
 import '../widgets/feature_button.dart';
-import '../screens/saju_input_screen.dart';
-import '../screens/webview_screen.dart';
 import '../screens/today_screen.dart';
-import '../screens/month_screen.dart';
-import '../screens/year_screen.dart';
+import '../screens/detail_story_screen.dart';
+// import '../screens/month_screen.dart'; // 주석처리
+// import '../screens/year_screen.dart'; // 주석처리
 // import '../widgets/kma_weather_chip.dart'; // 날씨 정보 주석처리
 
 import '../services/saju_service.dart';
@@ -18,7 +15,6 @@ import '../models/saju_info.dart';
 import '../models/saju_api_response.dart';
 import '../models/user_model.dart';
 import '../screens/myPage.dart';
-import '../screens/saju_navigator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {
         _currentTabIndex = _tabController.index;
@@ -114,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2C1810),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -143,15 +139,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            const Color(0xFF2C1810).withOpacity(0.95),
-            const Color(0xFF2C1810),
-          ],
-        ),
+              decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
+              Theme.of(context).scaffoldBackgroundColor,
+            ],
+          ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
@@ -174,8 +170,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        selectedItemColor: Colors.amber,
-        unselectedItemColor: Colors.white.withOpacity(0.6),
+        selectedItemColor: Theme.of(context).brightness == Brightness.dark 
+            ? Colors.grey.shade400 
+            : Colors.black,
+        unselectedItemColor: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
         selectedLabelStyle: GoogleFonts.notoSans(
           fontSize: 12,
           fontWeight: FontWeight.w600,
@@ -203,28 +201,29 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildTabBar() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 15),
       child: TabBar(
         controller: _tabController,
-        indicator: const BoxDecoration(
+        indicator: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: Colors.amber,
+              color: isDark ? Colors.grey.shade600 : Colors.black,
               width: 3,
             ),
           ),
         ),
         indicatorSize: TabBarIndicatorSize.tab,
         dividerColor: Colors.transparent,
-        labelColor: Colors.white,
-        unselectedLabelColor: Colors.white.withOpacity(0.6),
+        labelColor: Theme.of(context).colorScheme.onBackground,
+        unselectedLabelColor: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
         labelStyle: GoogleFonts.notoSans(
-          fontSize: 18,
+          fontSize: 20,
           fontWeight: FontWeight.w700,
         ),
         unselectedLabelStyle: GoogleFonts.notoSans(
-          fontSize: 16,
+          fontSize: 18,
           fontWeight: FontWeight.w500,
         ),
         onTap: (index) {
@@ -232,8 +231,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         },
         tabs: const [
           Tab(text: '오늘의 운세'),
-          Tab(text: '이달의 운세'),
-          Tab(text: '올해의 운세'),
+          Tab(text: '오늘의 이야기'),
+          // Tab(text: '이달의 운세'),
+          // Tab(text: '올해의 운세'),
         ],
       ),
     );
@@ -244,27 +244,28 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       controller: _tabController,
       children: const [
         TodayScreen(),
-        MonthScreen(),
-        YearScreen(),
+        DetailStoryScreen(),
+        // MonthScreen(),
+        // YearScreen(),
       ],
     );
   }
 
   Widget _buildMainContent() {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFF2C1810),
-            Color(0xFF4A2C1A),
-            Color(0xFF8B4513),
+            Theme.of(context).scaffoldBackgroundColor,
+            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
           ],
         ),
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(30),
         child: Column(
           children: [
             // 기능 버튼들
@@ -287,11 +288,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 Text(
                   'AstroStar',
                   style: GoogleFonts.playfairDisplay(
-                    fontSize: 28,
+                    fontSize: 30,
                     fontWeight: FontWeight.w600,
                     fontStyle: FontStyle.italic,
                     height: 1.1,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onBackground,
                     letterSpacing: 2,
                   ),
                 ),
@@ -308,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               style: GoogleFonts.notoSans(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
           ),
@@ -325,12 +326,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               height: 28,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-                border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.1),
+                border: Border.all(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.3), width: 1),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.settings,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onBackground,
                 size: 18,
               ),
             ),
@@ -415,8 +416,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
     final List<String> fortuneTypes = [
       '오늘의 운세',
-      '이달의 운세', 
-      '올해의 운세',
+      '오늘의 이야기',
+      // '이달의 운세', 
+      // '올해의 운세',
     ];
     
     final String selectedFortune = fortuneTypes[index];
@@ -432,16 +434,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         print('오늘의 운세 - 현재날짜: ${_sajuInfo!.currentTodayDate}, 저장된날짜: ${_sajuInfo!.todayFortune['lastFortuneDate']}');
         print('서버 호출 필요: $needServerCall');
         break;
-      case 1: // 이달의 운세
-        needServerCall = _sajuInfo!.isMonthFortuneExpired;
-        print('이달의 운세 - 현재달: ${_sajuInfo!.currentMonthDate}, 저장된달: ${_sajuInfo!.monthFortune['lastFortuneDate']}');
-        print('서버 호출 필요: $needServerCall');
+      case 1: // 오늘의 이야기
+        // 오늘의 이야기는 서버 호출이 필요하지 않음
+        needServerCall = false;
+        print('오늘의 이야기 - 서버 호출 불필요');
         break;
-      case 2: // 올해의 운세
-        needServerCall = _sajuInfo!.isYearFortuneExpired;
-        print('올해의 운세 - 현재년도: ${_sajuInfo!.currentYearDate}, 저장된년도: ${_sajuInfo!.yearFortune['lastFortuneDate']}');
-        print('서버 호출 필요: $needServerCall');
-        break;
+      // case 1: // 이달의 운세
+      //   needServerCall = _sajuInfo!.isMonthFortuneExpired;
+      //   print('이달의 운세 - 현재달: ${_sajuInfo!.currentMonthDate}, 저장된달: ${_sajuInfo!.monthFortune['lastFortuneDate']}');
+      //   print('서버 호출 필요: $needServerCall');
+      //   break;
+      // case 2: // 올해의 운세
+      //   needServerCall = _sajuInfo!.isYearFortuneExpired;
+      //   print('올해의 운세 - 현재년도: ${_sajuInfo!.currentYearDate}, 저장된년도: ${_sajuInfo!.yearFortune['lastFortuneDate']}');
+      //   print('서버 호출 필요: $needServerCall');
+      //   break;
     }
     
     if (!needServerCall) {
@@ -471,7 +478,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF2C1810),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -486,7 +493,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           content: Text(
             message,
             style: GoogleFonts.notoSans(
-              color: Colors.white.withOpacity(0.8),
+              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
               fontSize: 16,
             ),
           ),
@@ -574,12 +581,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         case 0: // 오늘의 운세
           success = await SajuService.updateTodayFortune(fortuneData);
           break;
-        case 1: // 이달의 운세
-          success = await SajuService.updateMonthFortune(fortuneData);
+        case 1: // 오늘의 이야기
+          // 오늘의 이야기는 데이터 저장이 필요하지 않음
+          success = true;
           break;
-        case 2: // 올해의 운세
-          success = await SajuService.updateYearFortune(fortuneData);
-          break;
+        // case 1: // 이달의 운세
+        //   success = await SajuService.updateMonthFortune(fortuneData);
+        //   break;
+        // case 2: // 올해의 운세
+        //   success = await SajuService.updateYearFortune(fortuneData);
+        //   break;
       }
 
       if (success) {

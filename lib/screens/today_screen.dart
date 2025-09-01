@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../services/saju_service.dart';
 import '../models/saju_info.dart';
 import '../models/saju_api_response.dart';
-import '../services/saju_api_service.dart';
+
 
 class TodayScreen extends StatefulWidget {
   const TodayScreen({super.key});
@@ -94,20 +94,25 @@ class _TodayScreenState extends State<TodayScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final cardBg = isDark ? Colors.white.withOpacity(0.14) : Colors.black.withOpacity(0.05);
+    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
+    
     if (_isLoading) {
       return Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF2C1810),
-              Color(0xFF4A2C1A),
-              Color(0xFF8B4513),
+              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
             ],
           ),
         ),
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator(
             color: Colors.amber,
           ),
@@ -117,35 +122,35 @@ class _TodayScreenState extends State<TodayScreen> {
 
     if (_todayFortune == null) {
       return Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF2C1810),
-              Color(0xFF4A2C1A),
-              Color(0xFF8B4513),
+              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
             ],
           ),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             '출생 정보를 먼저 입력해주세요.',
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(color: textColor, fontSize: 16),
           ),
         ),
       );
     }
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFF2C1810),
-            Color(0xFF4A2C1A),
-            Color(0xFF8B4513),
+            Theme.of(context).scaffoldBackgroundColor,
+            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
           ],
         ),
       ),
@@ -158,11 +163,6 @@ class _TodayScreenState extends State<TodayScreen> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
-              ),
               child: Column(
                 children: [
                   Text(
@@ -170,7 +170,7 @@ class _TodayScreenState extends State<TodayScreen> {
                     style: GoogleFonts.notoSans(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -202,14 +202,14 @@ class _TodayScreenState extends State<TodayScreen> {
                               RadarEntry(value: _todayFortune!.studyCore?.toDouble() ?? 0), // 학업/직장운
                             ],
                             fillColor: Color.fromARGB(255, 28, 158, 245).withOpacity(0.3), // 파랑 계열 (라벤더 퍼플)
-                            borderColor: Colors.white,
+                            borderColor: textColor,
                             borderWidth: 1,
                             entryRadius: 0,
                           ),
                         ],
                         //차트에 보이는 애정운..타이틀
                         titleTextStyle: GoogleFonts.notoSans(
-                          color: Colors.white,
+                          color: textColor,
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                         ),
@@ -247,11 +247,11 @@ class _TodayScreenState extends State<TodayScreen> {
                   const SizedBox(height: 10),
                   Text(
                     _truncateAtFirstPeriod(_todayFortune!.overall!),
-                    style: GoogleFonts.notoSans(
-                      fontSize: 16,
-                      color: Colors.white,
-                      height: 1.4,
-                    ),
+                                style: GoogleFonts.notoSans(
+                                fontSize: 17,
+                                color: textColor,
+                                height: 1.4,
+                              ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
@@ -264,8 +264,10 @@ class _TodayScreenState extends State<TodayScreen> {
                         Navigator.pushNamed(context, '/today-detail');
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
-                        foregroundColor: Colors.black,
+                        backgroundColor: Theme.of(context).brightness == Brightness.dark 
+                            ? Colors.white.withOpacity(0.2) 
+                            : Colors.black,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -274,7 +276,7 @@ class _TodayScreenState extends State<TodayScreen> {
                       child: Text(
                         '오늘의 운세 자세히 보기',
                         style: GoogleFonts.notoSans(
-                          fontSize: 16,
+                          fontSize: 17,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -286,66 +288,67 @@ class _TodayScreenState extends State<TodayScreen> {
             
             const SizedBox(height: 20),
             
-            _buildFortuneCard(
-              '애정운',
-              _truncateAtSecondPeriod(_todayFortune!.love!),
-              Icons.favorite,
-              Colors.pink,
-            ),
-            
-            const SizedBox(height: 20),
-            
-            _buildFortuneCard(
-              '재물운',
-              _truncateAtSecondPeriod(_todayFortune!.wealth!),
-              Icons.attach_money,
-              Colors.green,
-            ),
-            
-            const SizedBox(height: 20),
-            
-            _buildFortuneCard(
-              '건강운',
-              _truncateAtSecondPeriod(_todayFortune!.health!),
-              Icons.health_and_safety,
-              Colors.blue,
-            ),
-            
-            const SizedBox(height: 20),
-            
-            _buildFortuneCard(
-              '학업/직장운',
-              _truncateAtSecondPeriod(_todayFortune!.study!),
-              Icons.work,
-              Colors.purple,
-            ),
-            
-            const SizedBox(height: 30),
-            
-            // 하단 안내
+            // 통합된 운세 박스
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(25),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                color: cardBg,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: border),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.info_outline,
-                    color: Colors.amber,
-                    size: 24,
+                  // 애정운
+                  _buildFortuneSection(
+                    '애정운',
+                    _truncateAtSecondPeriod(_todayFortune!.love!),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '운세는 참고용이며, 실제 삶의 결정은 본인의 판단에 따라 결정하세요.',
-                    style: GoogleFonts.notoSans(
-                      fontSize: 12,
-                      color: Colors.white70,
-                    ),
-                    textAlign: TextAlign.center,
+                  
+                  const SizedBox(height: 30),
+                  
+                  // 재물운
+                  _buildFortuneSection(
+                    '재물운',
+                    _truncateAtSecondPeriod(_todayFortune!.wealth!),
+                  ),
+                  
+                  const SizedBox(height: 30),
+                  
+                  // 건강운
+                  _buildFortuneSection(
+                    '건강운',
+                    _truncateAtSecondPeriod(_todayFortune!.health!),
+                  ),
+                  
+                  const SizedBox(height: 30),
+                  
+                  // 학업/직장운
+                  _buildFortuneSection(
+                    '학업/직장운',
+                    _truncateAtSecondPeriod(_todayFortune!.study!),
+                  ),
+                  
+                  const SizedBox(height: 40),
+                  
+                  // 하단 안내
+                  Column(
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        color: Colors.amber,
+                        size: 28,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '운세는 참고용이며, 실제 삶의 결정은 본인의 판단에 따라 결정하세요.',
+                        style: GoogleFonts.notoSans(
+                          fontSize: 12,
+                          color: textColor.withOpacity(0.7),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -356,38 +359,58 @@ class _TodayScreenState extends State<TodayScreen> {
     );
   }
 
+  Widget _buildFortuneSection(String title, String content) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.notoSans(
+            fontSize: 19,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          content,
+          style: GoogleFonts.notoSans(
+            fontSize: 17,
+            color: textColor,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildFortuneCard(String title, String content, IconData icon, Color color) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final cardBg = isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
+    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: cardBg,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
               Text(
                 title,
                 style: GoogleFonts.notoSans(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: textColor,
                 ),
               ),
             ],
@@ -397,7 +420,7 @@ class _TodayScreenState extends State<TodayScreen> {
             content,
             style: GoogleFonts.notoSans(
               fontSize: 16,
-              color: Colors.white,
+              color: textColor,
               height: 1.4,
             ),
           ),

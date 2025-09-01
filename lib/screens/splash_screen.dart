@@ -16,8 +16,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   bool _isLoading = false;
   String _appName = 'AstroStar';
-  String _subtitle = '별자리의 신비로움을 통해 운세를 알아보세요';
-  String _buttonText = '시작하기';
+  String _subtitle = 'AI가 당신의 기본정보를 바탕으로 짧은 이야기를 만들어드립니다.';
+  String _buttonText = 'AI 이야기 시작하기';
   Timer? _subtitleTimer;
 
   @override
@@ -141,7 +141,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       const SizedBox(height: 14),
                       // 고정 메시지
                       Text(
-                        '오늘 밤하늘의 별은 \n어떤 이야기를 전해줄까요?',
+                        'AI가 당신의 기본정보를 통해\n짧은 이야기를 만들어드립니다.',
                         style: TextStyle(
                           fontSize: 19,
                           fontWeight: FontWeight.w700,

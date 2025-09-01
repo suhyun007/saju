@@ -14,7 +14,7 @@ import '../models/friend_info.dart';
 import '../utils/zodiac_utils.dart';
 import 'saju_input_screen.dart';
 import 'privacy_policy_screen.dart';
-import 'saju_navigator.dart';
+
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -185,13 +185,17 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
+        final border = isDark ? Colors.white24 : Colors.black.withOpacity(0.24);
+        
         return Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF2C1810).withOpacity(0.98),
+            color: sheetBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white24),
+            border: Border.all(color: border),
           ),
           child: ValueListenableBuilder<bool>(
             valueListenable: NotificationService.enabledNotifier,
@@ -204,15 +208,15 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                       SwitchListTile(
                         value: enabled,
                         activeColor: Colors.amber,
-                        title: Text('알림 사용', style: GoogleFonts.notoSans(color: Colors.white, fontWeight: FontWeight.w600)),
+                        title: Text('알림 사용', style: GoogleFonts.notoSans(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.w600)),
                         subtitle: Text(
                           enabled ? '알림이 활성화되어 있습니다.' : '알림이 비활성화되어 있습니다.',
-                          style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 12),
+                          style: GoogleFonts.notoSans(color: isDark ? Colors.white70 : Colors.black54, fontSize: 12),
                         ),
                         secondary: Text(
                           enabled ? 'ON' : 'OFF',
                           style: GoogleFonts.notoSans(
-                            color: enabled ? Colors.amber : Colors.grey[400],
+                            color: enabled ? Colors.amber : (isDark ? Colors.grey[400] : Colors.grey[600]),
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
                           ),
@@ -262,21 +266,21 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                               children: [
                               Text(
                                 '알림 시간: ',
-                                style: const TextStyle(color: Colors.white, fontSize: 16),
+                                style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16),
                               ),
                               // 시간 선택 드롭다운
                               Container(
                                 height: 32,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(6),
                                   border: Border.all(color: Colors.amber.withOpacity(0.3)),
                                 ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
                                   value: _selectedHour,
-                                  dropdownColor: const Color(0xFF2C1810),
-                                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                                  dropdownColor: isDark ? const Color(0xFF2C1810) : Colors.white,
+                                  style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16),
                                   underline: Container(),
                                   items: List.generate(24, (index) {
                                     final hour = index.toString().padLeft(2, '0');
@@ -296,21 +300,21 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                               ),
                               Text(
                                 ' : ',
-                                style: const TextStyle(color: Colors.white, fontSize: 16),
+                                style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16),
                               ),
                               // 분 선택 드롭다운
                               Container(
                                 height: 32,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(6),
                                   border: Border.all(color: Colors.amber.withOpacity(0.3)),
                                 ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
                                   value: _selectedMinute,
-                                  dropdownColor: const Color(0xFF2C1810),
-                                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                                  dropdownColor: isDark ? const Color(0xFF2C1810) : Colors.white,
+                                  style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16),
                                   underline: Container(),
                                   items: List.generate(60, (index) {
                                     final minute = index.toString().padLeft(2, '0');
@@ -446,13 +450,18 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
+        final border = isDark ? Colors.white24 : Colors.black.withOpacity(0.24);
+        final textColor = isDark ? Colors.white : Colors.black;
+        
         return Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF2C1810).withOpacity(0.98),
+            color: sheetBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white24),
+            border: Border.all(color: border),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -460,7 +469,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
               Text(
                 '로그아웃 하시겠습니까?',
                 style: GoogleFonts.notoSans(
-                  color: Colors.white,
+                  color: textColor,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -526,13 +535,17 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
+        final border = isDark ? Colors.white24 : Colors.black.withOpacity(0.24);
+        
         return Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF2C1810).withOpacity(0.98),
+            color: sheetBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white24),
+            border: Border.all(color: border),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -549,6 +562,10 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
 
   Widget _themeOptionTile(String label, ThemeMode mode) {
     final selected = ThemeService.currentMode == mode;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final unselectedIconColor = isDark ? Colors.white54 : Colors.black54;
+    
     return ListTile(
       onTap: () async {
         await ThemeService.setThemeMode(mode);
@@ -562,13 +579,13 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       title: Text(
         label,
         style: GoogleFonts.notoSans(
-          color: Colors.white,
+          color: textColor,
           fontWeight: FontWeight.w600,
         ),
       ),
       trailing: selected
           ? const Icon(Icons.check_circle, color: Colors.amber)
-          : const Icon(Icons.circle_outlined, color: Colors.white54),
+          : Icon(Icons.circle_outlined, color: unselectedIconColor),
     );
   }
 
@@ -605,13 +622,19 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
+        final border = isDark ? Colors.white24 : Colors.black.withOpacity(0.24);
+        final textColor = isDark ? Colors.white : Colors.black;
+        final subtitleColor = isDark ? Colors.white70 : Colors.black54;
+        
         return Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF2C1810).withOpacity(0.98),
+            color: sheetBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white24),
+            border: Border.all(color: border),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -627,7 +650,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                         Text(
                           _user!.displayName,
                           style: GoogleFonts.notoSans(
-                            color: Colors.white,
+                            color: textColor,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -635,7 +658,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                         const SizedBox(height: 4),
                         Text(
                           _user!.email,
-                          style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 13),
+                          style: GoogleFonts.notoSans(color: subtitleColor, fontSize: 13),
                         ),
                       ],
                     ),
@@ -653,22 +676,28 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
   }
 
   Widget _infoRow(String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.04);
+    final border = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.08);
+    final labelColor = isDark ? Colors.white70 : Colors.black54;
+    final valueColor = isDark ? Colors.white : Colors.black;
+    
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: cardBg,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: border),
       ),
       child: Row(
         children: [
-          Text(label, style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 12)),
+          Text(label, style: GoogleFonts.notoSans(color: labelColor, fontSize: 12)),
           const Spacer(),
           Flexible(
             child: Text(
               value,
-              style: GoogleFonts.notoSans(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+              style: GoogleFonts.notoSans(color: valueColor, fontSize: 12, fontWeight: FontWeight.w600),
               textAlign: TextAlign.right,
               overflow: TextOverflow.ellipsis,
             ),
@@ -681,174 +710,133 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF2C1810),
-              Color(0xFF4A2C1A),
-              Color(0xFF8B4513),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.only(top:20, left:20, right:20),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        print('=== 마이페이지 뒤로가기 버튼 클릭됨 ===');
-                        print('현재 context: $context');
-                        print('Navigator.canPop: ${Navigator.canPop(context)}');
-                        
-                        // 단순히 뒤로가기
-                        Navigator.pop(context);
-                        print('=== Navigator.pop 호출 완료 ===');
-                      },
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.only(top:20, left:20, right:20, bottom: 0),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      print('=== 마이페이지 뒤로가기 버튼 클릭됨 ===');
+                      print('현재 context: $context');
+                      print('Navigator.canPop: ${Navigator.canPop(context)}');
+                      
+                      // 단순히 뒤로가기
+                      Navigator.pop(context);
+                      print('=== Navigator.pop 호출 완료 ===');
+                    },
+                    icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onBackground),
+                  ),
+                  const SizedBox(width: 0),
+                  Text(
+                    '마이페이지',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
-                    const SizedBox(width: 15),
-                    Text(
-                      '마이페이지',
-                      style: GoogleFonts.notoSans(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
 
-              Expanded(
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(20),
                 child: ListView(
-                  padding: const EdgeInsets.all(20),
                   children: [
-                    const SizedBox(height: 20),
-                    _Section(
-                      title: '관리',
-                      children: [
+                  const SizedBox(height: 0),
+                  _Section(
+                    title: '관리',
+                    children: [
+                      _Tile(
+                        icon: Icons.calendar_today,
+                        title: _sajuInfo != null ? '${_sajuInfo!.name}님' : '사주정보',
+                        subtitle: _sajuInfo != null
+                            ? '${_sajuInfo!.yearText} ${_sajuInfo!.monthText} ${_sajuInfo!.dayText} ${_sajuInfo!.timeText}${_sajuInfo!.zodiacSign != null ? ' • ${_sajuInfo!.zodiacSign}' : ''}'
+                            : '사주정보를 입력해 주세요',
+                        zodiacSign: _sajuInfo?.zodiacSign,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SajuInputScreen(),
+                            ),
+                          ).then((_) {
+                            _loadSajuInfo(); // 사주정보 화면에서 돌아올 때 새로고침
+                          });
+                        },
+                      ),
+                      _Tile(
+                        icon: Icons.person,
+                        title: _user == null ? '프로필' : (_user!.displayName ?? '사용자'),
+                        subtitle: _user == null ? '구글에서 로그인' : (_user!.email ?? '이메일 없음'),
+                        iconBackgroundColor: _user != null ? Colors.amber : null,
+                        onTap: () {
+                          if (_user == null) {
+                            _signIn();
+                          } else {
+                            _showProfileSheet();
+                          }
+                        },
+                      ),
+                      if (_user != null)
                         _Tile(
-                          icon: Icons.calendar_today,
-                          title: _sajuInfo != null ? '${_sajuInfo!.name}님' : '사주정보',
-                          subtitle: _sajuInfo != null
-                              ? '${_sajuInfo!.yearText} ${_sajuInfo!.monthText} ${_sajuInfo!.dayText} ${_sajuInfo!.timeText}${_sajuInfo!.zodiacSign != null ? ' • ${_sajuInfo!.zodiacSign}' : ''}'
-                              : '사주정보를 입력해 주세요',
-                          zodiacSign: _sajuInfo?.zodiacSign,
+                          icon: Icons.logout,
+                          title: '로그아웃',
+                          subtitle: '현재 계정에서 로그아웃',
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SajuInputScreen(),
-                              ),
-                            ).then((_) {
-                              _loadSajuInfo(); // 사주정보 화면에서 돌아올 때 새로고침
-                            });
+                            _showLogoutSheet();
                           },
                         ),
-                        // _Tile(
-                        //   icon: _friendInfo != null ? Icons.person : Icons.person_add,
-                        //   title: _friendInfo != null ? '친구: ${_friendInfo!.name}' : '친구 정보 등록',
-                        //   subtitle: _friendInfo != null
-                        //       ? '${_friendInfo!.yearText} ${_friendInfo!.monthText} ${_friendInfo!.dayText} ${_friendInfo!.timeText}${_friendInfo!.zodiacSign != null ? ' • ${_friendInfo!.zodiacSign}' : ''}'
-                        //       : '친구 정보를 입력해 주세요',
-                        //   zodiacSign: _friendInfo?.zodiacSign,
-                        //   onTap: () {
-                        //     Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //         builder: (context) => const SajuInputScreen(isFriendInfo: true),
-                        //       ),
-                        //     ).then((_) {
-                        //       _loadFriendInfo(); // 친구정보 화면에서 돌아올 때 새로고침
-                        //     });
-                        //   },
-                        // ),
-                        _Tile(
-                          icon: Icons.person,
-                          title: _user == null ? '프로필' : (_user!.displayName ?? '사용자'),
-                          subtitle: _user == null ? '구글에서 로그인' : (_user!.email ?? '이메일 없음'),
-                          iconBackgroundColor: _user != null ? Colors.amber : null,
-                          onTap: () {
-                            if (_user == null) {
-                              _signIn();
-                            } else {
-                              _showProfileSheet();
-                            }
-                          },
-                        ),
-                        // 로그인된 경우에만 로그아웃 표시
-                        if (_user != null)
-                          _Tile(
-                            icon: Icons.logout,
-                            title: '로그아웃',
-                            subtitle: '현재 계정에서 로그아웃',
-                            onTap: () {
-                              _showLogoutSheet();
-                            },
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    _Section(
-                      title: '일반',
-                      children: [
-                        _Tile(
-                          icon: Icons.color_lens,
-                          title: '테마',
-                          subtitle: _themeSubtitle(),
-                          onTap: _showThemePicker,
-                        ),
-                        ValueListenableBuilder<bool>(
-                          valueListenable: NotificationService.enabledNotifier,
-                          builder: (context, enabled, _) {
-                            return _Tile(
-                              icon: Icons.notifications,
-                              title: '알림',
-                              subtitle: enabled ? 'ON' : 'OFF',
-                              onTap: _showNotificationSheet,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    _Section(
-                      title: '정보',
-                      children: [
-                        _Tile(
-                          icon: Icons.info_outline,
-                          title: '앱 정보',
-                          subtitle: '개인정보보호방침',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const PrivacyPolicyScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+                      _SubSectionTitle('일반'),
+                      _Tile(
+                        icon: Icons.color_lens,
+                        title: '테마',
+                        subtitle: _themeSubtitle(),
+                        onTap: _showThemePicker,
+                      ),
+                      ValueListenableBuilder<bool>(
+                        valueListenable: NotificationService.enabledNotifier,
+                        builder: (context, enabled, _) {
+                          return _Tile(
+                            icon: Icons.notifications,
+                            title: '알림',
+                            subtitle: enabled ? 'ON' : 'OFF',
+                            onTap: _showNotificationSheet,
+                          );
+                        },
+                      ),
+                      _SubSectionTitle('기타'),
+                      _Tile(
+                        icon: Icons.info_outline,
+                        title: '앱 정보',
+                        subtitle: '개인정보보호방침',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PrivacyPolicyScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
-
 
 class _Section extends StatelessWidget {
   final String title;
@@ -857,25 +845,30 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.06);
+    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
+    final textColor = isDark ? Colors.white70 : Colors.black54;
+    
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.06),
+        color: cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: GoogleFonts.notoSans(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.white70,
-            ),
+                  Text(
+          title,
+          style: GoogleFonts.notoSans(
+            fontSize: 21,
+            fontWeight: FontWeight.bold,
+            color: textColor,
           ),
-          const SizedBox(height: 10),
+        ),
+          const SizedBox(height: 0),
           ...children,
         ],
       ),
@@ -901,15 +894,24 @@ class _Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.04);
+    final border = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.08);
+    final iconBg = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.08);
+    final iconBorder = isDark ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.12);
+    final textColor = isDark ? Colors.white : Colors.black;
+    final subtitleColor = isDark ? Colors.white70 : Colors.black54;
+    final chevronColor = isDark ? Colors.white54 : Colors.black54;
+    
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(12),
         margin: const EdgeInsets.symmetric(vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
+          color: cardBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
+          border: Border.all(color: border),
         ),
         child: Row(
           children: [
@@ -918,8 +920,8 @@ class _Tile extends StatelessWidget {
               height: 36,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: iconBackgroundColor ?? Colors.white.withOpacity(0.08),
-                border: Border.all(color: Colors.white.withOpacity(0.12)),
+                color: iconBackgroundColor ?? iconBg,
+                border: Border.all(color: iconBorder),
               ),
               child: zodiacSign != null
                   ? Builder(
@@ -933,11 +935,11 @@ class _Tile extends StatelessWidget {
                           imagePath,
                           width: 20,
                           height: 20,
-                          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                          colorFilter: ColorFilter.mode(textColor, BlendMode.srcIn),
                         );
                       },
                     )
-                  : Icon(icon, color: Colors.white, size: 18),
+                  : Icon(icon, color: textColor, size: 18),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -947,24 +949,47 @@ class _Tile extends StatelessWidget {
                   Text(
                     title,
                     style: GoogleFonts.notoSans(
-                      fontSize: 15,
+                      fontSize: 17,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: GoogleFonts.notoSans(
-                      fontSize: 12,
-                      color: Colors.white70,
+                      fontSize: 14,
+                      color: subtitleColor,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.white54, size: 18),
+            Icon(Icons.chevron_right, color: chevronColor, size: 18),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SubSectionTitle extends StatelessWidget {
+  final String title;
+  const _SubSectionTitle(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white70 : Colors.black54;
+    
+    return Container(
+      margin: const EdgeInsets.only(top: 15, bottom: 0),
+      child:       Text(
+        title,
+        style: GoogleFonts.notoSans(
+          fontSize: 21,
+          fontWeight: FontWeight.bold,
+          color: textColor,
         ),
       ),
     );
