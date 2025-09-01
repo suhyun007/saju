@@ -208,7 +208,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         indicator: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: const Color(0xFF1A3A8A),
+              color: Theme.of(context).brightness == Brightness.dark 
+                  ? const Color(0xFFCCCCFF)
+                  : const Color(0xFF1A3A8A),
               width: 3,
             ),
           ),
@@ -293,7 +295,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     fontWeight: FontWeight.w500,
                     //fontStyle: FontStyle.italic,
                     height: 1.1,
-                    color: const Color(0xFF1A3A8A),
+                    color: Theme.of(context).brightness == Brightness.dark 
+                        ? const Color(0xFFCCCCFF)
+                        : const Color(0xFF1A3A8A),
                     letterSpacing: -1,
                   ),
                 ),

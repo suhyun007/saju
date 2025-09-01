@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   bool _isLoading = false;
   String _appName = 'AstroStar';
   String _subtitle = 'AstroStar가 당신의 기본정보를 바탕으로 짧은 이야기를 만들어드립니다.';
-  String _buttonText = 'AI 이야기 시작하기';
+  String _buttonText = 'AI 콘텐츠 시작';
   Timer? _subtitleTimer;
 
   @override
@@ -157,7 +157,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       const SizedBox(height: 10),
                       // 고정 메시지
                       Text(
-                        'AstroStar가\n당신의 정보를 바탕으로\n오늘의 짧은 이야기를 만들어드립니다.',
+                        'AstroStar가 당신의 정보를 바탕으로\n매일 재미있는 문학 콘텐츠를 만들어드립니다.',
                         style: TextStyle(
                           fontSize: 19,
                           fontWeight: FontWeight.w300,

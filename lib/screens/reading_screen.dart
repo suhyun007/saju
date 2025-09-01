@@ -56,7 +56,7 @@ class ReadingScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
                   color: Theme.of(context).brightness == Brightness.dark 
-                      ? Theme.of(context).colorScheme.surface.withOpacity(0.3)
+                      ? Colors.white.withOpacity(0.1)
                       : Theme.of(context).colorScheme.surface.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),

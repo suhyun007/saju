@@ -96,7 +96,7 @@ class _TodayScreenState extends State<TodayScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
-    final cardBg = isDark ? Colors.white.withOpacity(0.14) : Colors.black.withOpacity(0.05);
+    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
     final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
     
     if (_isLoading) {
