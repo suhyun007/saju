@@ -155,7 +155,7 @@ class _TodayScreenState extends State<TodayScreen> {
         ),
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 15),
+        padding: const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -173,54 +173,41 @@ class _TodayScreenState extends State<TodayScreen> {
                       color: textColor,
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 25),
                   // RadarChart
                   SizedBox(
-                    height: 200,
+                    height: 180,
                     child: RadarChart(
                       RadarChartData(
                         dataSets: [
                           RadarDataSet(
                             dataEntries: [
-                              RadarEntry(value: _todayFortune!.overallScore?.toDouble() ?? 0), // 총운
-                              RadarEntry(value: _todayFortune!.loveScore?.toDouble() ?? 0), // 애정운
-                              RadarEntry(value: _todayFortune!.wealthScore?.toDouble() ?? 0), // 재물운
-                              RadarEntry(value: _todayFortune!.healthScore?.toDouble() ?? 0), // 건강운
-                              RadarEntry(value: _todayFortune!.studyCore?.toDouble() ?? 0), // 학업/직장운
+                              RadarEntry(value: _todayFortune!.overallScore?.toDouble() ?? 0), // 전체의 흐름
+                              RadarEntry(value: _todayFortune!.loveScore?.toDouble() ?? 0), // 소중한 인연
+                              RadarEntry(value: _todayFortune!.wealthScore?.toDouble() ?? 0), // 풍요로움
+                              RadarEntry(value: _todayFortune!.healthScore?.toDouble() ?? 0), // 몸과 마음
+                              RadarEntry(value: _todayFortune!.studyCore?.toDouble() ?? 0), // 성장과 집중
                             ],
-                            fillColor: Color.fromARGB(255, 192, 118, 252).withOpacity(0.3), // 보라 계열 (슬레이트 블루)
+                            fillColor: const Color(0xFFCCCCFF), // 연한 보라색
                             borderColor: Colors.transparent,
                             borderWidth: 0,
                             entryRadius: 0,
                           ),
-                          RadarDataSet(
-                            dataEntries: [
-                              RadarEntry(value: _todayFortune!.overallScore?.toDouble() ?? 0), // 총운
-                              RadarEntry(value: _todayFortune!.loveScore?.toDouble() ?? 0), // 애정운
-                              RadarEntry(value: _todayFortune!.wealthScore?.toDouble() ?? 0), // 재물운
-                              RadarEntry(value: _todayFortune!.healthScore?.toDouble() ?? 0), // 건강운
-                              RadarEntry(value: _todayFortune!.studyCore?.toDouble() ?? 0), // 학업/직장운
-                            ],
-                            fillColor: Color.fromARGB(255, 28, 158, 245).withOpacity(0.3), // 파랑 계열 (라벤더 퍼플)
-                            borderColor: textColor,
-                            borderWidth: 1,
-                            entryRadius: 0,
-                          ),
                         ],
-                        //차트에 보이는 애정운..타이틀
+                        //차트에 보이는 소중한 인연..타이틀
                         titleTextStyle: GoogleFonts.notoSans(
                           color: textColor,
-                          fontSize: 15,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
-                        titlePositionPercentageOffset: 0.03,
+                        titlePositionPercentageOffset: 0.15,
                         //radarBackgroundColor: Colors.blue,
                         tickCount: 1,
                         gridBorderData: const BorderSide(color: Colors.transparent),    // 그리드 선 숨김
                         tickBorderData: const BorderSide(color: Colors.transparent),  // 안쪽 선 숨김
                         borderData: FlBorderData(show: false),
                         radarBorderData: const BorderSide(color: Colors.transparent), //제일큰 원
-                        radarBackgroundColor: Colors.transparent,  
+                        radarBackgroundColor: Colors.grey.shade200,  
                         ticksTextStyle: GoogleFonts.notoSans(
                           color: Colors.transparent,  // 숫자 숨김
                           fontSize: 0,               // 숫자 숨김
@@ -228,15 +215,15 @@ class _TodayScreenState extends State<TodayScreen> {
                         getTitle: (index, angle) {
                           switch (index) {
                             case 0:
-                              return RadarChartTitle(text: '총운');
+                              return RadarChartTitle(text: '전체');
                             case 1:
-                              return RadarChartTitle(text: '애정운');
+                              return RadarChartTitle(text: '인연');
                             case 2:
-                              return RadarChartTitle(text: '재물운');
+                              return RadarChartTitle(text: '풍요');
                             case 3:
-                              return RadarChartTitle(text: '건강운');
+                              return RadarChartTitle(text: '마음');
                             case 4:
-                              return RadarChartTitle(text: '학업\n직장운');  // 추가
+                              return RadarChartTitle(text: '성장');  // 추가
                             default:
                               return const RadarChartTitle(text: '');
                           }
@@ -244,7 +231,7 @@ class _TodayScreenState extends State<TodayScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   Text(
                     _truncateAtFirstPeriod(_todayFortune!.overall!),
                                 style: GoogleFonts.notoSans(
@@ -254,30 +241,39 @@ class _TodayScreenState extends State<TodayScreen> {
                               ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   
                   // 오늘의 운세 자세히 보기 버튼
                   Container(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/today-detail');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).brightness == Brightness.dark 
-                            ? Colors.white.withOpacity(0.2) 
-                            : Colors.black,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    height: 53,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFF4A90E2),
+                          Color(0xFF9B59B6),
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
                       ),
-                      child: Text(
-                        '오늘의 운세 자세히 보기',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/today-detail');
+                        },
+                        borderRadius: BorderRadius.circular(10),
+                        child: Center(
+                          child: Text(
+                            '오늘의 가이드 자세히 보기',
+                            style: GoogleFonts.notoSans(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -299,56 +295,60 @@ class _TodayScreenState extends State<TodayScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 애정운
+                  // 소중한 인연
                   _buildFortuneSection(
-                    '애정운',
+                    '소중한 인연',
                     _truncateAtSecondPeriod(_todayFortune!.love!),
                   ),
                   
                   const SizedBox(height: 30),
                   
-                  // 재물운
+                  // 풍요로움
                   _buildFortuneSection(
-                    '재물운',
+                    '풍요로움',
                     _truncateAtSecondPeriod(_todayFortune!.wealth!),
                   ),
                   
                   const SizedBox(height: 30),
                   
-                  // 건강운
+                  // 몸과 마음
                   _buildFortuneSection(
-                    '건강운',
+                    '몸과 마음',
                     _truncateAtSecondPeriod(_todayFortune!.health!),
                   ),
                   
                   const SizedBox(height: 30),
                   
-                  // 학업/직장운
+                  // 성장과 집중
                   _buildFortuneSection(
-                    '학업/직장운',
+                    '성장과 집중',
                     _truncateAtSecondPeriod(_todayFortune!.study!),
                   ),
                   
                   const SizedBox(height: 40),
                   
                   // 하단 안내
-                  Column(
-                    children: [
-                      const Icon(
-                        Icons.info_outline,
-                        color: Colors.amber,
-                        size: 28,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '운세는 참고용이며, 실제 삶의 결정은 본인의 판단에 따라 결정하세요.',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 12,
-                          color: textColor.withOpacity(0.7),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
+                          color: Colors.amber,
+                          size: 34,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요.\n당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.',
+                          style: GoogleFonts.notoSans(
+                            fontSize: 14,
+                            color: textColor.withOpacity(0.7),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

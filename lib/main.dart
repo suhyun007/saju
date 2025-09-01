@@ -66,6 +66,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
     final lightTheme = ThemeData(
       brightness: Brightness.light,
       primarySwatch: Colors.brown,
+      primaryColor: const Color(0xFF3366FF),
       fontFamily: GoogleFonts.notoSansKr().fontFamily,
       scaffoldBackgroundColor: Colors.white,
     );
@@ -73,6 +74,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
     final darkTheme = ThemeData(
       brightness: Brightness.dark,
       primarySwatch: Colors.brown,
+      primaryColor: const Color(0xFF3366FF),
       fontFamily: GoogleFonts.notoSansKr().fontFamily,
       scaffoldBackgroundColor: Colors.black,
     );

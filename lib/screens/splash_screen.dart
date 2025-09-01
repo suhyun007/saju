@@ -16,7 +16,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   bool _isLoading = false;
   String _appName = 'AstroStar';
-  String _subtitle = 'AI가 당신의 기본정보를 바탕으로 짧은 이야기를 만들어드립니다.';
+  String _subtitle = 'AstroStar가 당신의 기본정보를 바탕으로 짧은 이야기를 만들어드립니다.';
   String _buttonText = 'AI 이야기 시작하기';
   Timer? _subtitleTimer;
 
@@ -108,21 +108,37 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             children: [
               // 앱 이름 (맨 위)
-              const SizedBox(height: 190),
-              Text(
-                _appName,
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 56,
-                  fontWeight: FontWeight.w600,
-                  fontStyle: FontStyle.italic,
-                  color: Color(0xFFE6F3FF),
-                  letterSpacing: 4,
+              const SizedBox(height: 50),
+                              Text(
+                  _appName,
+                  style: GoogleFonts.josefinSans(
+                    fontSize: 04,
+                    fontWeight: FontWeight.w300,
+                    color: Color(0xFFE6F3FF),
+                    letterSpacing: 1,
+                    shadows: [
+                      Shadow(
+                        color: Color(0xFF4A90E2).withOpacity(0.8),
+                        blurRadius: 15,
+                        offset: Offset(2, 2),
+                      ),
+                      Shadow(
+                        color: Color(0xFF9B59B6).withOpacity(0.6),
+                        blurRadius: 25,
+                        offset: Offset(-2, -2),
+                      ),
+                      Shadow(
+                        color: Colors.white.withOpacity(0.4),
+                        blurRadius: 8,
+                        offset: Offset(0, 0),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               // 중간 영역
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 25),
+                  padding: const EdgeInsets.only(top: 220),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -138,13 +154,13 @@ class _SplashScreenState extends State<SplashScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 10),
                       // 고정 메시지
                       Text(
-                        'AI가 당신의 기본정보를 통해\n짧은 이야기를 만들어드립니다.',
+                        'AstroStar가\n당신의 정보를 바탕으로\n오늘의 짧은 이야기를 만들어드립니다.',
                         style: TextStyle(
                           fontSize: 19,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w300,
                           color: Color(0xFFE6F3FF),
                           letterSpacing: 0.5,
                           height: 1.5,
@@ -163,8 +179,8 @@ class _SplashScreenState extends State<SplashScreen> {
                       Text(
                         _subtitle,
                         style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 0,
+                          fontWeight: FontWeight.w400,
                           color: Color(0xFFE6F3FF),
                           letterSpacing: 1,
                           shadows: [
@@ -177,7 +193,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 10),
                       // 시작하기 버튼
                       Container(
                         width: 360,

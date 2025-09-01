@@ -101,9 +101,9 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 총운 카드
+            // 전체의 흐름 카드
             _buildFortuneDetailCard(
-              '총운',
+              '전체의 흐름',
               '${_sajuInfo!.todayFortune['overallScore']}점',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['overall']),
               Icons.star,
@@ -128,25 +128,25 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
 
             const SizedBox(height: 20),
             
-            // 건강운 카드
+            // 몸과 마음 카드
             _buildStyleCardWithoutIcon(
-              '건강운',
+              '몸과 마음',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['health']),
             ),
 
             const SizedBox(height: 20),
             
-            // 애정운 카드
+            // 소중한 인연 카드
             _buildStyleCardWithoutIcon(
-              '애정운',
+              '소중한 인연',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['love']),
             ),
             
             const SizedBox(height: 20),
             
-            // 재물운 카드
+            // 풍요로움 카드
             _buildStyleCardWithoutIcon(
-              '재물운',
+              '풍요로움',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['wealth']),
             ),
             
@@ -154,7 +154,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             
             // 학업운 카드
             _buildStyleCardWithoutIcon(
-              '학업운/사업운',
+              '성장과 집중',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['study']),
             ),
           ],
