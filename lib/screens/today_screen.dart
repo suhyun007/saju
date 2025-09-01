@@ -188,7 +188,9 @@ class _TodayScreenState extends State<TodayScreen> {
                               RadarEntry(value: _todayFortune!.healthScore?.toDouble() ?? 0), // 몸과 마음
                               RadarEntry(value: _todayFortune!.studyCore?.toDouble() ?? 0), // 성장과 집중
                             ],
-                            fillColor: const Color(0xFFCCCCFF), // 연한 보라색
+                            fillColor: Theme.of(context).brightness == Brightness.dark 
+                                ? const Color(0xFFB488FF).withOpacity(0.4) // 다크모드에서는 투명하게
+                                : const Color(0xFFCCDDFF), // 라이트모드에서는 원래 색상
                             borderColor: Colors.transparent,
                             borderWidth: 0,
                             entryRadius: 0,
@@ -207,7 +209,9 @@ class _TodayScreenState extends State<TodayScreen> {
                         tickBorderData: const BorderSide(color: Colors.transparent),  // 안쪽 선 숨김
                         borderData: FlBorderData(show: false),
                         radarBorderData: const BorderSide(color: Colors.transparent), //제일큰 원
-                        radarBackgroundColor: Colors.grey.shade200,  
+                        radarBackgroundColor: Theme.of(context).brightness == Brightness.dark 
+                            ? Colors.grey.shade900
+                            : const Color(0xFFE8F4FD).withOpacity(0.8), // 하늘색이 섞인 연한 회색 (약간 투명)  
                         ticksTextStyle: GoogleFonts.notoSans(
                           color: Colors.transparent,  // 숫자 숨김
                           fontSize: 0,               // 숫자 숨김

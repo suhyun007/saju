@@ -43,6 +43,7 @@ class NotificationService {
     '좋은 하루를 여는 열쇠, 여기요',
     '오늘의 기분 전환, 행복 한 컵',
     '오늘도 별이 당신 편이에요',
+    '별빛이 이야기해주는 당신의 이야기를 들어보세요',
   ];
 
   static String _pickDailyBody() {
@@ -519,7 +520,7 @@ class NotificationService {
     await _plugin.show(
       1002,
       _dailyTitle,
-      _pickDailyBody(),
+      '${_pickDailyBody()}\n별빛이 이야기해주는 당신의 이야기를 들어보세요',
       details,
     );
     print('NotificationService: 운세 알림 전송 완료');
@@ -554,7 +555,7 @@ class NotificationService {
     await _plugin.zonedSchedule(
       2001,
       _dailyTitle,
-      _pickDailyBody(),
+      '${_pickDailyBody()}\n별빛이 이야기해주는 당신의 이야기를 들어보세요',
       scheduled,
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
