@@ -258,6 +258,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get myPageTitle => 'マイページ';
 
   @override
+  String get todayDetailTitle => '今日のガイド';
+
+  @override
+  String get luckyItem => 'ラッキーアイテム';
+
+  @override
+  String get todayOutfit => '今日のコーデ';
+
+  @override
+  String get overallFlow => '全体の流れ';
+
+  @override
+  String get score => '点';
+
+  @override
   String get privacyPolicyTitle => 'プライバシーポリシー';
 
   @override

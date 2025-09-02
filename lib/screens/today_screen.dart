@@ -169,9 +169,10 @@ class _TodayScreenState extends State<TodayScreen> {
                   Text(
                     '${_todayFortune!.overallScore}${AppLocalizations.of(context)?.point ?? '점'}',
                     style: GoogleFonts.notoSans(
-                      fontSize: 40,
+                      fontSize: Localizations.localeOf(context).languageCode == 'en' ? 39 : 40, // 영어일 때 -1 작게
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF7A68B7), //0xFF5C4B8A   //0xFF7A68B7
+                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -1 : 0, // 영어일 때 글자 간격 -1
                     ),
                   ),
                   const SizedBox(height: 25),
@@ -200,8 +201,9 @@ class _TodayScreenState extends State<TodayScreen> {
                         //차트에 보이는 소중한 인연..타이틀
                         titleTextStyle: GoogleFonts.notoSans(
                           color: textColor,
-                          fontSize: 16,
+                          fontSize: Localizations.localeOf(context).languageCode == 'en' ? 15 : 16, // 영어일 때 -1 작게
                           fontWeight: FontWeight.w500,
+                          letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -1 : 0, // 영어일 때 글자 간격 -1
                         ),
                         titlePositionPercentageOffset: 0.15,
                         //radarBackgroundColor: Colors.blue,
@@ -228,7 +230,7 @@ class _TodayScreenState extends State<TodayScreen> {
                             case 3:
                               return RadarChartTitle(text: AppLocalizations.of(context)?.mind ?? '마음');
                             case 4:
-                              return RadarChartTitle(text: AppLocalizations.of(context)?.growth ?? '성장');  // 추가
+                              return RadarChartTitle(text: AppLocalizations.of(context)?.growth ?? '성장');
                             default:
                               return const RadarChartTitle(text: '');
                           }
@@ -347,12 +349,12 @@ class _TodayScreenState extends State<TodayScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          AppLocalizations.of(context)?.todayStoryHint ?? '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요.\n당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.',
+                          (AppLocalizations.of(context)?.todayStoryHint ?? '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요. 당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.').replaceAll('\n', ' '),
                           style: GoogleFonts.notoSans(
                             fontSize: 14,
                             color: textColor.withOpacity(0.7),
                           ),
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.left,
                         ),
                       ],
                     ),

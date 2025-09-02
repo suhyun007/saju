@@ -259,6 +259,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get myPageTitle => '마이페이지';
 
   @override
+  String get todayDetailTitle => '오늘의 가이드';
+
+  @override
+  String get luckyItem => '행운의 아이템';
+
+  @override
+  String get todayOutfit => '오늘의 코디';
+
+  @override
+  String get overallFlow => '전체의 흐름';
+
+  @override
+  String get score => '점';
+
+  @override
   String get privacyPolicyTitle => '개인정보보호방침';
 
   @override

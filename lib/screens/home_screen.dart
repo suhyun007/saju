@@ -215,40 +215,103 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.only(top: 8),
       transform: Matrix4.translationValues(0, -4, 0),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Theme.of(context).brightness == Brightness.dark 
-                  ? const Color(0xFFCCCCFF)
-                  : const Color(0xFF3D4B91),
-              width: 3,
+      child: Row(
+        children: [
+          // 오늘의 가이드 탭 (더 넓게)
+          Expanded(
+            flex: 2, // 다른 탭보다 2배 넓게
+            child: GestureDetector(
+              onTap: () => _handleTabTap(0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: _currentTabIndex == 0
+                          ? (isDark ? const Color(0xFFCCCCFF) : const Color(0xFF3D4B91))
+                          : Colors.transparent,
+                      width: 3,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  AppLocalizations.of(context)?.tabTodayGuide ?? '오늘의 가이드',
+                  style: GoogleFonts.notoSans(
+                    fontSize: _currentTabIndex == 0 ? 18 : 16,
+                    fontWeight: _currentTabIndex == 0 ? FontWeight.w700 : FontWeight.w500,
+                    color: _currentTabIndex == 0
+                        ? Theme.of(context).colorScheme.onBackground
+                        : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           ),
-        ),
-        indicatorSize: TabBarIndicatorSize.tab,
-        dividerColor: Colors.transparent,
-        labelColor: Theme.of(context).colorScheme.onBackground,
-        unselectedLabelColor: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
-        labelStyle: GoogleFonts.notoSans(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-        ),
-        unselectedLabelStyle: GoogleFonts.notoSans(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        onTap: (index) {
-          _handleTabTap(index);
-        },
-        tabs: [
-          Tab(text: AppLocalizations.of(context)?.tabTodayGuide ?? '오늘의 가이드'),
-          Tab(text: AppLocalizations.of(context)?.tabEpisode ?? '에피소드'),
-          Tab(text: AppLocalizations.of(context)?.tabPoetry ?? '시 낭독'),
-          // Tab(text: '이달의 운세'),
-          // Tab(text: '올해의 운세'),
+          // 에피소드 탭
+          Expanded(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () => _handleTabTap(1),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: _currentTabIndex == 1
+                          ? (isDark ? const Color(0xFFCCCCFF) : const Color(0xFF3D4B91))
+                          : Colors.transparent,
+                      width: 3,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  AppLocalizations.of(context)?.tabEpisode ?? '에피소드',
+                  style: GoogleFonts.notoSans(
+                    fontSize: _currentTabIndex == 1 ? 18 : 16,
+                    fontWeight: _currentTabIndex == 1 ? FontWeight.w700 : FontWeight.w500,
+                    color: _currentTabIndex == 1
+                        ? Theme.of(context).colorScheme.onBackground
+                        : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+          // 시 낭독 탭
+          Expanded(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () => _handleTabTap(2),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: _currentTabIndex == 2
+                          ? (isDark ? const Color(0xFFCCCCFF) : const Color(0xFF3D4B91))
+                          : Colors.transparent,
+                      width: 3,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  AppLocalizations.of(context)?.tabPoetry ?? '시 낭독',
+                  style: GoogleFonts.notoSans(
+                    fontSize: _currentTabIndex == 2 ? 18 : 16,
+                    fontWeight: _currentTabIndex == 2 ? FontWeight.w700 : FontWeight.w500,
+                    color: _currentTabIndex == 2
+                        ? Theme.of(context).colorScheme.onBackground
+                        : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -304,14 +367,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 Text(
                   'AstroStar',
                   style: GoogleFonts.josefinSans(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w600,
                     //fontStyle: FontStyle.italic,
                     height: 1.1,
                     color: Theme.of(context).brightness == Brightness.dark 
                         ? const Color(0xFFCCCCFF)
                         : const Color(0xFF3D4B91), //0xFF1A3A8A
-                    letterSpacing: -1,
+                    letterSpacing: -0.7,
                   ),
                 ),
               ],
@@ -361,6 +424,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   void _handleTabTap(int index) async {
+    // 탭 컨트롤러를 먼저 업데이트
+    _tabController.animateTo(index);
+    
     if (_sajuInfo == null) {
       return;
     }

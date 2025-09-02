@@ -256,6 +256,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get myPageTitle => '我的页面';
 
   @override
+  String get todayDetailTitle => '今日指南';
+
+  @override
+  String get luckyItem => '幸运物品';
+
+  @override
+  String get todayOutfit => '今日穿搭';
+
+  @override
+  String get overallFlow => '整体运势';
+
+  @override
+  String get score => '分';
+
+  @override
   String get privacyPolicyTitle => '隐私政策';
 
   @override

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import '../services/saju_service.dart';
 import '../models/saju_info.dart';
+import '../l10n/app_localizations.dart';
 
 class TodayDetailScreen extends StatefulWidget {
   const TodayDetailScreen({super.key});
@@ -80,7 +81,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          '오늘의 운세',
+          AppLocalizations.of(context)?.todayDetailTitle ?? '오늘의 가이드',
           textAlign: TextAlign.left,
           style: GoogleFonts.notoSans(
             color: Theme.of(context).colorScheme.onBackground,
@@ -103,8 +104,8 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
           children: [
             // 전체의 흐름 카드
             _buildFortuneDetailCard(
-              '전체의 흐름',
-              '${_sajuInfo!.todayFortune['overallScore']}점',
+              AppLocalizations.of(context)?.overallFlow ?? '전체의 흐름',
+              '${_sajuInfo!.todayFortune['overallScore']}${AppLocalizations.of(context)?.score ?? '점'}',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['overall']),
               Icons.star,
               Colors.amber,
@@ -114,7 +115,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             
             // 행운의 아이템 카드
             _buildStyleCardWithoutIcon(
-              '행운의 아이템',
+              AppLocalizations.of(context)?.luckyItem ?? '행운의 아이템',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['luckyItem']),
             ),
             
@@ -122,7 +123,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             
             // 오늘의 코디 카드
             _buildStyleCardWithoutIcon(
-              '오늘의 코디',
+              AppLocalizations.of(context)?.todayOutfit ?? '오늘의 코디',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['todayOutfit']),
             ),
 
@@ -130,7 +131,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             
             // 몸과 마음 카드
             _buildStyleCardWithoutIcon(
-              '몸과 마음',
+              AppLocalizations.of(context)?.bodyAndMind ?? '몸과 마음',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['health']),
             ),
 
@@ -138,7 +139,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             
             // 소중한 인연 카드
             _buildStyleCardWithoutIcon(
-              '소중한 인연',
+              AppLocalizations.of(context)?.preciousRelationship ?? '소중한 인연',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['love']),
             ),
             
@@ -146,7 +147,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             
             // 풍요로움 카드
             _buildStyleCardWithoutIcon(
-              '풍요로움',
+              AppLocalizations.of(context)?.abundance ?? '풍요로움',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['wealth']),
             ),
             
@@ -154,7 +155,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             
             // 학업운 카드
             _buildStyleCardWithoutIcon(
-              '성장과 집중',
+              AppLocalizations.of(context)?.growthAndFocus ?? '성장과 집중',
               _addNewlineAtFirstPeriod(_sajuInfo!.todayFortune['study']),
             ),
           ],
@@ -266,10 +267,10 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
 
   void _shareFortune() {
     final String shareText = '''
-      🌟 오늘의 운세 🌟
-      #오늘의운세 #사주앱
+      🌟 ${AppLocalizations.of(context)?.todayDetailTitle ?? '오늘의 가이드'} 🌟
+      #오늘의가이드 #사주앱
 ''';
     
-    Share.share(shareText, subject: '오늘의 운세');
+    Share.share(shareText, subject: AppLocalizations.of(context)?.todayDetailTitle ?? '오늘의 가이드');
   }
 }

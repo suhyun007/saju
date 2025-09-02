@@ -110,8 +110,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           const SizedBox(height: 10),
           Row(
             children: [
-              // 여성
+              // 여성 (30%)
               Expanded(
+                flex: 30,
                 child: GestureDetector(
                   onTap: () => setState(() => _selectedGender = l10n.female),
                   child: Container(
@@ -130,8 +131,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   ),
                 ),
               ),
-              // 남성
+              // 남성 (30%)
               Expanded(
+                flex: 30,
                 child: GestureDetector(
                   onTap: () => setState(() => _selectedGender = l10n.male),
                   child: Container(
@@ -150,8 +152,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   ),
                 ),
               ),
-              // 논바이너리
+              // 논바이너리 (40%)
               Expanded(
+                flex: 40,
                 child: GestureDetector(
                   onTap: () => setState(() => _selectedGender = l10n.nonBinary),
                   child: Container(
@@ -650,9 +653,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                       Text(
               widget.isFriendInfo ? l10n.friendInfoInput : l10n.birthInfoInput,
             style: GoogleFonts.notoSans(
-              fontSize: 25,
+              fontSize: Localizations.localeOf(context).languageCode == 'en' ? 24 : 25, // 영어일 때 -1 작게
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onBackground,
+              letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -1 : 0, // 영어일 때 글자 간격 -1
             ),
           ),
         ],

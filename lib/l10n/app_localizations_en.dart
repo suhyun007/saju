@@ -266,6 +266,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myPageTitle => 'My Page';
 
   @override
+  String get todayDetailTitle => 'Today\'s Guide';
+
+  @override
+  String get luckyItem => 'Lucky Item';
+
+  @override
+  String get todayOutfit => 'Today\'s Outfit';
+
+  @override
+  String get overallFlow => 'Overall Flow';
+
+  @override
+  String get score => 'pts';
+
+  @override
   String get privacyPolicyTitle => 'Privacy Policy';
 
   @override

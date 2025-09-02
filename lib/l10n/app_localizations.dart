@@ -576,6 +576,36 @@ abstract class AppLocalizations {
   /// **'My Page'**
   String get myPageTitle;
 
+  /// No description provided for @todayDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Guide'**
+  String get todayDetailTitle;
+
+  /// No description provided for @luckyItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Lucky Item'**
+  String get luckyItem;
+
+  /// No description provided for @todayOutfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Outfit'**
+  String get todayOutfit;
+
+  /// No description provided for @overallFlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Flow'**
+  String get overallFlow;
+
+  /// No description provided for @score.
+  ///
+  /// In en, this message translates to:
+  /// **'pts'**
+  String get score;
+
   /// No description provided for @privacyPolicyTitle.
   ///
   /// In en, this message translates to:
