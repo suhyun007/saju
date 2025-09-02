@@ -89,11 +89,11 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: border)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: border)),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Colors.amber)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
             ),
           ),
 
-          const SizedBox(height: 35),
+          const SizedBox(height: 25),
 
           // 성별
           Row(
@@ -104,31 +104,71 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           ),
           const SizedBox(height: 10),
           Row(
-            children: _genders.map((gender) {
-              final isSelected = _selectedGender == gender;
-              return Expanded(
+            children: [
+              // 여성
+              Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _selectedGender = gender),
+                  onTap: () => setState(() => _selectedGender = '여성'),
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(right: 2.5),
+                    padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.amber.withOpacity(0.2) : cardBg,
+                      color: _selectedGender == '여성' ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: isSelected ? Colors.amber : border),
+                      border: Border.all(color: _selectedGender == '여성' ? const Color(0xFF5d7df4) : border),
                     ),
                     child: Text(
-                      gender,
+                      '여성',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 16, fontWeight: FontWeight.w500, color: isSelected ? Colors.amber[800] : primary),
+                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == '여성' ? const Color(0xFF5d7df4) : primary),
                     ),
                   ),
                 ),
-              );
-            }).toList(),
+              ),
+              // 남성
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedGender = '남성'),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: _selectedGender == '남성' ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: _selectedGender == '남성' ? const Color(0xFF5d7df4) : border),
+                    ),
+                    child: Text(
+                      '남성',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == '남성' ? const Color(0xFF5d7df4) : primary),
+                    ),
+                  ),
+                ),
+              ),
+              // 논바이너리
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedGender = '논바이너리'),
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 2.5),
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: _selectedGender == '논바이너리' ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: _selectedGender == '논바이너리' ? const Color(0xFF5d7df4) : border),
+                    ),
+                    child: Text(
+                      '논바이너리',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == '논바이너리' ? const Color(0xFF5d7df4) : primary),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
 
-          const SizedBox(height: 35),
+          const SizedBox(height: 25),
 
           // 출생일자
           Row(
@@ -141,7 +181,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           InkWell(
             onTap: _selectDate,
             child: Container(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: border)),
               child: Row(
                 children: [
@@ -159,7 +199,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ),
           ),
 
-          const SizedBox(height: 35),
+          const SizedBox(height: 25),
 
           // 출생시간
           Row(
@@ -172,11 +212,11 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: InkWell(
                   onTap: _isTimeUnknown ? null : _selectTime,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     decoration: BoxDecoration(color: _isTimeUnknown ? cardBg.withOpacity(0.5) : cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: border)),
                     child: Row(
                       children: [
@@ -194,7 +234,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               ),
               const SizedBox(width: 10),
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: InkWell(
                   onTap: () {
                     setState(() {
@@ -202,16 +242,18 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                       if (_isTimeUnknown) { _selectedHour = null; _selectedMinute = null; }
                     });
                   },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-                    decoration: BoxDecoration(color: _isTimeUnknown ? Colors.amber : cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: _isTimeUnknown ? Colors.amber : border)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(_isTimeUnknown ? Icons.check_box : Icons.check_box_outline_blank, color: _isTimeUnknown ? Colors.white : secondary),
-                        const SizedBox(width: 6),
-                        Text('시간모름', style: GoogleFonts.notoSans(fontSize: 14, color: _isTimeUnknown ? Colors.white : secondary)),
-                      ],
+                  child: IntrinsicWidth(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      decoration: BoxDecoration(color: _isTimeUnknown ? const Color(0xFF5d7df4) : cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: _isTimeUnknown ? const Color(0xFF5d7df4) : border)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(_isTimeUnknown ? Icons.check_box : Icons.check_box_outline_blank, color: _isTimeUnknown ? Colors.white : secondary),
+                          const SizedBox(width: 6),
+                          Text('시간모름', style: GoogleFonts.notoSans(fontSize: 14, color: _isTimeUnknown ? Colors.white : secondary)),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -219,7 +261,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ],
           ),
 
-          const SizedBox(height: 35),
+          const SizedBox(height: 25),
 
           // 태어난 지역
           Row(
@@ -233,24 +275,44 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.amber.withOpacity(0.3))),
+              decoration: BoxDecoration(color: const Color(0xFF5d7df4).withOpacity(0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF5d7df4).withOpacity(0.3))),
               child: Row(children: [
-                const Icon(Icons.check_circle, color: Colors.amber, size: 17),
+                const Icon(Icons.check_circle, color: Color(0xFF5d7df4), size: 17),
                 const SizedBox(width: 8),
                 Expanded(child: Text(_selectedRegion!, style: GoogleFonts.notoSans(fontSize: 15, color: primary))),
               ]),
             ),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _searchPlace,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-              icon: const Icon(Icons.search),
-              label: Text(_selectedRegion != null && _selectedRegion!.isNotEmpty ? '지역 다시 검색' : '지역 검색하기', style: GoogleFonts.notoSans(fontSize: 18, fontWeight: FontWeight.w600)),
+            child: InkWell(
+              onTap: _searchPlace,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.grey.withOpacity(0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.search, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      _selectedRegion != null && _selectedRegion!.isNotEmpty ? '지역 다시 검색' : '지역 검색하기',
+                      style: GoogleFonts.notoSans(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
 
-          const SizedBox(height: 35),
+          const SizedBox(height: 25),
 
           // 상태
           Row(children: [
@@ -258,21 +320,43 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             Text('사랑에 대한 나의 상태', style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
           ]),
           const SizedBox(height: 10),
-          Row(
-            children: _statuses.map((status) {
-              final isSelected = _selectedStatus == status;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedStatus = status),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(color: isSelected ? Colors.amber.withOpacity(0.2) : cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: isSelected ? Colors.amber : border)),
-                    child: Text(status, textAlign: TextAlign.center, style: GoogleFonts.notoSans(fontSize: 16, fontWeight: FontWeight.w500, color: isSelected ? Colors.amber[800] : primary)),
-                  ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: border),
+            ),
+            child: DropdownButton<String>(
+              value: _selectedStatus,
+              isExpanded: true,
+              underline: Container(),
+              style: GoogleFonts.notoSans(
+                fontSize: 17,
+                color: primary,
+              ),
+              items: _statuses.map((status) {
+                return DropdownMenuItem<String>(
+                  value: status,
+                  child: Text(status),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedStatus = value;
+                  });
+                }
+              },
+              hint: Text(
+                '상태를 선택해주세요',
+                style: GoogleFonts.notoSans(
+                  fontSize: 17,
+                  color: secondary,
                 ),
-              );
-            }).toList(),
+              ),
+            ),
           ),
         ],
       ),
@@ -787,6 +871,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     });
                   },
                   child: Container(
+                    width: double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 5),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -799,7 +884,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     child: Text(
                       gender,
                       style: GoogleFonts.notoSans(
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.w500,
                         color: isSelected ? Colors.amber[800] : primary,
                       ),
@@ -1021,12 +1106,12 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       child: ElevatedButton(
         onPressed: isFormValid ? _saveSajuInfo : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isFormValid ? Colors.amber : Colors.grey.withOpacity(0.3),
+          backgroundColor: isFormValid ? const Color(0xFF5d7df4) : Colors.grey.withOpacity(0.3),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          elevation: isFormValid ? 5 : 0,
+          elevation: 0,
         ),
         child: Text(
           widget.isFriendInfo ? '친구 정보 저장' : '출생 정보 저장',

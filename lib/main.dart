@@ -97,7 +97,12 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
             '/month-detail': (context) => const MonthDetailScreen(),
             '/year-detail': (context) => const YearDetailScreen(),
           },
-          // builder 제거: 테마의 scaffoldBackgroundColor 사용
+          builder: (context, child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: child!,
+            );
+          },
         );
       },
     );

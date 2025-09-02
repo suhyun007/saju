@@ -193,7 +193,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             Icon(icon, color: color, size: 24),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 0),
         // 내용만 박스 안에
         Container(
           width: double.infinity,

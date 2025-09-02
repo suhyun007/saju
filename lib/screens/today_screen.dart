@@ -190,7 +190,7 @@ class _TodayScreenState extends State<TodayScreen> {
                             ],
                             fillColor: Theme.of(context).brightness == Brightness.dark 
                                 ? const Color(0xFFB488FF).withOpacity(0.4) // 다크모드에서는 투명하게
-                                : const Color(0xFFCCDDFF), // 라이트모드에서는 원래 색상
+                                : const Color(0xFF6E5DE7).withOpacity(0.5), // 라이트모드에서는 원래 색상
                             borderColor: Colors.transparent,
                             borderWidth: 0,
                             entryRadius: 0,
@@ -211,7 +211,7 @@ class _TodayScreenState extends State<TodayScreen> {
                         radarBorderData: const BorderSide(color: Colors.transparent), //제일큰 원
                         radarBackgroundColor: Theme.of(context).brightness == Brightness.dark 
                             ? Colors.grey.shade900
-                            : const Color(0xFFE8F4FD).withOpacity(0.8), // 하늘색이 섞인 연한 회색 (약간 투명)  
+                            : const Color(0xEEE9E6FF).withOpacity(1), //  바탕색  
                         ticksTextStyle: GoogleFonts.notoSans(
                           color: Colors.transparent,  // 숫자 숨김
                           fontSize: 0,               // 숫자 숨김
@@ -254,8 +254,10 @@ class _TodayScreenState extends State<TodayScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Color(0xFF4A90E2),
-                          Color(0xFF9B59B6),
+                          Color(0xFF5d7df4), // 채도 높은 파란색
+                          Color(0xFF9961f6), // 채도 높은 보라색
+                          //Color(0xFF4A90E2), // 파란색
+                          //Color(0xFF9B59B6), // 보라색
                         ],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
@@ -272,9 +274,9 @@ class _TodayScreenState extends State<TodayScreen> {
                         child: Center(
                           child: Text(
                             '오늘의 가이드 자세히 보기',
-                            style: GoogleFonts.notoSans(
+                            style: GoogleFonts.roboto(
                               fontSize: 17,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w900,
                               color: Colors.white,
                             ),
                           ),

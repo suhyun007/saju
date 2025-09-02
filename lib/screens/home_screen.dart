@@ -203,6 +203,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 15),
+      transform: Matrix4.translationValues(0, -4, 0),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
@@ -210,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             bottom: BorderSide(
               color: Theme.of(context).brightness == Brightness.dark 
                   ? const Color(0xFFCCCCFF)
-                  : const Color(0xFF1A3A8A),
+                  : const Color(0xFF3D4B91),
               width: 3,
             ),
           ),
@@ -281,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
       child: Row(
         children: [
           Expanded(
@@ -297,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     height: 1.1,
                     color: Theme.of(context).brightness == Brightness.dark 
                         ? const Color(0xFFCCCCFF)
-                        : const Color(0xFF1A3A8A),
+                        : const Color(0xFF3D4B91), //0xFF1A3A8A
                     letterSpacing: -1,
                   ),
                 ),

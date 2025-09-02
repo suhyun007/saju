@@ -187,14 +187,15 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
-        final border = isDark ? Colors.white24 : Colors.black.withOpacity(0.24);
+        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
+        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
         
         return Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: sheetBg,
-            borderRadius: BorderRadius.circular(16),
+            color: cardBg,
+            borderRadius: BorderRadius.circular(15),
             border: Border.all(color: border),
           ),
           child: ValueListenableBuilder<bool>(
@@ -271,11 +272,11 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                               // 시간 선택 드롭다운
                               Container(
                                 height: 32,
-                                decoration: BoxDecoration(
-                                  color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(color: Colors.amber.withOpacity(0.3)),
-                                ),
+                                        decoration: BoxDecoration(
+          color: isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1)),
+        ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
                                   value: _selectedHour,
@@ -305,11 +306,11 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                               // 분 선택 드롭다운
                               Container(
                                 height: 32,
-                                decoration: BoxDecoration(
-                                  color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(color: Colors.amber.withOpacity(0.3)),
-                                ),
+                                        decoration: BoxDecoration(
+          color: isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1)),
+        ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
                                   value: _selectedMinute,
@@ -451,16 +452,16 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       backgroundColor: Colors.transparent,
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
-        final border = isDark ? Colors.white24 : Colors.black.withOpacity(0.24);
+        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
+        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
         final textColor = isDark ? Colors.white : Colors.black;
         
         return Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: sheetBg,
-            borderRadius: BorderRadius.circular(16),
+            color: cardBg,
+            borderRadius: BorderRadius.circular(15),
             border: Border.all(color: border),
           ),
           child: Column(
@@ -536,15 +537,15 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       backgroundColor: Colors.transparent,
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
-        final border = isDark ? Colors.white24 : Colors.black.withOpacity(0.24);
+        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
+        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
         
         return Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: sheetBg,
-            borderRadius: BorderRadius.circular(16),
+            color: cardBg,
+            borderRadius: BorderRadius.circular(15),
             border: Border.all(color: border),
           ),
           child: Column(
@@ -623,8 +624,8 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       backgroundColor: Colors.transparent,
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
-        final border = isDark ? Colors.white24 : Colors.black.withOpacity(0.24);
+        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
+        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
         final textColor = isDark ? Colors.white : Colors.black;
         final subtitleColor = isDark ? Colors.white70 : Colors.black54;
         
@@ -632,8 +633,8 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: sheetBg,
-            borderRadius: BorderRadius.circular(16),
+            color: cardBg,
+            borderRadius: BorderRadius.circular(15),
             border: Border.all(color: border),
           ),
           child: Column(
@@ -677,8 +678,8 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
 
   Widget _infoRow(String label, String value) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.04);
-    final border = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.08);
+    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
+    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
     final labelColor = isDark ? Colors.white70 : Colors.black54;
     final valueColor = isDark ? Colors.white : Colors.black;
     
@@ -846,7 +847,7 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.06);
+    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
     final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
     final textColor = isDark ? Colors.white70 : Colors.black54;
     
@@ -895,10 +896,10 @@ class _Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.04);
-    final border = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.08);
-    final iconBg = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.08);
-    final iconBorder = isDark ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.12);
+    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
+    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
+    final iconBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
+    final iconBorder = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
     final textColor = isDark ? Colors.white : Colors.black;
     final subtitleColor = isDark ? Colors.white70 : Colors.black54;
     final chevronColor = isDark ? Colors.white54 : Colors.black54;

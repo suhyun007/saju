@@ -138,7 +138,7 @@ class _SplashScreenState extends State<SplashScreen> {
               // 중간 영역
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 220),
+                  padding: const EdgeInsets.only(top: 200),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -154,10 +154,10 @@ class _SplashScreenState extends State<SplashScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 17),
                       // 고정 메시지
                       Text(
-                        'AstroStar가 당신의 정보를 바탕으로\n매일 재미있는 문학 콘텐츠를 만들어드립니다.',
+                        'AstroStar가 당신의 정보를\n바탕으로 매일 재미있는\n문학 콘텐츠를 만들어드립니다.',
                         style: TextStyle(
                           fontSize: 19,
                           fontWeight: FontWeight.w300,
@@ -174,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 22),
                       // 부제목
                       Text(
                         _subtitle,
@@ -196,18 +196,18 @@ class _SplashScreenState extends State<SplashScreen> {
                       const SizedBox(height: 10),
                       // 시작하기 버튼
                       Container(
-                        width: 360,
+                        width: 370,
                         height: 59,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Color(0xFF4A90E2),
-                              Color(0xFF9B59B6),
+                              Color(0xFF5d7df4), // 채도 높은 파란색
+                              Color(0xFF9961f6), // 채도 높은 보라색
                             ],
                             begin: Alignment.centerLeft,
                             end: Alignment.centerRight,
                           ),
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         child: Material(
                           color: Colors.transparent,
