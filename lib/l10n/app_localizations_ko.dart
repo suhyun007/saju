@@ -259,6 +259,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get myPageTitle => '마이페이지';
 
   @override
+  String get loading => '로딩중...';
+
+  @override
   String get todayDetailTitle => '오늘의 가이드';
 
   @override

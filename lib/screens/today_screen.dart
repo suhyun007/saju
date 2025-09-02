@@ -167,7 +167,9 @@ class _TodayScreenState extends State<TodayScreen> {
               child: Column(
                 children: [
                   Text(
-                    '${_todayFortune!.overallScore}${AppLocalizations.of(context)?.point ?? '점'}',
+                    Localizations.localeOf(context).languageCode == 'en' 
+                        ? '${_todayFortune!.overallScore}'
+                        : '${_todayFortune!.overallScore} ${AppLocalizations.of(context)?.point ?? '점'}',
                     style: GoogleFonts.notoSans(
                       fontSize: Localizations.localeOf(context).languageCode == 'en' ? 39 : 40, // 영어일 때 -1 작게
                       fontWeight: FontWeight.bold,
@@ -259,8 +261,6 @@ class _TodayScreenState extends State<TodayScreen> {
                         colors: [
                           Color(0xFF5d7df4), // 채도 높은 파란색
                           Color(0xFF9961f6), // 채도 높은 보라색
-                          //Color(0xFF4A90E2), // 파란색
-                          //Color(0xFF9B59B6), // 보라색
                         ],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,

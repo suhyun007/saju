@@ -417,7 +417,7 @@ abstract class AppLocalizations {
   /// No description provided for @splashButtonText.
   ///
   /// In en, this message translates to:
-  /// **'Start AI Content'**
+  /// **'AI Contents'**
   String get splashButtonText;
 
   /// User welcome message
@@ -575,6 +575,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My Page'**
   String get myPageTitle;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
 
   /// No description provided for @todayDetailTitle.
   ///
@@ -873,19 +879,19 @@ abstract class AppLocalizations {
   /// No description provided for @tabTodayGuide.
   ///
   /// In en, this message translates to:
-  /// **'Today\'s Guide'**
+  /// **'Guide'**
   String get tabTodayGuide;
 
   /// No description provided for @tabEpisode.
   ///
   /// In en, this message translates to:
-  /// **'Episode'**
+  /// **'Today\'s Episode'**
   String get tabEpisode;
 
   /// No description provided for @tabPoetry.
   ///
   /// In en, this message translates to:
-  /// **'Poetry'**
+  /// **'Today\'s Poetry'**
   String get tabPoetry;
 
   /// No description provided for @todayGuideDetailButton.

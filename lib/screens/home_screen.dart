@@ -35,6 +35,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   UserModel? _currentUser;
   late TabController _tabController;
   int _currentTabIndex = 0;
+  bool _isEpisodeLoading = false;
+  bool _isPoetryLoading = false;
+  bool _isGuideLoading = false;
 
   @override
   void initState() {
@@ -219,9 +222,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       transform: Matrix4.translationValues(0, -4, 0),
       child: Row(
         children: [
-          // 오늘의 가이드 탭 (더 넓게)
+          // 에피소드 탭
           Expanded(
-            flex: 2, // 다른 탭보다 2배 넓게
+            flex: 2, // 더 크게
             child: GestureDetector(
               onTap: () => _handleTabTap(0),
               child: Container(
@@ -237,22 +240,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)?.tabTodayGuide ?? '오늘의 가이드',
+                  AppLocalizations.of(context)?.tabEpisode ?? '에피소드',
                   style: GoogleFonts.notoSans(
-                    fontSize: _currentTabIndex == 0 ? 18 : 16,
-                    fontWeight: _currentTabIndex == 0 ? FontWeight.w700 : FontWeight.w500,
+                    fontSize: _currentTabIndex == 0 ? 17 : 15,
+                    fontWeight: _currentTabIndex == 0 ? FontWeight.w600 : FontWeight.w400,
                     color: _currentTabIndex == 0
                         ? Theme.of(context).colorScheme.onBackground
                         : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
           ),
-          // 에피소드 탭
+          // 시 낭독 탭
           Expanded(
-            flex: 1,
+            flex: 2, // 더 크게
             child: GestureDetector(
               onTap: () => _handleTabTap(1),
               child: Container(
@@ -268,22 +272,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)?.tabEpisode ?? '에피소드',
+                  AppLocalizations.of(context)?.tabPoetry ?? '시 낭독',
                   style: GoogleFonts.notoSans(
-                    fontSize: _currentTabIndex == 1 ? 18 : 16,
-                    fontWeight: _currentTabIndex == 1 ? FontWeight.w700 : FontWeight.w500,
+                    fontSize: _currentTabIndex == 1 ? 17 : 15,
+                    fontWeight: _currentTabIndex == 1 ? FontWeight.w600 : FontWeight.w400,
                     color: _currentTabIndex == 1
                         ? Theme.of(context).colorScheme.onBackground
                         : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
           ),
-          // 시 낭독 탭
+          // 오늘의 가이드 탭 (더 작게)
           Expanded(
-            flex: 1,
+            flex: 1, // 더 작게
             child: GestureDetector(
               onTap: () => _handleTabTap(2),
               child: Container(
@@ -299,13 +304,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)?.tabPoetry ?? '시 낭독',
+                  AppLocalizations.of(context)?.tabTodayGuide ?? '오늘의 가이드',
                   style: GoogleFonts.notoSans(
-                    fontSize: _currentTabIndex == 2 ? 18 : 16,
-                    fontWeight: _currentTabIndex == 2 ? FontWeight.w700 : FontWeight.w500,
+                    fontSize: _currentTabIndex == 2 ? 17 : 15,
+                    fontWeight: _currentTabIndex == 2 ? FontWeight.w600 : FontWeight.w400,
                     color: _currentTabIndex == 2
                         ? Theme.of(context).colorScheme.onBackground
                         : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -320,10 +326,70 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget _buildTabContent() {
     return TabBarView(
       controller: _tabController,
-      children: const [
-        TodayScreen(),
-        DetailStoryScreen(),
-        ReadingScreen(),
+      children: [
+        _isEpisodeLoading 
+          ? Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 200),
+                child: Column(
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizations.of(context)?.loading ?? '로딩중...',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : const DetailStoryScreen(),
+        _isPoetryLoading 
+          ? Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 200),
+                child: Column(
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizations.of(context)?.loading ?? '로딩중...',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : const ReadingScreen(),
+        _isGuideLoading 
+          ? Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 200),
+                child: Column(
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizations.of(context)?.loading ?? '로딩중...',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : const TodayScreen(),
         // MonthScreen(),
         // YearScreen(),
       ],
@@ -374,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     color: Theme.of(context).brightness == Brightness.dark 
                         ? const Color(0xFFCCCCFF)
                         : const Color(0xFF3D4B91), //0xFF1A3A8A
-                    letterSpacing: -0.7,
+                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : -0.7,
                   ),
                 ),
               ],
@@ -424,7 +490,52 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   void _handleTabTap(int index) async {
-    // 탭 컨트롤러를 먼저 업데이트
+    // 각 탭별로 로딩 레이어를 먼저 표시
+    if (index == 0) {
+      setState(() {
+        _isEpisodeLoading = true;
+      });
+      
+      // 0.9초 후에 로딩 레이어 제거
+      Future.delayed(const Duration(milliseconds: 900), () {
+        if (mounted && _currentTabIndex == 0) {
+          setState(() {
+            _isEpisodeLoading = false;
+          });
+        }
+      });
+    } else if (index == 1) {
+      setState(() {
+        _isPoetryLoading = true;
+      });
+      
+      // 0.9초 후에 로딩 레이어 제거
+      Future.delayed(const Duration(milliseconds: 900), () {
+        if (mounted && _currentTabIndex == 1) {
+          setState(() {
+            _isPoetryLoading = false;
+          });
+        }
+      });
+    } else if (index == 2) {
+      setState(() {
+        _isGuideLoading = true;
+      });
+      
+      // 0.9초 후에 로딩 레이어 제거
+      Future.delayed(const Duration(milliseconds: 900), () {
+        if (mounted && _currentTabIndex == 2) {
+          setState(() {
+            _isGuideLoading = false;
+          });
+        }
+      });
+    }
+    
+    // 로딩 상태 설정 후 약간의 지연을 두고 탭 변경
+    await Future.delayed(const Duration(milliseconds: 50));
+    
+    // 탭 컨트롤러 업데이트
     _tabController.animateTo(index);
     
     if (_sajuInfo == null) {
@@ -562,6 +673,51 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       print('API 호출 중 오류: $e');
     }
   }
+
+  void _showLoadingPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  AppLocalizations.of(context)?.loading ?? '로딩중...',
+                  style: GoogleFonts.notoSans(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    // 0.9초 후에 자동으로 팝업 닫기
+    Future.delayed(const Duration(milliseconds: 900), () {
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+
 
   void _showErrorDialog(String message) {
     showDialog(

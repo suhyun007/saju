@@ -236,18 +236,21 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     print('=== _showNotificationSheet 함수 호출됨 ===');
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.black.withOpacity(0.7),
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       useSafeArea: false,
       builder: (context) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
         final l10n = AppLocalizations.of(context);
-        final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
-        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black;
-        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.2);
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final cardColor = isDark ? Colors.grey[200] : Colors.black;
         
         return Container(
           margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(15),
+          ),
           child: ValueListenableBuilder<bool>(
             valueListenable: NotificationService.enabledNotifier,
             builder: (context, enabled, _) {
@@ -261,20 +264,20 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                         activeColor: Colors.amber,
                         title: Text(
                           l10n?.myPageNotificationTitle ?? '알림 사용', 
-                          style: GoogleFonts.notoSans(color: Colors.white, fontWeight: FontWeight.w600)
+                          style: GoogleFonts.notoSans(color: isDark ? Colors.black : Colors.white, fontWeight: FontWeight.w600)
                         ),
                         subtitle: Text(
                           enabled ? (l10n?.myPageNotificationStatus ?? '알림이 활성화되어 있습니다.') : (l10n?.myPageNotificationStatus ?? '알림이 비활성화되어 있습니다.'),
-                          style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 12),
+                          style: GoogleFonts.notoSans(color: isDark ? Colors.black54 : Colors.white70, fontSize: 12),
                         ),
-                        secondary: Text(
-                          enabled ? 'ON' : 'OFF',
-                          style: GoogleFonts.notoSans(
-                            color: enabled ? Colors.amber : (isDark ? Colors.grey[400] : Colors.grey[600]),
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
+                                                  secondary: Text(
+                            enabled ? 'ON' : 'OFF',
+                            style: GoogleFonts.notoSans(
+                              color: enabled ? Colors.amber : (isDark ? Colors.black54 : Colors.grey[400]),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
                         onChanged: (value) async {
                           if (value) {
                             // ON 시도: 먼저 iOS 권한 상태 확인
@@ -320,7 +323,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                               children: [
                               Text(
                                 l10n?.myPageNotificationTime ?? '알림 시간: ',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
+                                style: TextStyle(color: Colors.black, fontSize: 16),
                               ),
                               // 시간 선택 드롭다운
                               Container(
@@ -328,7 +331,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.2)),
+          border: Border.all(color: Colors.white.withOpacity(0.2)),
         ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
@@ -363,7 +366,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.2)),
+          border: Border.all(color: Colors.white.withOpacity(0.2)),
         ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
@@ -591,18 +594,16 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
         final l10n = AppLocalizations.of(context);
-        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
-        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final cardColor = isDark ? Colors.grey[200] : Colors.black;
         
         return Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: cardBg,
+            color: cardColor,
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: border),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -620,8 +621,8 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
   Widget _themeOptionTile(String label, ThemeMode mode) {
     final selected = ThemeService.currentMode == mode;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black;
-    final unselectedIconColor = isDark ? Colors.white54 : Colors.black54;
+    final textColor = isDark ? Colors.black : Colors.white;
+    final unselectedIconColor = isDark ? Colors.black54 : Colors.white54;
     
     return ListTile(
       onTap: () async {
@@ -800,9 +801,10 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                   Text(
                     l10n?.myPageTitle ?? '마이페이지',
                     style: GoogleFonts.notoSans(
-                      fontSize: 25,
+                      fontSize: Localizations.localeOf(context).languageCode == 'en' ? 24 : 25,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
+                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
                     ),
                   ),
                 ],
@@ -913,7 +915,7 @@ class _Section extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
     final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
-    final textColor = isDark ? Colors.white70 : Colors.black54;
+    final textColor = isDark ? Colors.white70 : const Color(0xFF1A1A1A);
     
     return Container(
       padding: const EdgeInsets.all(30),
@@ -929,8 +931,9 @@ class _Section extends StatelessWidget {
           title,
           style: GoogleFonts.notoSans(
             fontSize: 21,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: textColor,
+            letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
           ),
         ),
           const SizedBox(height: 0),
@@ -964,8 +967,8 @@ class _Tile extends StatelessWidget {
     final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
     final iconBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
     final iconBorder = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
-    final textColor = isDark ? Colors.white : Colors.black;
-    final subtitleColor = isDark ? Colors.white70 : Colors.black54;
+    final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final subtitleColor = isDark ? Colors.white70 : const Color(0xFF1A1A1A);
     final chevronColor = isDark ? Colors.white54 : Colors.black54;
     
     return InkWell(
@@ -1015,8 +1018,9 @@ class _Tile extends StatelessWidget {
                     title,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: textColor,
+                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -1025,6 +1029,7 @@ class _Tile extends StatelessWidget {
                     style: GoogleFonts.notoSans(
                       fontSize: 14,
                       color: subtitleColor,
+                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
                     ),
                   ),
                 ],
@@ -1045,16 +1050,17 @@ class _SubSectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white70 : Colors.black54;
+    final textColor = isDark ? Colors.white70 : const Color(0xFF1A1A1A);
     
     return Container(
       margin: const EdgeInsets.only(top: 15, bottom: 0),
       child:       Text(
         title,
         style: GoogleFonts.notoSans(
-          fontSize: 21,
-          fontWeight: FontWeight.bold,
+          fontSize: Localizations.localeOf(context).languageCode == 'en' ? 20 : 21,
+          fontWeight: FontWeight.w600,
           color: textColor,
+          letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
         ),
       ),
     );

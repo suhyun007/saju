@@ -32,6 +32,7 @@ class ReadingScreen extends StatelessWidget {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
+                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.4 : 0,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -41,6 +42,7 @@ class ReadingScreen extends StatelessWidget {
                     style: GoogleFonts.notoSans(
                       fontSize: 15,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.9) : const Color(0xFF1A1A1A).withOpacity(0.9),
+                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.4 : 0,
                     ),
                     textAlign: TextAlign.center,
                   ),

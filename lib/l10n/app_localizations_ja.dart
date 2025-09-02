@@ -258,6 +258,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get myPageTitle => 'マイページ';
 
   @override
+  String get loading => '読み込み中...';
+
+  @override
   String get todayDetailTitle => '今日のガイド';
 
   @override

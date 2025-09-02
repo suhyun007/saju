@@ -79,16 +79,16 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text(l10n.name, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+              Text(l10n.name, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
           const SizedBox(height: 10),
           TextFormField(
             controller: _nameController,
-            style: GoogleFonts.notoSans(fontSize: 17, color: primary),
+            style: GoogleFonts.notoSans(fontSize: 15, color: primary),
             decoration: InputDecoration(
               hintText: l10n.nameHint,
-              hintStyle: GoogleFonts.notoSans(fontSize: 17, color: secondary),
+              hintStyle: GoogleFonts.notoSans(fontSize: 15, color: secondary),
               filled: true,
               fillColor: cardBg,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: border)),
@@ -104,7 +104,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text(l10n.gender, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+              Text(l10n.gender, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
           const SizedBox(height: 10),
@@ -126,7 +126,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     child: Text(
                       l10n.female,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == l10n.female ? const Color(0xFF5d7df4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w500, color: _selectedGender == l10n.female ? const Color(0xFF5d7df4) : primary),
                     ),
                   ),
                 ),
@@ -147,7 +147,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     child: Text(
                       l10n.male,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == l10n.male ? const Color(0xFF5d7df4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w500, color: _selectedGender == l10n.male ? const Color(0xFF5d7df4) : primary),
                     ),
                   ),
                 ),
@@ -168,7 +168,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     child: Text(
                       l10n.nonBinary,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w500, color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4) : primary),
                     ),
                   ),
                 ),
@@ -182,7 +182,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text(l10n.birthDate, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+              Text(l10n.birthDate, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
           const SizedBox(height: 10),
@@ -198,7 +198,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   Expanded(
                     child: Text(
                       _selectedDate != null ? _formatDateForDisplay(_selectedDate!) : l10n.birthDateHint,
-                      style: GoogleFonts.notoSans(fontSize: 17, color: _selectedDate != null ? primary : secondary),
+                      style: GoogleFonts.notoSans(fontSize: 15, color: _selectedDate != null ? primary : secondary),
                     ),
                   ),
                   Icon(Icons.arrow_drop_down, color: secondary),
@@ -231,7 +231,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                         Expanded(
                           child: Text(
                             _isTimeUnknown ? l10n.timeUnknown : ( _selectedHour != null && _selectedMinute != null ? _formatTimeForDisplay(_selectedHour, _selectedMinute) : l10n.birthTimeHint),
-                            style: GoogleFonts.notoSans(fontSize: 17, color: _isTimeUnknown ? secondary.withOpacity(0.5) : (_selectedHour != null ? primary : secondary)),
+                            style: GoogleFonts.notoSans(fontSize: 15, color: _isTimeUnknown ? secondary.withOpacity(0.5) : (_selectedHour != null ? primary : secondary)),
                           ),
                         ),
                         if (!_isTimeUnknown) Icon(Icons.arrow_drop_down, color: secondary),
@@ -251,7 +251,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
                     decoration: BoxDecoration(color: _isTimeUnknown ? const Color(0xFF5d7df4) : cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: _isTimeUnknown ? const Color(0xFF5d7df4) : border)),
                     child: Row(
                       children: [
@@ -278,7 +278,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text(l10n.birthRegion, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+              Text(l10n.birthRegion, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
           const SizedBox(height: 10),
@@ -290,7 +290,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               child: Row(children: [
                 const Icon(Icons.check_circle, color: Color(0xFF5d7df4), size: 17),
                 const SizedBox(width: 8),
-                Expanded(child: Text(_selectedRegion!, style: GoogleFonts.notoSans(fontSize: 15, color: primary))),
+                Expanded(child: Text(_selectedRegion!, style: GoogleFonts.notoSans(fontSize: 13, color: primary))),
               ]),
             ),
           SizedBox(
@@ -315,7 +315,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     const SizedBox(width: 8),
                     Text(
                       _selectedRegion != null && _selectedRegion!.isNotEmpty ? l10n.searchRegionAgain : l10n.searchRegion,
-                      style: GoogleFonts.notoSans(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white),
+                      style: GoogleFonts.notoSans(fontSize: Localizations.localeOf(context).languageCode == 'en' ? 15 : 16, fontWeight: FontWeight.w600, color: Colors.white),
                     ),
                   ],
                 ),
@@ -328,7 +328,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           // 상태
           Row(children: [
             const SizedBox(width: 4),
-            Text(l10n.loveStatus, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+            Text(l10n.loveStatus, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
           ]),
           const SizedBox(height: 10),
           Container(
@@ -344,7 +344,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               isExpanded: true,
               underline: Container(),
               style: GoogleFonts.notoSans(
-                fontSize: 17,
+                fontSize: 15,
                 color: primary,
               ),
               items: statuses.map((status) {
@@ -369,7 +369,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               hint: Text(
                 '상태를 선택해주세요',
                 style: GoogleFonts.notoSans(
-                  fontSize: 17,
+                  fontSize: 15,
                   color: secondary,
                 ),
               ),
@@ -680,7 +680,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Text(
             l10n.infoMessage,
             style: GoogleFonts.notoSans(
-              fontSize: 18,
+              fontSize: Localizations.localeOf(context).languageCode == 'en' ? 17 : 18,
               fontWeight: FontWeight.w500,
               color: primary,
             ),
@@ -1362,7 +1362,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         child: Text(
           widget.isFriendInfo ? l10n.saveFriendInfo : l10n.saveBirthInfo,
           style: GoogleFonts.notoSans(
-            fontSize: 21,
+            fontSize: Localizations.localeOf(context).languageCode == 'en' ? 20 : 21,
             fontWeight: FontWeight.bold,
           ),
         ),

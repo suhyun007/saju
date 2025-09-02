@@ -175,7 +175,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Gain new insights through Saju and zodiac signs.';
 
   @override
-  String get splashButtonText => 'Start AI Content';
+  String get splashButtonText => 'AI Contents';
 
   @override
   String myPageWelcome(String userName) {
@@ -264,6 +264,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myPageTitle => 'My Page';
+
+  @override
+  String get loading => 'Loading...';
 
   @override
   String get todayDetailTitle => 'Today\'s Guide';
@@ -424,13 +427,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get growth => 'Growth';
 
   @override
-  String get tabTodayGuide => 'Today\'s Guide';
+  String get tabTodayGuide => 'Guide';
 
   @override
-  String get tabEpisode => 'Episode';
+  String get tabEpisode => 'Today\'s Episode';
 
   @override
-  String get tabPoetry => 'Poetry';
+  String get tabPoetry => 'Today\'s Poetry';
 
   @override
   String get todayGuideDetailButton => 'View Today\'s Guide';

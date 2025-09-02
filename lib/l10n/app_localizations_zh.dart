@@ -256,6 +256,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get myPageTitle => '我的页面';
 
   @override
+  String get loading => '加载中...';
+
+  @override
   String get todayDetailTitle => '今日指南';
 
   @override
