@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -40,25 +41,29 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   // Google Maps API Key는 AndroidManifest.xml과 AppDelegate.swift에 설정됨
   // 현재 구현에서는 geolocator와 geocoding 패키지를 사용하므로 직접적인 API 키 사용 불필요
   
-  final List<String> _genders
-   = ['여성', '남성', '논바이너리'];
   final List<String> _hours = List.generate(24, (index) => index.toString().padLeft(2, '0'));
   final List<String> _minutes = List.generate(60, (index) => index.toString().padLeft(2, '0'));
-  final List<String> _statuses = ['기혼', '연애 중', '연애희망', '관심없음'];
 
   @override
   void initState() {
     super.initState();
     _loadSavedSajuInfo();
   }
+  
+
 
   Widget _buildUnifiedFormCard() {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.onBackground;
     final secondary = primary.withOpacity(0.7);
     final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
     final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
     final hasTime = _selectedHour != null && _selectedMinute != null;
+    
+    // 성별과 상태 배열을 현재 언어로 정의
+    final genders = [l10n.female, l10n.male, l10n.nonBinary];
+    final statuses = [l10n.married, l10n.inRelationship, l10n.wantRelationship, l10n.noInterest];
 
     return Container(
       padding: const EdgeInsets.all(30),
@@ -74,7 +79,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text('이름', style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+              Text(l10n.name, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
             ],
           ),
           const SizedBox(height: 10),
@@ -82,7 +87,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             controller: _nameController,
             style: GoogleFonts.notoSans(fontSize: 17, color: primary),
             decoration: InputDecoration(
-              hintText: '이름을 입력해주세요',
+              hintText: l10n.nameHint,
               hintStyle: GoogleFonts.notoSans(fontSize: 17, color: secondary),
               filled: true,
               fillColor: cardBg,
@@ -99,7 +104,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text('성별', style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+              Text(l10n.gender, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
             ],
           ),
           const SizedBox(height: 10),
@@ -108,19 +113,19 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               // 여성
               Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _selectedGender = '여성'),
+                  onTap: () => setState(() => _selectedGender = l10n.female),
                   child: Container(
                     margin: const EdgeInsets.only(right: 2.5),
                     padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: _selectedGender == '여성' ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _selectedGender == '여성' ? const Color(0xFF5d7df4) : border),
-                    ),
+                                      decoration: BoxDecoration(
+                    color: _selectedGender == l10n.female ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: _selectedGender == l10n.female ? const Color(0xFF5d7df4) : border),
+                  ),
                     child: Text(
-                      '여성',
+                      l10n.female,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == '여성' ? const Color(0xFF5d7df4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == l10n.female ? const Color(0xFF5d7df4) : primary),
                     ),
                   ),
                 ),
@@ -128,19 +133,19 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               // 남성
               Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _selectedGender = '남성'),
+                  onTap: () => setState(() => _selectedGender = l10n.male),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: _selectedGender == '남성' ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
+                      color: _selectedGender == l10n.male ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _selectedGender == '남성' ? const Color(0xFF5d7df4) : border),
+                      border: Border.all(color: _selectedGender == l10n.male ? const Color(0xFF5d7df4) : border),
                     ),
                     child: Text(
-                      '남성',
+                      l10n.male,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == '남성' ? const Color(0xFF5d7df4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == l10n.male ? const Color(0xFF5d7df4) : primary),
                     ),
                   ),
                 ),
@@ -148,19 +153,19 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               // 논바이너리
               Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _selectedGender = '논바이너리'),
+                  onTap: () => setState(() => _selectedGender = l10n.nonBinary),
                   child: Container(
                     margin: const EdgeInsets.only(left: 2.5),
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: _selectedGender == '논바이너리' ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
+                      color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _selectedGender == '논바이너리' ? const Color(0xFF5d7df4) : border),
+                      border: Border.all(color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4) : border),
                     ),
                     child: Text(
-                      '논바이너리',
+                      l10n.nonBinary,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == '논바이너리' ? const Color(0xFF5d7df4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 15, fontWeight: FontWeight.w500, color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4) : primary),
                     ),
                   ),
                 ),
@@ -174,7 +179,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text('출생일자', style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+              Text(l10n.birthDate, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
             ],
           ),
           const SizedBox(height: 10),
@@ -189,7 +194,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      _selectedDate != null ? '${_selectedDate!.year}년 ${_selectedDate!.month}월 ${_selectedDate!.day}일' : '생년월일을 선택해주세요',
+                      _selectedDate != null ? _formatDateForDisplay(_selectedDate!) : l10n.birthDateHint,
                       style: GoogleFonts.notoSans(fontSize: 17, color: _selectedDate != null ? primary : secondary),
                     ),
                   ),
@@ -205,7 +210,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text('출생시간', style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+              Text(l10n.birthTime, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
             ],
           ),
           const SizedBox(height: 10),
@@ -222,7 +227,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            _isTimeUnknown ? '시간모름' : ( _selectedHour != null && _selectedMinute != null ? '${_selectedHour!.padLeft(2, '0')}시 ${_selectedMinute!.padLeft(2, '0')}분' : '시간을 선택해주세요'),
+                            _isTimeUnknown ? l10n.timeUnknown : ( _selectedHour != null && _selectedMinute != null ? _formatTimeForDisplay(_selectedHour, _selectedMinute) : l10n.birthTimeHint),
                             style: GoogleFonts.notoSans(fontSize: 17, color: _isTimeUnknown ? secondary.withOpacity(0.5) : (_selectedHour != null ? primary : secondary)),
                           ),
                         ),
@@ -242,18 +247,21 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                       if (_isTimeUnknown) { _selectedHour = null; _selectedMinute = null; }
                     });
                   },
-                  child: IntrinsicWidth(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      decoration: BoxDecoration(color: _isTimeUnknown ? const Color(0xFF5d7df4) : cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: _isTimeUnknown ? const Color(0xFF5d7df4) : border)),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(_isTimeUnknown ? Icons.check_box : Icons.check_box_outline_blank, color: _isTimeUnknown ? Colors.white : secondary),
-                          const SizedBox(width: 6),
-                          Text('시간모름', style: GoogleFonts.notoSans(fontSize: 14, color: _isTimeUnknown ? Colors.white : secondary)),
-                        ],
-                      ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                    decoration: BoxDecoration(color: _isTimeUnknown ? const Color(0xFF5d7df4) : cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: _isTimeUnknown ? const Color(0xFF5d7df4) : border)),
+                    child: Row(
+                      children: [
+                        Icon(_isTimeUnknown ? Icons.check_box : Icons.check_box_outline_blank, color: _isTimeUnknown ? Colors.white : secondary, size: 20),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            l10n.timeUnknown, 
+                            style: GoogleFonts.notoSans(fontSize: 13, color: _isTimeUnknown ? Colors.white : secondary),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -267,7 +275,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text('태어난 지역', style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+              Text(l10n.birthRegion, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
             ],
           ),
           const SizedBox(height: 10),
@@ -303,7 +311,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     const Icon(Icons.search, color: Colors.white),
                     const SizedBox(width: 8),
                     Text(
-                      _selectedRegion != null && _selectedRegion!.isNotEmpty ? '지역 다시 검색' : '지역 검색하기',
+                      _selectedRegion != null && _selectedRegion!.isNotEmpty ? l10n.searchRegionAgain : l10n.searchRegion,
                       style: GoogleFonts.notoSans(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white),
                     ),
                   ],
@@ -317,7 +325,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           // 상태
           Row(children: [
             const SizedBox(width: 4),
-            Text('사랑에 대한 나의 상태', style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
+            Text(l10n.loveStatus, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
           ]),
           const SizedBox(height: 10),
           Container(
@@ -336,10 +344,16 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                 fontSize: 17,
                 color: primary,
               ),
-              items: _statuses.map((status) {
+              items: statuses.map((status) {
                 return DropdownMenuItem<String>(
                   value: status,
-                  child: Text(status),
+                  child: Container(
+                    width: double.infinity,
+                    child: Text(
+                      status,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 );
               }).toList(),
               onChanged: (String? value) {
@@ -364,19 +378,192 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
 
+  String _mapStatusToCurrentLanguage(String? savedStatus) {
+    if (savedStatus == null) return '';
+    
+    final l10n = AppLocalizations.of(context)!;
+    
+    // 저장된 값이 현재 언어의 값과 일치하는지 확인
+    final currentStatuses = [l10n.married, l10n.inRelationship, l10n.wantRelationship, l10n.noInterest];
+    if (currentStatuses.contains(savedStatus)) {
+      return savedStatus;
+    }
+    
+    // 저장된 값이 다른 언어의 값인 경우 매핑
+    if (savedStatus == '연애중' || savedStatus == 'In a Relationship' || savedStatus == '恋爱中' || savedStatus == '恋愛中') {
+      return l10n.inRelationship;
+    } else if (savedStatus == '결혼' || savedStatus == 'Married' || savedStatus == '已婚' || savedStatus == '結婚') {
+      return l10n.married;
+    } else if (savedStatus == '연애하고 싶음' || savedStatus == 'Want a Relationship' || savedStatus == '想恋爱' || savedStatus == '恋愛したい') {
+      return l10n.wantRelationship;
+    } else if (savedStatus == '관심없음' || savedStatus == 'No Interest' || savedStatus == '不感兴趣' || savedStatus == '興味なし') {
+      return l10n.noInterest;
+    }
+    
+    // 매핑되지 않은 경우 기본값 반환
+    return l10n.inRelationship;
+  }
+
+  String _formatDateForDisplay(DateTime date) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
+    
+    // 영어일 때는 year, month, day 텍스트 없이 숫자만 표시
+    if (locale.languageCode == 'en') {
+      return '${date.month}.${date.day}.${date.year}';
+    } else {
+      // 다른 언어는 기존 형식 유지
+      return '${date.year}${l10n.year} ${date.month}${l10n.month} ${date.day}${l10n.day}';
+    }
+  }
+
+  String _formatTimeForDisplay(String? hour, String? minute) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
+    
+    if (hour == null || minute == null) return '';
+    
+    // 영어일 때는 hour, minute 텍스트 없이 숫자만 표시
+    if (locale.languageCode == 'en') {
+      return '${hour.padLeft(2, '0')}:${minute.padLeft(2, '0')}';
+    } else {
+      // 다른 언어는 기존 형식 유지
+      return '${hour.padLeft(2, '0')}${l10n.hour} ${minute.padLeft(2, '0')}${l10n.minute}';
+    }
+  }
+
+  Widget _buildYearPicker(int year, Function(int) onChanged, Color onSurface) {
+    return Expanded(
+      child: CupertinoPicker(
+        itemExtent: 40,
+        scrollController: FixedExtentScrollController(
+          initialItem: year - 1900,
+        ),
+        onSelectedItemChanged: (index) {
+          onChanged(1900 + index);
+        },
+        children: List.generate(
+          DateTime.now().year - 1900 + 1,
+          (index) => Center(
+            child: Text(
+              '${1900 + index}',
+              style: TextStyle(fontSize: 18, color: onSurface),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMonthPicker(int month, Function(int) onChanged, Color onSurface) {
+    return Expanded(
+      child: CupertinoPicker(
+        itemExtent: 40,
+        scrollController: FixedExtentScrollController(
+          initialItem: month - 1,
+        ),
+        onSelectedItemChanged: (index) {
+          onChanged(index + 1);
+        },
+        children: List.generate(
+          12,
+          (index) => Center(
+            child: Text(
+              '${index + 1}',
+              style: TextStyle(fontSize: 18, color: onSurface),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDayPicker(int day, Function(int) onChanged, Color onSurface) {
+    return Expanded(
+      child: CupertinoPicker(
+        itemExtent: 40,
+        scrollController: FixedExtentScrollController(
+          initialItem: day - 1,
+        ),
+        onSelectedItemChanged: (index) {
+          onChanged(index + 1);
+        },
+        children: List.generate(
+          31,
+          (index) => Center(
+            child: Text(
+              '${index + 1}',
+              style: TextStyle(fontSize: 18, color: onSurface),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  int _getHourIndex(int hour) {
+    return hour;
+  }
+
+  int _getHourFromIndex(int index) {
+    return index;
+  }
+
+  String _formatHourForDisplay(int hour, AppLocalizations l10n, Locale locale) {
+    if (locale.languageCode == 'en') {
+      // 영어: AM/PM 형식
+      if (hour == 0) {
+        return '${l10n.am} 12';
+      } else if (hour < 12) {
+        return '${l10n.am} ${hour.toString().padLeft(2, '0')}';
+      } else if (hour == 12) {
+        return '${l10n.pm} 12';
+      } else {
+        return '${l10n.pm} ${(hour - 12).toString().padLeft(2, '0')}';
+      }
+    } else {
+      // 다른 언어: 24시간 형식
+      return '${hour.toString().padLeft(2, '0')}';
+    }
+  }
+
+  String _mapGenderToCurrentLanguage(String? savedGender) {
+    if (savedGender == null) return '';
+    
+    final l10n = AppLocalizations.of(context)!;
+    
+    // 저장된 값이 현재 언어의 값과 일치하는지 확인
+    final currentGenders = [l10n.female, l10n.male, l10n.nonBinary];
+    if (currentGenders.contains(savedGender)) {
+      return savedGender;
+    }
+    
+    // 저장된 값이 다른 언어의 값인 경우 매핑
+    if (savedGender == '여성' || savedGender == 'Female' || savedGender == '女性' || savedGender == '女') {
+      return l10n.female;
+    } else if (savedGender == '남성' || savedGender == 'Male' || savedGender == '男性' || savedGender == '男') {
+      return l10n.male;
+    } else if (savedGender == '논바이너리' || savedGender == 'N-binary' || savedGender == 'ノンバイナリー' || savedGender == '非二元') {
+      return l10n.nonBinary;
+    }
+    
+    // 매핑되지 않은 경우 기본값 반환
+    return l10n.female;
+  }
+
   Future<void> _loadSavedSajuInfo() async {
     if (widget.isFriendInfo) {
       final friendInfo = await FriendService.loadFriendInfo();
       if (friendInfo != null && mounted) {
         setState(() {
           _nameController.text = friendInfo.name;
-          _selectedGender = friendInfo.gender;
+          _selectedGender = _mapGenderToCurrentLanguage(friendInfo.gender);
           _selectedDate = friendInfo.birthDate;
           _selectedHour = friendInfo.birthHour.toString().padLeft(2, '0');
           _selectedMinute = friendInfo.birthMinute.toString().padLeft(2, '0');
           _selectedRegion = friendInfo.region;
           _regionController.text = friendInfo.region;
-          _selectedStatus = friendInfo.status;
+          _selectedStatus = _mapStatusToCurrentLanguage(friendInfo.status);
         });
       }
     } else {
@@ -384,13 +571,13 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       if (sajuInfo != null && mounted) {
         setState(() {
           _nameController.text = sajuInfo.name;
-          _selectedGender = sajuInfo.gender;
+          _selectedGender = _mapGenderToCurrentLanguage(sajuInfo.gender);
           _selectedDate = sajuInfo.birthDate;
           _selectedHour = sajuInfo.birthHour.toString().padLeft(2, '0');
           _selectedMinute = sajuInfo.birthMinute.toString().padLeft(2, '0');
           _selectedRegion = sajuInfo.region;
           _regionController.text = sajuInfo.region;
-          _selectedStatus = sajuInfo.status;
+          _selectedStatus = _mapStatusToCurrentLanguage(sajuInfo.status);
         });
       }
     }
@@ -444,6 +631,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 0),
       child: Row(
@@ -459,8 +647,8 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ),
           ),
           const SizedBox(width: 0),
-          Text(
-            widget.isFriendInfo ? '친구 정보 입력' : '출생 정보 입력',
+                      Text(
+              widget.isFriendInfo ? l10n.friendInfoInput : l10n.birthInfoInput,
             style: GoogleFonts.notoSans(
               fontSize: 25,
               fontWeight: FontWeight.bold,
@@ -473,6 +661,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
   Widget _buildInfoMessage() {
+    final l10n = AppLocalizations.of(context)!;
     final primary = Theme.of(context).colorScheme.onBackground;
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
@@ -485,7 +674,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            'AI가 당신만의 이야기를\n풀어내려면 출생정보가 필요해요.',
+            l10n.infoMessage,
             style: GoogleFonts.notoSans(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -499,6 +688,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
   Widget _buildNameInput() {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.onBackground;
     final secondary = primary.withOpacity(0.7);
@@ -517,7 +707,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               Text(
-                '이름',
+                l10n.name,
                 style: GoogleFonts.notoSans(
                   fontSize: 21,
                   fontWeight: FontWeight.bold,
@@ -534,7 +724,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               color: primary,
             ),
             decoration: InputDecoration(
-              hintText: '이름을 입력해주세요',
+              hintText: l10n.nameHint,
               hintStyle: GoogleFonts.notoSans(
                 fontSize: 17,
                 color: secondary,
@@ -638,6 +828,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
   Widget _buildTimeInput() {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.onBackground;
     final secondary = primary.withOpacity(0.7);
@@ -692,10 +883,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                         Expanded(
                           child: Text(
                             _isTimeUnknown 
-                                ? '시간모름'
+                                ? l10n.timeUnknown
                                 : hasTime
-                                    ? '${_selectedHour!.padLeft(2, '0')}시 ${_selectedMinute!.padLeft(2, '0')}분'
-                                    : '시간을 선택해주세요',
+                                    ? _formatTimeForDisplay(_selectedHour, _selectedMinute)
+                                    : l10n.birthTimeHint,
                             style: GoogleFonts.notoSans(
                               fontSize: 17,
                               color: _isTimeUnknown 
@@ -764,7 +955,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   Future<void> _selectTime() async {
     final int initHour = int.tryParse(_selectedHour ?? '') ?? DateTime.now().hour;
     final int initMinute = int.tryParse(_selectedMinute ?? '') ?? DateTime.now().minute;
-    DateTime temp = DateTime(2000, 1, 1, initHour, initMinute);
+    int tempHour = initHour;
+    int tempMinute = initMinute;
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
 
     final DateTime? picked = await showModalBottomSheet<DateTime>(
       context: context,
@@ -784,37 +978,75 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     children: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx),
-                        child: const Text('취소', style: TextStyle(fontSize: 16)),
+                        child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.pop(ctx, temp),
-                        child: const Text('확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        onPressed: () => Navigator.pop(ctx, DateTime(2000, 1, 1, tempHour, tempMinute)),
+                        child: Text(l10n.confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
                 ),
                 const Divider(height: 0),
-                // Column labels for hour/minute
+                // 언어에 따른 라벨
                 Padding(
                   padding: const EdgeInsets.only(left: 50, right: 50, top: 8, bottom: 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text('시', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
+                      Text(l10n.hour, style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
                       const SizedBox(width: 20),
-                      Text('분', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
+                      Text(l10n.minute, style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
                     ],
                   ),
                 ),
                 const SizedBox(height: 0),
                 Expanded(
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.time,
-                    use24hFormat: true,
-                    initialDateTime: temp,
-                    onDateTimeChanged: (value) {
-                      temp = value;
-                    },
+                  child: Row(
+                    children: [
+                      // 시 선택 (오전/오후 포함)
+                      Expanded(
+                        child: CupertinoPicker(
+                          itemExtent: 40,
+                          scrollController: FixedExtentScrollController(
+                            initialItem: _getHourIndex(initHour),
+                          ),
+                          onSelectedItemChanged: (index) {
+                            tempHour = _getHourFromIndex(index);
+                          },
+                          children: List.generate(
+                            24,
+                            (index) => Center(
+                              child: Text(
+                                _formatHourForDisplay(index, l10n, locale),
+                                style: TextStyle(fontSize: 18, color: onSurface),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // 분 선택
+                      Expanded(
+                        child: CupertinoPicker(
+                          itemExtent: 40,
+                          scrollController: FixedExtentScrollController(
+                            initialItem: initMinute,
+                          ),
+                          onSelectedItemChanged: (index) {
+                            tempMinute = index;
+                          },
+                          children: List.generate(
+                            60,
+                            (index) => Center(
+                              child: Text(
+                                '${index.toString().padLeft(2, '0')}',
+                                style: TextStyle(fontSize: 18, color: onSurface),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -824,19 +1056,23 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       },
     );
 
-          if (picked != null) {
-        setState(() {
-          _selectedHour = picked.hour.toString().padLeft(2, '0');
-          _selectedMinute = picked.minute.toString().padLeft(2, '0');
-        });
-      }
+    if (picked != null) {
+      setState(() {
+        _selectedHour = picked.hour.toString().padLeft(2, '0');
+        _selectedMinute = picked.minute.toString().padLeft(2, '0');
+      });
+    }
   }
 
   Widget _buildGenderInput() {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.onBackground;
     final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
     final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
+    
+    // 성별 배열을 현재 언어로 정의
+    final genders = [l10n.female, l10n.male, l10n.nonBinary];
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -861,7 +1097,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           ),
           const SizedBox(height: 10),
           Row(
-            children: _genders.map((gender) {
+            children: genders.map((gender) {
               final isSelected = _selectedGender == gender;
               return Expanded(
                 child: GestureDetector(
@@ -993,10 +1229,15 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
   Widget _buildStatusInput() {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.onBackground;
     final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
     final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
+    
+    // 상태 배열을 현재 언어로 정의
+    final statuses = [l10n.married, l10n.inRelationship, l10n.wantRelationship, l10n.noInterest];
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1016,7 +1257,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               ),
               const SizedBox(width: 5),
               Text(
-                '사랑에 대한 나의 상태',
+                l10n.loveStatus,
                 style: GoogleFonts.notoSans(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -1027,7 +1268,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           ),
           const SizedBox(height: 10),
           Row(
-            children: _statuses.map((status) {
+            children: statuses.map((status) {
               final isSelected = _selectedStatus == status;
               return Expanded(
                 child: GestureDetector(
@@ -1092,6 +1333,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
   Widget _buildSaveButton() {
+    final l10n = AppLocalizations.of(context)!;
     // 모든 필수 항목이 입력되었는지 확인 (시간모름 선택 시 시간 정보는 선택사항)
     final bool isFormValid = _nameController.text.trim().isNotEmpty &&
         _selectedGender != null &&
@@ -1114,7 +1356,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           elevation: 0,
         ),
         child: Text(
-          widget.isFriendInfo ? '친구 정보 저장' : '출생 정보 저장',
+          widget.isFriendInfo ? l10n.saveFriendInfo : l10n.saveBirthInfo,
           style: GoogleFonts.notoSans(
             fontSize: 21,
             fontWeight: FontWeight.bold,
@@ -1129,6 +1371,8 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     int tempYear = initial.year;
     int tempMonth = initial.month;
     int tempDay = initial.day;
+    final locale = Localizations.localeOf(context);
+    final l10n = AppLocalizations.of(context)!;
 
     final DateTime? picked = await showModalBottomSheet<DateTime>(
       context: context,
@@ -1148,105 +1392,65 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     children: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx),
-                        child: const Text('취소', style: TextStyle(fontSize: 16)),
+                        child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, DateTime(tempYear, tempMonth, tempDay)),
-                        child: const Text('확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: Text(l10n.confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
                 ),
                 const Divider(height: 1),
-                // 년/월/일 라벨
+                // 언어에 따른 라벨 순서
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text('년', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
-                      Text('월', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
-                      Text('일', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
-                    ],
+                    children: locale.languageCode == 'en' 
+                      ? [
+                          Text('Month', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
+                          Text('Day', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
+                          Text('Year', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
+                        ]
+                      : [
+                          Text(l10n.year, style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
+                          Text(l10n.month, style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
+                          Text(l10n.day, style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
+                        ],
                   ),
                 ),
                 Expanded(
                   child: Row(
-                    children: [
-                      // 년도 선택
-                      Expanded(
-                        child: CupertinoPicker(
-                          itemExtent: 40,
-                          scrollController: FixedExtentScrollController(
-                            initialItem: tempYear - 1900,
-                          ),
-                          onSelectedItemChanged: (index) {
-                            tempYear = 1900 + index;
-                            // 월/일 유효성 검사
+                    children: locale.languageCode == 'en' 
+                      ? [
+                          // 영어: 월, 일, 년도 순서
+                          _buildMonthPicker(tempMonth, (month) {
+                            tempMonth = month;
                             int maxDay = DateTime(tempYear, tempMonth + 1, 0).day;
-                            if (tempDay > maxDay) {
-                              tempDay = maxDay;
-                            }
-                          },
-                          children: List.generate(
-                            DateTime.now().year - 1900 + 1,
-                            (index) => Center(
-                              child: Text(
-                                '${1900 + index}',
-                                style: TextStyle(fontSize: 18, color: onSurface),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      // 월 선택
-                      Expanded(
-                        child: CupertinoPicker(
-                          itemExtent: 40,
-                          scrollController: FixedExtentScrollController(
-                            initialItem: tempMonth - 1,
-                          ),
-                          onSelectedItemChanged: (index) {
-                            tempMonth = index + 1;
-                            // 일 유효성 검사
+                            if (tempDay > maxDay) tempDay = maxDay;
+                          }, onSurface),
+                          _buildDayPicker(tempDay, (day) => tempDay = day, onSurface),
+                          _buildYearPicker(tempYear, (year) {
+                            tempYear = year;
                             int maxDay = DateTime(tempYear, tempMonth + 1, 0).day;
-                            if (tempDay > maxDay) {
-                              tempDay = maxDay;
-                            }
-                          },
-                          children: List.generate(
-                            12,
-                            (index) => Center(
-                              child: Text(
-                                '${index + 1}',
-                                style: TextStyle(fontSize: 18, color: onSurface),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      // 일 선택
-                      Expanded(
-                        child: CupertinoPicker(
-                          itemExtent: 40,
-                          scrollController: FixedExtentScrollController(
-                            initialItem: tempDay - 1,
-                          ),
-                          onSelectedItemChanged: (index) {
-                            tempDay = index + 1;
-                          },
-                          children: List.generate(
-                            31,
-                            (index) => Center(
-                              child: Text(
-                                '${index + 1}',
-                                style: TextStyle(fontSize: 18, color: onSurface),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                            if (tempDay > maxDay) tempDay = maxDay;
+                          }, onSurface),
+                        ]
+                      : [
+                          // 다른 언어: 년도, 월, 일 순서
+                          _buildYearPicker(tempYear, (year) {
+                            tempYear = year;
+                            int maxDay = DateTime(tempYear, tempMonth + 1, 0).day;
+                            if (tempDay > maxDay) tempDay = maxDay;
+                          }, onSurface),
+                          _buildMonthPicker(tempMonth, (month) {
+                            tempMonth = month;
+                            int maxDay = DateTime(tempYear, tempMonth + 1, 0).day;
+                            if (tempDay > maxDay) tempDay = maxDay;
+                          }, onSurface),
+                          _buildDayPicker(tempDay, (day) => tempDay = day, onSurface),
+                        ],
                   ),
                 ),
               ],

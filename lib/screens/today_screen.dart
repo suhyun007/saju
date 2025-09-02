@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../services/saju_service.dart';
 import '../models/saju_info.dart';
 import '../models/saju_api_response.dart';
+import '../l10n/app_localizations.dart';
 
 
 class TodayScreen extends StatefulWidget {
@@ -95,7 +96,7 @@ class _TodayScreenState extends State<TodayScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black;
+    final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
     final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
     final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
     
@@ -166,11 +167,11 @@ class _TodayScreenState extends State<TodayScreen> {
               child: Column(
                 children: [
                   Text(
-                    '${_todayFortune!.overallScore}점',
+                    '${_todayFortune!.overallScore}${AppLocalizations.of(context)?.point ?? '점'}',
                     style: GoogleFonts.notoSans(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
-                      color: textColor,
+                      color: const Color(0xFF7A68B7), //0xFF5C4B8A   //0xFF7A68B7
                     ),
                   ),
                   const SizedBox(height: 25),
@@ -219,15 +220,15 @@ class _TodayScreenState extends State<TodayScreen> {
                         getTitle: (index, angle) {
                           switch (index) {
                             case 0:
-                              return RadarChartTitle(text: '전체');
+                              return RadarChartTitle(text: AppLocalizations.of(context)?.overall ?? '전체');
                             case 1:
-                              return RadarChartTitle(text: '인연');
+                              return RadarChartTitle(text: AppLocalizations.of(context)?.relationship ?? '인연');
                             case 2:
-                              return RadarChartTitle(text: '풍요');
+                              return RadarChartTitle(text: AppLocalizations.of(context)?.wealth ?? '풍요');
                             case 3:
-                              return RadarChartTitle(text: '마음');
+                              return RadarChartTitle(text: AppLocalizations.of(context)?.mind ?? '마음');
                             case 4:
-                              return RadarChartTitle(text: '성장');  // 추가
+                              return RadarChartTitle(text: AppLocalizations.of(context)?.growth ?? '성장');  // 추가
                             default:
                               return const RadarChartTitle(text: '');
                           }
@@ -273,7 +274,7 @@ class _TodayScreenState extends State<TodayScreen> {
                         borderRadius: BorderRadius.circular(10),
                         child: Center(
                           child: Text(
-                            '오늘의 가이드 자세히 보기',
+                            AppLocalizations.of(context)?.todayGuideDetailButton ?? '오늘의 가이드 자세히 보기',
                             style: GoogleFonts.roboto(
                               fontSize: 17,
                               fontWeight: FontWeight.w900,
@@ -303,7 +304,7 @@ class _TodayScreenState extends State<TodayScreen> {
                 children: [
                   // 소중한 인연
                   _buildFortuneSection(
-                    '소중한 인연',
+                    AppLocalizations.of(context)?.preciousRelationship ?? '소중한 인연',
                     _truncateAtSecondPeriod(_todayFortune!.love!),
                   ),
                   
@@ -311,7 +312,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   
                   // 풍요로움
                   _buildFortuneSection(
-                    '풍요로움',
+                    AppLocalizations.of(context)?.abundance ?? '풍요로움',
                     _truncateAtSecondPeriod(_todayFortune!.wealth!),
                   ),
                   
@@ -319,7 +320,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   
                   // 몸과 마음
                   _buildFortuneSection(
-                    '몸과 마음',
+                    AppLocalizations.of(context)?.bodyAndMind ?? '몸과 마음',
                     _truncateAtSecondPeriod(_todayFortune!.health!),
                   ),
                   
@@ -327,7 +328,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   
                   // 성장과 집중
                   _buildFortuneSection(
-                    '성장과 집중',
+                    AppLocalizations.of(context)?.growthAndFocus ?? '성장과 집중',
                     _truncateAtSecondPeriod(_todayFortune!.study!),
                   ),
                   
@@ -346,7 +347,7 @@ class _TodayScreenState extends State<TodayScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요.\n당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.',
+                          AppLocalizations.of(context)?.todayStoryHint ?? '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요.\n당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.',
                           style: GoogleFonts.notoSans(
                             fontSize: 14,
                             color: textColor.withOpacity(0.7),

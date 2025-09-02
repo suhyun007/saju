@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:async';
 import 'saju_input_screen.dart';
 import 'home_screen.dart';
 import '../services/saju_service.dart';
-import '../services/splash_text_service.dart';
+import '../l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,41 +14,10 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool _isLoading = false;
-  String _appName = 'AstroStar';
-  String _subtitle = 'AstroStar가 당신의 기본정보를 바탕으로 짧은 이야기를 만들어드립니다.';
-  String _buttonText = 'AI 콘텐츠 시작';
-  Timer? _subtitleTimer;
 
   @override
   void initState() {
     super.initState();
-    _loadSplashTexts();
-  }
-
-  Future<void> _loadSplashTexts() async {
-    await SplashTextService.loadSplashTexts();
-    if (mounted) {
-      setState(() {
-        _appName = SplashTextService.getAppName();
-        _subtitle = SplashTextService.getSubtitle();
-        _buttonText = SplashTextService.getButtonText();
-      });
-      
-      // 12초마다 subtitle 변경
-      _subtitleTimer = Timer.periodic(const Duration(seconds: 12), (timer) {
-        if (mounted && !_isLoading) {
-          setState(() {
-            _subtitle = SplashTextService.getSubtitle();
-          });
-        }
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _subtitleTimer?.cancel();
-    super.dispose();
   }
 
   Future<void> _handleStartButton() async {
@@ -96,6 +64,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -107,34 +77,34 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Center(
           child: Column(
             children: [
-              // 앱 이름 (맨 위)
-              const SizedBox(height: 50),
-                              Text(
-                  _appName,
-                  style: GoogleFonts.josefinSans(
-                    fontSize: 04,
-                    fontWeight: FontWeight.w300,
-                    color: Color(0xFFE6F3FF),
-                    letterSpacing: 1,
-                    shadows: [
-                      Shadow(
-                        color: Color(0xFF4A90E2).withOpacity(0.8),
-                        blurRadius: 15,
-                        offset: Offset(2, 2),
-                      ),
-                      Shadow(
-                        color: Color(0xFF9B59B6).withOpacity(0.6),
-                        blurRadius: 25,
-                        offset: Offset(-2, -2),
-                      ),
-                      Shadow(
-                        color: Colors.white.withOpacity(0.4),
-                        blurRadius: 8,
-                        offset: Offset(0, 0),
-                      ),
-                    ],
-                  ),
-                ),
+              // 앱 이름 (맨 위) - 제거됨
+              // const SizedBox(height: 50),
+              // Text(
+              //   _appName,
+              //   style: GoogleFonts.josefinSans(
+              //     fontSize: 40,
+              //     fontWeight: FontWeight.w300,
+              //     color: const Color(0xFFE6F3FF),
+              //     letterSpacing: 1,
+              //     shadows: [
+              //       Shadow(
+              //         color: const Color(0xFF4A90E2).withOpacity(0.8),
+              //         blurRadius: 15,
+              //         offset: const Offset(2, 2),
+              //       ),
+              //       Shadow(
+              //         color: const Color(0xFF9B59B6).withOpacity(0.6),
+              //         blurRadius: 25,
+              //         offset: const Offset(-2, -2),
+              //       ),
+              //       Shadow(
+              //         color: Colors.white.withOpacity(0.4),
+              //         blurRadius: 8,
+              //         offset: const Offset(0, 0),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               // 중간 영역
               Expanded(
                 child: Padding(
@@ -155,16 +125,16 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                       ),
                       const SizedBox(height: 17),
-                      // 고정 메시지
+                      // 고정 메시지 (로컬라이징 적용)
                       Text(
-                        'AstroStar가 당신의 정보를\n바탕으로 매일 재미있는\n문학 콘텐츠를 만들어드립니다.',
+                        l10n?.splashSubtitle2 ?? 'AstroStar creates fun literary content daily based on your information.',
                         style: TextStyle(
-                          fontSize: 19,
+                          fontSize: l10n?.localeName == 'en' ? 20.0 : 19.0, // 영어일 때 20, 한국어일 때 19
                           fontWeight: FontWeight.w300,
-                          color: Color(0xFFE6F3FF),
+                          color: const Color(0xFFE6F3FF),
                           letterSpacing: 0.5,
                           height: 1.5,
-                          shadows: [
+                          shadows: const [
                             Shadow(
                               color: Colors.black,
                               blurRadius: 3,
@@ -175,31 +145,12 @@ class _SplashScreenState extends State<SplashScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 22),
-                      // 부제목
-                      Text(
-                        _subtitle,
-                        style: TextStyle(
-                          fontSize: 0,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFFE6F3FF),
-                          letterSpacing: 1,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black,
-                              blurRadius: 5,
-                              offset: Offset(0, 0),
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 10),
-                      // 시작하기 버튼
+                      // 시작하기 버튼 (로컬라이징 적용)
                       Container(
                         width: 370,
                         height: 59,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
+                          gradient: const LinearGradient(
                             colors: [
                               Color(0xFF5d7df4), // 채도 높은 파란색
                               Color(0xFF9961f6), // 채도 높은 보라색
@@ -224,7 +175,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                       ),
                                     )
                                   : Text(
-                                      _buttonText,
+                                      l10n?.splashButtonText ?? 'Start AI Content',
                                       style: const TextStyle(
                                         fontSize: 23,
                                         fontWeight: FontWeight.bold,

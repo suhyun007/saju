@@ -30,7 +30,7 @@ class DetailStoryScreen extends StatelessWidget {
                     style: GoogleFonts.notoSans(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -39,7 +39,7 @@ class DetailStoryScreen extends StatelessWidget {
                     '매일 새로운 당신의 이야기를 만나보세요.',
                     style: GoogleFonts.notoSans(
                       fontSize: 15,
-                      color: Theme.of(context).colorScheme.onBackground.withOpacity(0.9),
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.9) : const Color(0xFF1A1A1A).withOpacity(0.9),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -70,7 +70,7 @@ class DetailStoryScreen extends StatelessWidget {
                         style: GoogleFonts.notoSans(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onBackground,
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -86,7 +86,7 @@ class DetailStoryScreen extends StatelessWidget {
                         '현관 앞에서 수현은 하늘을 올려다봤다. 별 한 점이 딱, 깜빡였다. 그녀는 조용히 주문처럼 중얼거렸다. "내가 움직이면, 세상도 한 칸 움직인다." 그리고 노트에 마지막 줄을 더했다.',
                         style: GoogleFonts.notoSans(
                           fontSize: 18,
-                          color: Theme.of(context).colorScheme.onBackground.withOpacity(1),
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                           height: 1.6,
                         ),
                       ),
@@ -96,7 +96,7 @@ class DetailStoryScreen extends StatelessWidget {
                         style: GoogleFonts.notoSans(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.8) : const Color(0xFF1A1A1A).withOpacity(0.8),
                           fontStyle: FontStyle.italic,
                         ),
                         textAlign: TextAlign.left,

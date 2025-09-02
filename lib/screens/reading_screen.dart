@@ -30,7 +30,7 @@ class ReadingScreen extends StatelessWidget {
                     style: GoogleFonts.notoSans(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -39,7 +39,7 @@ class ReadingScreen extends StatelessWidget {
                     '매일 당신에게 시 한 편을 지어드려요.',
                     style: GoogleFonts.notoSans(
                       fontSize: 15,
-                      color: Theme.of(context).colorScheme.onBackground.withOpacity(0.9),
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.9) : const Color(0xFF1A1A1A).withOpacity(0.9),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -70,7 +70,7 @@ class ReadingScreen extends StatelessWidget {
                         style: GoogleFonts.notoSans(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onBackground,
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -79,7 +79,7 @@ class ReadingScreen extends StatelessWidget {
                         '아침의 창문은\n호기심으로 반짝였다\n\n바람이 장난처럼\n머리칼을 흔들자\n내 마음도 웃었다\n\n낯선 골목에서\n새로운 대화가 피어났고\n작은 우연이\n오늘의 별자리를 연결했다\n\n머릿속 번개 같은 깨달음\n손끝에서 빛이 흘러\n내일로 가는 길을 비춘다\n\n밤하늘에 한 점 별이\n눈을 깜빡이며 말한다\n"오늘의 용기를 잊지 말 것\n그것이 내일을 부른다"',
                         style: GoogleFonts.notoSans(
                           fontSize: 18,
-                          color: Theme.of(context).colorScheme.onBackground.withOpacity(1),
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                           height: 1.8,
                         ),
                         textAlign: TextAlign.center,
@@ -90,7 +90,7 @@ class ReadingScreen extends StatelessWidget {
                         style: GoogleFonts.notoSans(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.8) : const Color(0xFF1A1A1A).withOpacity(0.8),
                           fontStyle: FontStyle.italic,
                         ),
                         textAlign: TextAlign.left,

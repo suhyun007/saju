@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import '../l10n/app_localizations.dart';
 
 class LocationPickerScreen extends StatefulWidget {
   const LocationPickerScreen({super.key});
@@ -55,6 +56,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     // 500ms 후에 서버 API 호출
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
       final url = Uri.parse('https://saju-server-j9ti.vercel.app/api/places/search');
+      final locale = Localizations.localeOf(context);
 
       try {
         final response = await http.post(
@@ -64,8 +66,12 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           },
           body: jsonEncode({
             'input': input,
+            'language': locale.languageCode, // 현재 언어 정보 전달
           }),
         );
+        
+        print('🌍 클라이언트에서 보내는 언어: ${locale.languageCode}');
+        print('🌍 검색어: $input');
 
         print('📌 서버 API 상태코드: ${response.statusCode}');
         print('📌 서버 API 응답: ${response.body}');
@@ -120,6 +126,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
   Future<void> _fetchLocationDetails(String placeId, String description) async {
     final url = Uri.parse('https://saju-server-j9ti.vercel.app/api/places/details');
+    final locale = Localizations.localeOf(context);
 
     try {
       final response = await http.post(
@@ -129,6 +136,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         },
         body: jsonEncode({
           'placeId': placeId,
+          'language': locale.languageCode, // 현재 언어 정보 전달
         }),
       );
 
@@ -237,7 +245,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  '지역명을 입력하여 검색하세요',
+                                  AppLocalizations.of(context)?.locationSearchEmptyMessage ?? '지역명을 입력하여 검색하세요',
                                   style: GoogleFonts.notoSans(
                                     fontSize: 16,
                                     color: Colors.white70,
@@ -271,7 +279,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           const SizedBox(width: 15),
           Expanded(
             child: Text(
-              '태어난 지역 검색',
+              AppLocalizations.of(context)?.locationSearchTitle ?? '태어난 지역 검색',
               style: GoogleFonts.notoSans(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -300,7 +308,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           color: Colors.white,
         ),
         decoration: InputDecoration(
-          hintText: '지역/구/동을 입력하세요',
+          hintText: AppLocalizations.of(context)?.locationSearchHint ?? '지역/구/동을 입력하세요',
           hintStyle: GoogleFonts.notoSans(
             fontSize: 16,
             color: Colors.white70,
@@ -353,7 +361,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
               const Icon(Icons.location_on, color: Colors.amber, size: 24),
               const SizedBox(width: 10),
               Text(
-                '선택된 위치',
+                AppLocalizations.of(context)?.selectedLocation ?? '선택된 위치',
                 style: GoogleFonts.notoSans(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -370,8 +378,8 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           if (_selectedLatitude != null && _selectedLongitude != null) ...[
             const SizedBox(height: 5),
             Text(
-              '위도: ${_selectedLatitude!.toStringAsFixed(6)}, '
-              '경도: ${_selectedLongitude!.toStringAsFixed(6)}',
+              '${AppLocalizations.of(context)?.latitude ?? '위도'}: ${_selectedLatitude!.toStringAsFixed(6)}, '
+              '${AppLocalizations.of(context)?.longitude ?? '경도'}: ${_selectedLongitude!.toStringAsFixed(6)}',
               style: GoogleFonts.notoSans(fontSize: 14, color: Colors.white70),
             ),
           ],
@@ -397,7 +405,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 ),
               ),
               child: Text(
-                '취소',
+                AppLocalizations.of(context)?.cancel ?? '취소',
                 style: GoogleFonts.notoSans(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
@@ -423,7 +431,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 ),
               ),
               child: Text(
-                '선택',
+                AppLocalizations.of(context)?.select ?? '선택',
                 style: GoogleFonts.notoSans(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),

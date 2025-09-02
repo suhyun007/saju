@@ -12,6 +12,7 @@ import '../services/friend_service.dart';
 import '../models/saju_info.dart';
 import '../models/friend_info.dart';
 import '../utils/zodiac_utils.dart';
+import '../l10n/app_localizations.dart';
 import 'saju_input_screen.dart';
 import 'privacy_policy_screen.dart';
 
@@ -151,8 +152,24 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       setState(() {
         _user = user;
       });
+      final l10n = AppLocalizations.of(context);
+      final welcomeMessage = l10n?.myPageWelcome(user.displayName ?? '') ?? '${user.displayName}님 환영합니다!';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${user.displayName}님 환영합니다!')),
+        SnackBar(content: Text(welcomeMessage)),
+      );
+    }
+  }
+
+  Future<void> _onSignIn(UserModel user) async {
+    if (!mounted) return;
+    if (user != null) {
+      setState(() {
+        _user = user;
+      });
+      final l10n = AppLocalizations.of(context);
+      final welcomeMessage = l10n?.myPageWelcome(user.displayName ?? '') ?? '${user.displayName}님 환영합니다!';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(welcomeMessage)),
       );
     }
   }
@@ -163,19 +180,55 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     setState(() {
       _user = null;
     });
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('로그아웃 되었습니다.')),
+      SnackBar(content: Text(l10n?.myPageLogoutSuccess ?? '로그아웃 되었습니다.')),
     );
   }
 
   String _themeSubtitle() {
+    final l10n = AppLocalizations.of(context);
     switch (ThemeService.currentMode) {
       case ThemeMode.light:
-        return '라이트';
+        return l10n?.myPageThemeLight ?? '라이트';
       case ThemeMode.dark:
-        return '다크';
+        return l10n?.myPageThemeDark ?? '다크';
       case ThemeMode.system:
-        return '시스템';
+        return l10n?.myPageThemeSystem ?? '시스템';
+    }
+  }
+
+  String _formatBirthInfo(SajuInfo sajuInfo) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context);
+    
+    // 영어일 때만 MM.DD.YYYY HH:MM 형식으로 변경 (12지신 제외)
+    if (locale.languageCode == 'en') {
+      final month = sajuInfo.monthText.replaceAll('월', '').padLeft(2, '0');
+      final day = sajuInfo.dayText.replaceAll('일', '').padLeft(2, '0');
+      final year = sajuInfo.yearText.replaceAll('년', '');
+      final time = sajuInfo.timeText.replaceAll('시', ':').replaceAll('분', '');
+      return '$month.$day.$year $time';
+    } else {
+      // 다른 언어는 기존 순서 유지 (년,월,일,시,12지신)
+      return '${sajuInfo.yearText} ${sajuInfo.monthText} ${sajuInfo.dayText} ${sajuInfo.timeText}${sajuInfo.zodiacSign != null ? ' • ${sajuInfo.zodiacSign}' : ''}';
+    }
+  }
+
+  String _formatNameWithHonorific(String name) {
+    final locale = Localizations.localeOf(context);
+    
+    switch (locale.languageCode) {
+      case 'ko':
+        return '$name님'; // 한국어: 님
+      case 'en':
+        return name; // 영어: 호칭 없음
+      case 'zh':
+        return '$name'; // 중국어: 호칭 없음 (필요시 先生, 女士 등 추가 가능)
+      case 'ja':
+        return '$nameさん'; // 일본어: さん
+      default:
+        return '$name님'; // 기본값: 한국어와 동일
     }
   }
 
@@ -183,21 +236,18 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     print('=== _showNotificationSheet 함수 호출됨 ===');
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.black.withOpacity(0.7),
+      isScrollControlled: true,
+      useSafeArea: false,
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
+        final l10n = AppLocalizations.of(context);
         final sheetBg = isDark ? const Color(0xFF2C1810).withOpacity(0.98) : Colors.white.withOpacity(0.98);
-        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
-        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
+        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black;
+        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.2);
         
         return Container(
           margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: border),
-          ),
           child: ValueListenableBuilder<bool>(
             valueListenable: NotificationService.enabledNotifier,
             builder: (context, enabled, _) {
@@ -209,10 +259,13 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                       SwitchListTile(
                         value: enabled,
                         activeColor: Colors.amber,
-                        title: Text('알림 사용', style: GoogleFonts.notoSans(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.w600)),
+                        title: Text(
+                          l10n?.myPageNotificationTitle ?? '알림 사용', 
+                          style: GoogleFonts.notoSans(color: Colors.white, fontWeight: FontWeight.w600)
+                        ),
                         subtitle: Text(
-                          enabled ? '알림이 활성화되어 있습니다.' : '알림이 비활성화되어 있습니다.',
-                          style: GoogleFonts.notoSans(color: isDark ? Colors.white70 : Colors.black54, fontSize: 12),
+                          enabled ? (l10n?.myPageNotificationStatus ?? '알림이 활성화되어 있습니다.') : (l10n?.myPageNotificationStatus ?? '알림이 비활성화되어 있습니다.'),
+                          style: GoogleFonts.notoSans(color: Colors.white70, fontSize: 12),
                         ),
                         secondary: Text(
                           enabled ? 'ON' : 'OFF',
@@ -233,11 +286,11 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: const Text('알림 권한 필요'),
-                                    content: const Text('앱설정 > 알림에서 "알림 허용"을 켜주세요.'),
+                                    title: Text(l10n?.myPageNotificationPermissionTitle ?? '알림 권한 필요'),
+                                    content: Text(l10n?.myPageNotificationPermissionMessage ?? '앱설정 > 알림에서 "알림 허용"을 켜주세요.'),
                                     actions: [
-                                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
-                                      TextButton(onPressed: () { Navigator.pop(context); NotificationService.navigateToAppSettings(); }, child: const Text('설정으로 이동')),
+                                      TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n?.myPageNotificationPermissionCancel ?? '취소')),
+                                      TextButton(onPressed: () { Navigator.pop(context); NotificationService.navigateToAppSettings(); }, child: Text(l10n?.myPageNotificationPermissionSettings ?? '설정으로 이동')),
                                     ],
                                   ),
                                 );
@@ -266,28 +319,29 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                               Text(
-                                '알림 시간: ',
-                                style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16),
+                                l10n?.myPageNotificationTime ?? '알림 시간: ',
+                                style: TextStyle(color: Colors.white, fontSize: 16),
                               ),
                               // 시간 선택 드롭다운
                               Container(
                                 height: 32,
                                         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1)),
+          border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.2)),
         ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
                                   value: _selectedHour,
-                                  dropdownColor: isDark ? const Color(0xFF2C1810) : Colors.white,
-                                  style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16),
+                                  dropdownColor: Colors.white,
+                                  style: TextStyle(color: Colors.black, fontSize: 16),
                                   underline: Container(),
+                                  menuMaxHeight: 130,
                                   items: List.generate(24, (index) {
                                     final hour = index.toString().padLeft(2, '0');
                                     return DropdownMenuItem<String>(
                                       value: hour,
-                                      child: Text(hour),
+                                      child: Text(hour, style: TextStyle(color: Colors.black)),
                                     );
                                   }),
                                   onChanged: (String? value) {
@@ -301,27 +355,28 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                               ),
                               Text(
                                 ' : ',
-                                style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16),
+                                style: TextStyle(color: Colors.white, fontSize: 16),
                               ),
                               // 분 선택 드롭다운
                               Container(
                                 height: 32,
                                         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1)),
+          border: Border.all(color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.2)),
         ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
                                   value: _selectedMinute,
-                                  dropdownColor: isDark ? const Color(0xFF2C1810) : Colors.white,
-                                  style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16),
+                                  dropdownColor: Colors.white,
+                                  style: TextStyle(color: Colors.black, fontSize: 16),
                                   underline: Container(),
+                                  menuMaxHeight: 130,
                                   items: List.generate(60, (index) {
                                     final minute = index.toString().padLeft(2, '0');
                                     return DropdownMenuItem<String>(
                                       value: minute,
-                                      child: Text(minute),
+                                      child: Text(minute, style: TextStyle(color: Colors.black)),
                                     );
                                   }),
                                   onChanged: (String? value) {
@@ -367,15 +422,15 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: const Text('알림 권한 필요'),
-                                        content: const Text('앱설정 > 알림에서 "알림 허용"을 켜주세요.'),
+                                        title: Text(l10n?.myPageNotificationPermissionTitle ?? '알림 권한 필요'),
+                                        content: Text(l10n?.myPageNotificationPermissionMessage ?? '앱설정 > 알림에서 "알림 허용"을 켜주세요.'),
                                         actions: [
                                           TextButton(
                                             onPressed: () {
                                               print('취소 버튼 클릭됨');
                                               Navigator.pop(context);
                                             },
-                                            child: const Text('취소'),
+                                            child: Text(l10n?.myPageNotificationPermissionCancel ?? '취소'),
                                           ),
                                           TextButton(
                                             onPressed: () {
@@ -386,7 +441,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                               NotificationService.navigateToAppSettings();
                                               print('=== navigateToAppSettings 호출 완료 ===');
                                             },
-                                            child: const Text('설정으로 이동'),
+                                            child: Text(l10n?.myPageNotificationPermissionSettings ?? '설정으로 이동'),
                                           ),
                                         ],
                                       ),
@@ -399,8 +454,8 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                 if (!appEnabled) {
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('알림이 비활성화되어 있습니다. 알림을 켜고 다시 시도해주세요.'),
+                                      SnackBar(
+                                        content: Text(l10n?.myPageNotificationDisabledMessage ?? '알림이 비활성화되어 있습니다. 알림을 켜고 다시 시도해주세요.'),
                                         backgroundColor: Colors.orange,
                                         duration: Duration(seconds: 2),
                                       ),
@@ -420,7 +475,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('알림 시간이 $_selectedHour:$_selectedMinute로 저장되었습니다.'),
+                                      content: Text(l10n?.myPageNotificationTimeSavedMessage(_selectedHour, _selectedMinute) ?? '알림 시간이 $_selectedHour:$_selectedMinute로 저장되었습니다.'),
                                       backgroundColor: Colors.amber,
                                       duration: const Duration(seconds: 2),
                                     ),
@@ -428,7 +483,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                 }
                               },
                               icon: const Icon(Icons.check),
-                              label: const Text('확인'),
+                              label: Text(l10n?.myPageNotificationConfirmButton ?? '확인'),
                             ),
                           ),
                         ],
@@ -537,6 +592,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       backgroundColor: Colors.transparent,
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
+        final l10n = AppLocalizations.of(context);
         final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
         final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
         
@@ -551,9 +607,9 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _themeOptionTile('라이트', ThemeMode.light),
-              _themeOptionTile('다크', ThemeMode.dark),
-              _themeOptionTile('시스템', ThemeMode.system),
+              _themeOptionTile(l10n?.myPageThemeLight ?? '라이트', ThemeMode.light),
+              _themeOptionTile(l10n?.myPageThemeDark ?? '다크', ThemeMode.dark),
+              _themeOptionTile(l10n?.myPageThemeSystem ?? '시스템', ThemeMode.system),
             ],
           ),
         );
@@ -589,6 +645,8 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
           : Icon(Icons.circle_outlined, color: unselectedIconColor),
     );
   }
+
+
 
   Widget _buildAvatar({double size = 64}) {
     final radius = size / 2;
@@ -710,6 +768,12 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = isDark ? Colors.white : Colors.black;
+    final secondary = isDark ? Colors.white70 : Colors.black54;
+    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.grey.withOpacity(0.1);
+    final border = isDark ? Colors.white.withOpacity(0.2) : Colors.grey.withOpacity(0.3);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -734,7 +798,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                   ),
                   const SizedBox(width: 0),
                   Text(
-                    '마이페이지',
+                    l10n?.myPageTitle ?? '마이페이지',
                     style: GoogleFonts.notoSans(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
@@ -752,13 +816,13 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                   children: [
                   const SizedBox(height: 0),
                   _Section(
-                    title: '관리',
+                    title: l10n?.myPageManagement ?? '관리',
                     children: [
                       _Tile(
                         icon: Icons.calendar_today,
-                        title: _sajuInfo != null ? '${_sajuInfo!.name}님' : '사주정보',
+                        title: _sajuInfo != null ? _formatNameWithHonorific(_sajuInfo!.name) : '사주정보',
                         subtitle: _sajuInfo != null
-                            ? '${_sajuInfo!.yearText} ${_sajuInfo!.monthText} ${_sajuInfo!.dayText} ${_sajuInfo!.timeText}${_sajuInfo!.zodiacSign != null ? ' • ${_sajuInfo!.zodiacSign}' : ''}'
+                            ? _formatBirthInfo(_sajuInfo!)
                             : '사주정보를 입력해 주세요',
                         zodiacSign: _sajuInfo?.zodiacSign,
                         onTap: () {
@@ -774,8 +838,8 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                       ),
                       _Tile(
                         icon: Icons.person,
-                        title: _user == null ? '프로필' : (_user!.displayName ?? '사용자'),
-                        subtitle: _user == null ? '구글에서 로그인' : (_user!.email ?? '이메일 없음'),
+                        title: _user == null ? (l10n?.myPageProfile ?? '프로필') : (_user!.displayName ?? (l10n?.myPageUser ?? '사용자')),
+                        subtitle: _user == null ? (l10n?.myPageLoggedInWithGoogle ?? '구글에서 로그인') : (_user!.email ?? '이메일 없음'),
                         iconBackgroundColor: _user != null ? Colors.amber : null,
                         onTap: () {
                           if (_user == null) {
@@ -788,16 +852,16 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                       if (_user != null)
                         _Tile(
                           icon: Icons.logout,
-                          title: '로그아웃',
+                          title: l10n?.myPageLogout ?? '로그아웃',
                           subtitle: '현재 계정에서 로그아웃',
                           onTap: () {
                             _showLogoutSheet();
                           },
                         ),
-                      _SubSectionTitle('일반'),
+                      _SubSectionTitle(l10n?.myPageGeneral ?? '일반'),
                       _Tile(
                         icon: Icons.color_lens,
-                        title: '테마',
+                        title: l10n?.myPageTheme ?? '테마',
                         subtitle: _themeSubtitle(),
                         onTap: _showThemePicker,
                       ),
@@ -806,17 +870,17 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                         builder: (context, enabled, _) {
                           return _Tile(
                             icon: Icons.notifications,
-                            title: '알림',
+                            title: l10n?.myPageNotificationTitle ?? '알림',
                             subtitle: enabled ? 'ON' : 'OFF',
                             onTap: _showNotificationSheet,
                           );
                         },
                       ),
-                      _SubSectionTitle('기타'),
+                      _SubSectionTitle(l10n?.myPageOther ?? '기타'),
                       _Tile(
                         icon: Icons.info_outline,
-                        title: '앱 정보',
-                        subtitle: '개인정보보호방침',
+                        title: l10n?.myPageAppInfo ?? '앱 정보',
+                        subtitle: l10n?.myPagePrivacyPolicy ?? '개인정보보호방침',
                         onTap: () {
                           Navigator.push(
                             context,
