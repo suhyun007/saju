@@ -422,4 +422,16 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get todayStoryHint =>
       '今日の物語は星からの小さなヒントに過ぎません。\nあなたの選択と歩む道は完全にあなただけのものです。';
+
+  @override
+  String get episodeTitle => '今日のエピソード';
+
+  @override
+  String get episodeSubtitle => '毎日あなたについての新しい物語を発見しましょう。';
+
+  @override
+  String get poetryTitle => '今日の詩朗読';
+
+  @override
+  String get poetrySubtitle => '毎日あなたに詩を一首書いてあげます。';
 }

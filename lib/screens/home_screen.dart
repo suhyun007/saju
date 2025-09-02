@@ -16,6 +16,7 @@ import '../models/saju_info.dart';
 import '../models/saju_api_response.dart';
 import '../models/user_model.dart';
 import '../screens/myPage.dart';
+import '../l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -60,6 +61,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     setState(() {
       _currentUser = user;
     });
+  }
+
+  String _formatNameWithHonorific(String name) {
+    final locale = Localizations.localeOf(context);
+    switch (locale.languageCode) {
+      case 'ko': return '$name님'; // 한국어: 님
+      case 'en': return name;     // 영어: 호칭 없음
+      case 'zh': return '$name';  // 중국어: 호칭 없음
+      case 'ja': return '$nameさん'; // 일본어: さん
+      default: return '$name님';
+    }
   }
 
   Future<void> _loadUserInfo() async {
@@ -231,10 +243,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         onTap: (index) {
           _handleTabTap(index);
         },
-        tabs: const [
-          Tab(text: '오늘의 가이드'),
-          Tab(text: '에피소드'),
-          Tab(text: '시 낭독'),
+        tabs: [
+          Tab(text: AppLocalizations.of(context)?.tabTodayGuide ?? '오늘의 가이드'),
+          Tab(text: AppLocalizations.of(context)?.tabEpisode ?? '에피소드'),
+          Tab(text: AppLocalizations.of(context)?.tabPoetry ?? '시 낭독'),
           // Tab(text: '이달의 운세'),
           // Tab(text: '올해의 운세'),
         ],
@@ -310,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             margin: const EdgeInsets.only(right: 0),
             child: Text(
               _sajuInfo != null && _sajuInfo!.name.isNotEmpty 
-                ? '${_sajuInfo!.name}님' 
+                ? _formatNameWithHonorific(_sajuInfo!.name)
                 : '손님',
               style: GoogleFonts.notoSans(
                 fontSize: 15,

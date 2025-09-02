@@ -150,5 +150,9 @@
   "abundance": "Abundance",
   "bodyAndMind": "Body & Mind",
   "growthAndFocus": "Growth & Focus",
-  "todayStoryHint": "Today's story is just a small hint from the stars.\nYour choices and the path you walk are entirely your own."
+  "todayStoryHint": "Today's story is just a small hint from the stars.\nYour choices and the path you walk are entirely your own.",
+  "episodeTitle": "Today's Episode",
+  "episodeSubtitle": "Discover a new story about you every day.",
+  "poetryTitle": "Today's Poetry",
+  "poetrySubtitle": "I write a poem for you every day."
 }

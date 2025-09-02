@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/app_localizations.dart';
 
 class DetailStoryScreen extends StatelessWidget {
   const DetailStoryScreen({super.key});
@@ -26,7 +27,7 @@ class DetailStoryScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '오늘의 에피소드',
+                    AppLocalizations.of(context)?.episodeTitle ?? '오늘의 에피소드',
                     style: GoogleFonts.notoSans(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -36,7 +37,7 @@ class DetailStoryScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '매일 새로운 당신의 이야기를 만나보세요.',
+                    AppLocalizations.of(context)?.episodeSubtitle ?? '매일 새로운 당신의 이야기를 만나보세요.',
                     style: GoogleFonts.notoSans(
                       fontSize: 15,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.9) : const Color(0xFF1A1A1A).withOpacity(0.9),

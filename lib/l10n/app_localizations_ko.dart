@@ -423,4 +423,16 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get todayStoryHint =>
       '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요.\n당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.';
+
+  @override
+  String get episodeTitle => '오늘의 에피소드';
+
+  @override
+  String get episodeSubtitle => '매일 새로운 당신의 이야기를 만나보세요.';
+
+  @override
+  String get poetryTitle => '오늘의 시 낭독';
+
+  @override
+  String get poetrySubtitle => '매일 당신에게 시 한 편을 지어드려요.';
 }

@@ -419,4 +419,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get todayStoryHint => '今天的故事只是星星给你的小提示。\n你的选择和走过的路完全是你自己的。';
+
+  @override
+  String get episodeTitle => '今日剧集';
+
+  @override
+  String get episodeSubtitle => '每天发现关于你的新故事。';
+
+  @override
+  String get poetryTitle => '今日诗歌';
+
+  @override
+  String get poetrySubtitle => '每天为您写一首诗。';
 }

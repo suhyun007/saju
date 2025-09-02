@@ -893,6 +893,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Today\'s story is just a small hint from the stars.\nYour choices and the path you walk are entirely your own.'**
   String get todayStoryHint;
+
+  /// No description provided for @episodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Episode'**
+  String get episodeTitle;
+
+  /// No description provided for @episodeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover a new story about you every day.'**
+  String get episodeSubtitle;
+
+  /// No description provided for @poetryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Poetry'**
+  String get poetryTitle;
+
+  /// No description provided for @poetrySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'I write a poem for you every day.'**
+  String get poetrySubtitle;
 }
 
 class _AppLocalizationsDelegate

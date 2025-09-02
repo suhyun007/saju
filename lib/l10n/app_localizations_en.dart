@@ -435,4 +435,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get todayStoryHint =>
       'Today\'s story is just a small hint from the stars.\nYour choices and the path you walk are entirely your own.';
+
+  @override
+  String get episodeTitle => 'Today\'s Episode';
+
+  @override
+  String get episodeSubtitle => 'Discover a new story about you every day.';
+
+  @override
+  String get poetryTitle => 'Today\'s Poetry';
+
+  @override
+  String get poetrySubtitle => 'I write a poem for you every day.';
 }

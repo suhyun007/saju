@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/app_localizations.dart';
 
 class ReadingScreen extends StatelessWidget {
   const ReadingScreen({super.key});
@@ -26,7 +27,7 @@ class ReadingScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '오늘의 시 낭독',
+                    AppLocalizations.of(context)?.poetryTitle ?? '오늘의 시 낭독',
                     style: GoogleFonts.notoSans(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -36,7 +37,7 @@ class ReadingScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '매일 당신에게 시 한 편을 지어드려요.',
+                    AppLocalizations.of(context)?.poetrySubtitle ?? '매일 당신에게 시 한 편을 지어드려요.',
                     style: GoogleFonts.notoSans(
                       fontSize: 15,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.9) : const Color(0xFF1A1A1A).withOpacity(0.9),

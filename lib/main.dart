@@ -121,7 +121,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
           title: '사주앱',
           debugShowCheckedModeBanner: false,
           locale: languageService.currentLocale,
-          supportedLocales: LanguageService.supportedLocales,
+          supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
