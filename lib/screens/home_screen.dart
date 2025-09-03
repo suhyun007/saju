@@ -248,13 +248,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           Container(
                             margin: const EdgeInsets.only(top: 14),
                             height: 2,
-                            color: const Color(0xFF1A1A1A),
+                            color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
                           )
                         else
                           Container(
                             margin: const EdgeInsets.only(top: 16),
                             height: 1,
-                            color: const Color(0xFFCCCCCC),
+                            color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
                           )
 
                       ],
@@ -286,13 +286,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           Container(
                             margin: const EdgeInsets.only(top: 14),
                             height: 2,
-                            color: const Color(0xFF1A1A1A),
+                            color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
                           )
                         else
                           Container(
                             margin: const EdgeInsets.only(top: 16),
                             height: 1,
-                            color: const Color(0xFFCCCCCC),
+                            color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
                           )
 
                       ],
@@ -324,13 +324,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           Container(
                             margin: const EdgeInsets.only(top: 14),
                             height: 2,
-                            color: const Color(0xFF1A1A1A),
+                            color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
                           )
                         else
                           Container(
                             margin: const EdgeInsets.only(top: 16),
                             height: 1,
-                            color: const Color(0xFFCCCCCC),
+                            color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
                           )
 
                       ],
@@ -351,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       children: [
         _isEpisodeLoading 
           ? Container(
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
               child: Padding(
                 padding: const EdgeInsets.only(top: 200),
                 child: Column(
@@ -360,9 +360,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     const SizedBox(height: 16),
                     Text(
                       AppLocalizations.of(context)?.loading ?? '로딩중...',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
                       ),
                     ),
                   ],
@@ -372,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           : const DetailStoryScreen(),
         _isPoetryLoading 
           ? Container(
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
               child: Padding(
                 padding: const EdgeInsets.only(top: 200),
                 child: Column(
@@ -381,9 +382,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     const SizedBox(height: 16),
                     Text(
                       AppLocalizations.of(context)?.loading ?? '로딩중...',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
                       ),
                     ),
                   ],
@@ -391,7 +393,28 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ),
             )
           : const ReadingScreen(),
-        const GuideScreen(),
+        _isGuideLoading 
+          ? Container(
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 200),
+                child: Column(
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizations.of(context)?.loading ?? '로딩중...',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : const GuideScreen(),
         // MonthScreen(),
         // YearScreen(),
       ],
