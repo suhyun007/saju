@@ -156,7 +156,7 @@ class _GuideScreenState extends State<GuideScreen> {
         ),
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 15),
+        padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -200,7 +200,7 @@ class _GuideScreenState extends State<GuideScreen> {
             
             // 통합된 운세 박스
             Container(
-              padding: const EdgeInsets.all(25),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: cardBg,
                 borderRadius: BorderRadius.circular(15),
@@ -245,7 +245,7 @@ class _GuideScreenState extends State<GuideScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   
                   // 소중한 인연
                   _buildFortuneSection(
@@ -253,7 +253,7 @@ class _GuideScreenState extends State<GuideScreen> {
                     _truncateAtSecondPeriod(_todayFortune!.love!),
                   ),
                   
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   
                   // 풍요로움
                   _buildFortuneSection(
@@ -261,7 +261,7 @@ class _GuideScreenState extends State<GuideScreen> {
                     _truncateAtSecondPeriod(_todayFortune!.wealth!),
                   ),
                   
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   
                   // 몸과 마음
                   _buildFortuneSection(
@@ -269,7 +269,7 @@ class _GuideScreenState extends State<GuideScreen> {
                     _truncateAtSecondPeriod(_todayFortune!.health!),
                   ),
                   
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   
                   // 성장과 집중
                   _buildFortuneSection(
@@ -326,7 +326,7 @@ class _GuideScreenState extends State<GuideScreen> {
             color: textColor,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 7),
         Text(
           content,
           style: GoogleFonts.notoSans(

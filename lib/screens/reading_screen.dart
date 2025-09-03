@@ -10,14 +10,14 @@ class ReadingScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Poetry UI
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
               child: Column(
                 children: [
                   const Icon(
@@ -56,7 +56,7 @@ class ReadingScreen extends StatelessWidget {
             Expanded(
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(30),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Theme.of(context).brightness == Brightness.dark 
                       ? Colors.white.withOpacity(0.1)
@@ -77,7 +77,7 @@ class ReadingScreen extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       Text(
                         '아침의 창문은\n호기심으로 반짝였다\n\n바람이 장난처럼\n머리칼을 흔들자\n내 마음도 웃었다\n\n낯선 골목에서\n새로운 대화가 피어났고\n작은 우연이\n오늘의 별자리를 연결했다\n\n머릿속 번개 같은 깨달음\n손끝에서 빛이 흘러\n내일로 가는 길을 비춘다\n\n밤하늘에 한 점 별이\n눈을 깜빡이며 말한다\n"오늘의 용기를 잊지 말 것\n그것이 내일을 부른다"',
                         style: GoogleFonts.notoSans(

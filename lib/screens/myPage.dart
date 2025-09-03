@@ -15,6 +15,7 @@ import '../utils/zodiac_utils.dart';
 import '../l10n/app_localizations.dart';
 import 'saju_input_screen.dart';
 import 'privacy_policy_screen.dart';
+import 'home_screen.dart';
 
 
 class MyPage extends StatefulWidget {
@@ -653,7 +654,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     final radius = size / 2;
     if (_user?.photoURL != null && _user!.photoURL!.isNotEmpty) {
       return CircleAvatar(
-        radius: radius,
+        radius: size / 2,
         backgroundImage: NetworkImage(_user!.photoURL!),
         backgroundColor: Colors.white10,
       );
@@ -672,6 +673,69 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
           fontSize: radius,
           fontWeight: FontWeight.bold,
         ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
+            Theme.of(context).scaffoldBackgroundColor,
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: 1, // My 페이지는 항상 1번 인덱스
+        onTap: (index) {
+          if (index == 0) {
+            // Home 아이콘 클릭 시 홈 화면의 첫 번째 탭으로 이동
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ),
+            );
+          }
+        },
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        selectedItemColor: Colors.grey.shade700,
+        unselectedItemColor: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+        selectedLabelStyle: GoogleFonts.notoSans(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: GoogleFonts.notoSans(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person_outline),
+            label: 'My',
+          ),
+        ],
       ),
     );
   }
@@ -777,6 +841,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     final border = isDark ? Colors.white.withOpacity(0.2) : Colors.grey.withOpacity(0.3);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      bottomNavigationBar: _buildBottomNavigationBar(),
       body: SafeArea(
         child: Column(
           children: [
@@ -892,6 +957,40 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                           );
                         },
                       ),
+                      
+                      // LunaVerse 브랜드 로고
+                      const SizedBox(height: 40),
+                      Center(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.auto_awesome,
+                              size: 21,
+                              color: isDark ? const Color(0xFFB3B3FF) : const Color(0xFF8B8BFF),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'LunaVerse',
+                              style: GoogleFonts.josefinSans(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: primary,
+                                letterSpacing: -0.5,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              'Version 1.0.0',
+                              style: GoogleFonts.notoSans(
+                                fontSize: 11,
+                                color: secondary.withOpacity(0.7),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -919,6 +1018,7 @@ class _Section extends StatelessWidget {
     
     return Container(
       padding: const EdgeInsets.all(30),
+      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(14),

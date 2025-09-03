@@ -167,21 +167,32 @@ class _SplashScreenState extends State<SplashScreen> {
                             child: Center(
                               child: _isLoading
                                   ? const SizedBox(
-                                      width: 26,
-                                      height: 26,
+                                      width: 25,
+                                      height: 25,
                                       child: CircularProgressIndicator(
                                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : Text(
-                                      l10n?.splashButtonText ?? 'AI Content',
-                                      style: const TextStyle(
-                                        fontSize: 23,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        letterSpacing: 1,
-                                      ),
+                                  : Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.auto_awesome,
+                                          color: Colors.white,
+                                          size: 25,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          l10n?.splashButtonText ?? 'AI Content',
+                                          style: const TextStyle(
+                                            fontSize: 23,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                             ),
                           ),

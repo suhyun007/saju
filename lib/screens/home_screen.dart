@@ -175,7 +175,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       child: BottomNavigationBar(
         currentIndex: _currentTabIndex == 0 ? 0 : 1, // 현재 탭에 따라 인덱스 설정
         onTap: (index) {
-          if (index == 1) {
+          if (index == 0) {
+            // Home 아이콘 클릭 시 첫 번째 탭(Episode)으로 이동
+            _handleTabTap(0);
+          } else if (index == 1) {
             // My 페이지로 이동 - push로 이동하여 뒤로가기 가능하게
             Navigator.push(
               context,
@@ -353,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ? Container(
               color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
               child: Padding(
-                padding: const EdgeInsets.only(top: 200),
+                padding: const EdgeInsets.only(top: 150),
                 child: Column(
                   children: [
                     const CircularProgressIndicator(),
@@ -375,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ? Container(
               color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
               child: Padding(
-                padding: const EdgeInsets.only(top: 200),
+                padding: const EdgeInsets.only(top: 150),
                 child: Column(
                   children: [
                     const CircularProgressIndicator(),
@@ -397,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ? Container(
               color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
               child: Padding(
-                padding: const EdgeInsets.only(top: 200),
+                padding: const EdgeInsets.only(top: 150),
                 child: Column(
                   children: [
                     const CircularProgressIndicator(),

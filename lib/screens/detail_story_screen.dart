@@ -10,7 +10,7 @@ class DetailStoryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -56,7 +56,7 @@ class DetailStoryScreen extends StatelessWidget {
             Expanded(
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(30),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Theme.of(context).brightness == Brightness.dark 
                       ? Colors.white.withOpacity(0.1) 
@@ -77,7 +77,7 @@ class DetailStoryScreen extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       Text(
                         '오전 열 시, 수현은 커튼 사이로 스며든 햇살을 손등으로 받았다. 쌍둥이자리의 호기심이 살짝 간지럽혀, 갑자기 낯선 골목 카페가 떠올랐다.가볼까? 스스로에게 묻는 말이 이미 답이었다.\n'
                         '카페 문을 여니, 종이 종이 울렸다. 바리스타가 웃으며 말한다. "오늘의 추천은 라임 허니 라떼예요." 달큰한 향이 코끝에 닿자, 마음이 금세 가벼워졌다. 수현은 창가 자리에 앉아 노트를 펼쳤다. 오늘은 머릿속 별들이 유난히 수다스러웠다.\n'
