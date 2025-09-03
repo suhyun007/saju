@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../widgets/feature_button.dart';
-import '../screens/today_screen.dart';
+import '../screens/guide_screen.dart';
 import '../screens/detail_story_screen.dart';
 import '../screens/reading_screen.dart';
 // import '../screens/month_screen.dart'; // 주석처리
@@ -216,110 +216,132 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildTabBar() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15),
-      padding: const EdgeInsets.only(top: 8),
-      transform: Matrix4.translationValues(0, -4, 0),
-      child: Row(
-        children: [
-          // 에피소드 탭
-          Expanded(
-            flex: 2, // 더 크게
-            child: GestureDetector(
-              onTap: () => _handleTabTap(0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: _currentTabIndex == 0
-                          ? (isDark ? const Color(0xFFCCCCFF) : const Color(0xFF3D4B91))
-                          : Colors.transparent,
-                      width: 3,
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.only(top: 6),
+          transform: Matrix4.translationValues(0, -4, 0),
+          child: Row(
+            children: [
+              // 에피소드 탭
+              Expanded(
+                flex: 1, // 더 크게
+                child: GestureDetector(
+                  onTap: () => _handleTabTap(0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Column(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)?.tabEpisode ?? '에피소드',
+                          style: GoogleFonts.notoSans(
+                            fontSize: _currentTabIndex == 0 ? 18 : 17,
+                            fontWeight: _currentTabIndex == 0 ? FontWeight.w600 : FontWeight.w500,
+                            color: _currentTabIndex == 0
+                                ? Theme.of(context).colorScheme.onBackground
+                                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (_currentTabIndex == 0)
+                          Container(
+                            margin: const EdgeInsets.only(top: 14),
+                            height: 2,
+                            color: const Color(0xFF1A1A1A),
+                          )
+                        else
+                          Container(
+                            margin: const EdgeInsets.only(top: 16),
+                            height: 1,
+                            color: const Color(0xFFCCCCCC),
+                          )
+
+                      ],
                     ),
                   ),
                 ),
-                child: Text(
-                  AppLocalizations.of(context)?.tabEpisode ?? '에피소드',
-                  style: GoogleFonts.notoSans(
-                    fontSize: _currentTabIndex == 0 ? 17 : 15,
-                    fontWeight: _currentTabIndex == 0 ? FontWeight.w600 : FontWeight.w400,
-                    color: _currentTabIndex == 0
-                        ? Theme.of(context).colorScheme.onBackground
-                        : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
-                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
               ),
-            ),
-          ),
-          // 시 낭독 탭
-          Expanded(
-            flex: 2, // 더 크게
-            child: GestureDetector(
-              onTap: () => _handleTabTap(1),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: _currentTabIndex == 1
-                          ? (isDark ? const Color(0xFFCCCCFF) : const Color(0xFF3D4B91))
-                          : Colors.transparent,
-                      width: 3,
+              // 시 낭독 탭
+              Expanded(
+                flex: 1, // 더 크게
+                child: GestureDetector(
+                  onTap: () => _handleTabTap(1),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Column(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)?.tabPoetry ?? '시 낭독',
+                          style: GoogleFonts.notoSans(
+                            fontSize: _currentTabIndex == 1 ? 18 : 17,
+                            fontWeight: _currentTabIndex == 1 ? FontWeight.w600 : FontWeight.w500,
+                            color: _currentTabIndex == 1
+                                ? Theme.of(context).colorScheme.onBackground
+                                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (_currentTabIndex == 1)
+                          Container(
+                            margin: const EdgeInsets.only(top: 14),
+                            height: 2,
+                            color: const Color(0xFF1A1A1A),
+                          )
+                        else
+                          Container(
+                            margin: const EdgeInsets.only(top: 16),
+                            height: 1,
+                            color: const Color(0xFFCCCCCC),
+                          )
+
+                      ],
                     ),
                   ),
                 ),
-                child: Text(
-                  AppLocalizations.of(context)?.tabPoetry ?? '시 낭독',
-                  style: GoogleFonts.notoSans(
-                    fontSize: _currentTabIndex == 1 ? 17 : 15,
-                    fontWeight: _currentTabIndex == 1 ? FontWeight.w600 : FontWeight.w400,
-                    color: _currentTabIndex == 1
-                        ? Theme.of(context).colorScheme.onBackground
-                        : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
-                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
               ),
-            ),
-          ),
-          // 오늘의 가이드 탭 (더 작게)
-          Expanded(
-            flex: 1, // 더 작게
-            child: GestureDetector(
-              onTap: () => _handleTabTap(2),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: _currentTabIndex == 2
-                          ? (isDark ? const Color(0xFFCCCCFF) : const Color(0xFF3D4B91))
-                          : Colors.transparent,
-                      width: 3,
+              // 오늘의 가이드 탭 (더 작게)
+              Expanded(
+                flex: 1, // 더 작게
+                child: GestureDetector(
+                  onTap: () => _handleTabTap(2),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Column(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)?.tabTodayGuide ?? '오늘의 가이드',
+                          style: GoogleFonts.notoSans(
+                            fontSize: _currentTabIndex == 2 ? 18 : 17,
+                            fontWeight: _currentTabIndex == 2 ? FontWeight.w600 : FontWeight.w500,
+                            color: _currentTabIndex == 2
+                                ? Theme.of(context).colorScheme.onBackground
+                                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),                            letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (_currentTabIndex == 2)
+                          Container(
+                            margin: const EdgeInsets.only(top: 14),
+                            height: 2,
+                            color: const Color(0xFF1A1A1A),
+                          )
+                        else
+                          Container(
+                            margin: const EdgeInsets.only(top: 16),
+                            height: 1,
+                            color: const Color(0xFFCCCCCC),
+                          )
+
+                      ],
                     ),
                   ),
                 ),
-                child: Text(
-                  AppLocalizations.of(context)?.tabTodayGuide ?? '오늘의 가이드',
-                  style: GoogleFonts.notoSans(
-                    fontSize: _currentTabIndex == 2 ? 17 : 15,
-                    fontWeight: _currentTabIndex == 2 ? FontWeight.w600 : FontWeight.w400,
-                    color: _currentTabIndex == 2
-                        ? Theme.of(context).colorScheme.onBackground
-                        : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
-                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -369,27 +391,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ),
             )
           : const ReadingScreen(),
-        _isGuideLoading 
-          ? Container(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 200),
-                child: Column(
-                  children: [
-                    const CircularProgressIndicator(),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppLocalizations.of(context)?.loading ?? '로딩중...',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : const TodayScreen(),
+        const GuideScreen(),
         // MonthScreen(),
         // YearScreen(),
       ],
@@ -423,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 6),
       child: Row(
         children: [
           Expanded(
@@ -431,16 +433,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'AstroStar',
+                  'LunaVerse',
                   style: GoogleFonts.josefinSans(
-                    fontSize: 28,
+                    fontSize: 25,
                     fontWeight: FontWeight.w600,
                     //fontStyle: FontStyle.italic,
                     height: 1.1,
                     color: Theme.of(context).brightness == Brightness.dark 
                         ? const Color(0xFFCCCCFF)
                         : const Color(0xFF3D4B91), //0xFF1A3A8A
-                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : -0.7,
+                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.7 : -0.7,
                   ),
                 ),
               ],

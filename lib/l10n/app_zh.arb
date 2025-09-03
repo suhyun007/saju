@@ -12,7 +12,7 @@
   "birthDate": "出生日期",
   "birthDateHint": "请选择您的出生日期",
   "birthTime": "出生时间",
-  "birthTimeHint": "请选择您的出生时间",
+  "birthTimeHint": "选择出生时间",
   "timeUnknown": "时间未知",
   "birthRegion": "出生地区",
   "searchRegion": "搜索地区",
@@ -47,9 +47,9 @@
   "successFriendInfoSaved": "朋友信息已保存！(星座: {zodiacSign})",
   "errorBirthInfoSaveFailed": "保存出生信息失败。",
   "errorFriendInfoSaveFailed": "保存朋友信息失败。",
-  "splashAppName": "AstroStar",
-  "splashSubtitle1": "AstroStar基于您的基本信息创作短篇故事。",
-  "splashSubtitle2": "AstroStar基于您的信息每天创作有趣的文学内容。",
+  "splashAppName": "LunaVerse",
+  "splashSubtitle1": "LunaVerse基于您的基本信息创作短篇故事。",
+  "splashSubtitle2": "LunaVerse基于您的信息每天创作有趣的文学内容。",
   "splashSubtitle3": "AI讲述您独特的运势故事。",
   "splashSubtitle4": "通过四柱和星座获得新的见解。",
   "splashButtonText": "开始AI内容",
@@ -152,5 +152,5 @@
   "privacyPolicySection7Title": "7. 隐私政策变更通知",
   "privacyPolicySection7Content": "本政策可能会根据法律、政策或安全技术的变化而修改，变更时将通过应用内通知或更新进行通知。",
   "privacyPolicyFooter": "我们将尽最大努力保护您的个人信息。",
-  "privacyPolicyTeam": "AstroStar团队"
+  "privacyPolicyTeam": "LunaVerse团队"
 }

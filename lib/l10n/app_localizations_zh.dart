@@ -45,7 +45,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get birthTime => '出生时间';
 
   @override
-  String get birthTimeHint => '请选择您的出生时间';
+  String get birthTimeHint => '选择出生时间';
 
   @override
   String get timeUnknown => '时间未知';
@@ -154,13 +154,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get errorFriendInfoSaveFailed => '保存朋友信息失败。';
 
   @override
-  String get splashAppName => 'AstroStar';
+  String get splashAppName => 'LunaVerse';
 
   @override
-  String get splashSubtitle1 => 'AstroStar基于您的基本信息创作短篇故事。';
+  String get splashSubtitle1 => 'LunaVerse基于您的基本信息创作短篇故事。';
 
   @override
-  String get splashSubtitle2 => 'AstroStar基于您的信息每天创作有趣的文学内容。';
+  String get splashSubtitle2 => 'LunaVerse基于您的信息每天创作有趣的文学内容。';
 
   @override
   String get splashSubtitle3 => 'AI讲述您独特的运势故事。';
@@ -331,7 +331,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get privacyPolicyFooter => '我们将尽最大努力保护您的个人信息。';
 
   @override
-  String get privacyPolicyTeam => 'AstroStar团队';
+  String get privacyPolicyTeam => 'LunaVerse团队';
 
   @override
   String get myPageManagement => '管理';

@@ -45,7 +45,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get birthTime => '出生時刻';
 
   @override
-  String get birthTimeHint => '時刻を選択してください';
+  String get birthTimeHint => '時刻選択';
 
   @override
   String get timeUnknown => '時刻不明';
@@ -154,13 +154,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorFriendInfoSaveFailed => '友達情報の保存に失敗しました。';
 
   @override
-  String get splashAppName => 'AstroStar';
+  String get splashAppName => 'LunaVerse';
 
   @override
-  String get splashSubtitle1 => 'AstroStarがあなたの基本情報を基に短い物語を作成します。';
+  String get splashSubtitle1 => 'LunaVerseがあなたの基本情報を基に短い物語を作成します。';
 
   @override
-  String get splashSubtitle2 => 'AstroStarがあなたの情報を基に毎日楽しい文学コンテンツを作成します。';
+  String get splashSubtitle2 => 'LunaVerseがあなたの情報を基に毎日楽しい文学コンテンツを作成します。';
 
   @override
   String get splashSubtitle3 => 'AIがあなただけの運勢物語を語ります。';
@@ -333,7 +333,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get privacyPolicyFooter => '個人情報保護のために最善を尽くします。';
 
   @override
-  String get privacyPolicyTeam => 'AstroStarチーム';
+  String get privacyPolicyTeam => 'LunaVerseチーム';
 
   @override
   String get myPageManagement => '管理';

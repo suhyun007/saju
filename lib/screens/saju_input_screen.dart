@@ -231,7 +231,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                         Expanded(
                           child: Text(
                             _isTimeUnknown ? l10n.timeUnknown : ( _selectedHour != null && _selectedMinute != null ? _formatTimeForDisplay(_selectedHour, _selectedMinute) : l10n.birthTimeHint),
-                            style: GoogleFonts.notoSans(fontSize: 15, color: _isTimeUnknown ? secondary.withOpacity(0.5) : (_selectedHour != null ? primary : secondary)),
+                            style: GoogleFonts.notoSans(fontSize: 13, color: _isTimeUnknown ? secondary.withOpacity(0.5) : (_selectedHour != null ? primary : secondary)),
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (!_isTimeUnknown) Icon(Icons.arrow_drop_down, color: secondary),

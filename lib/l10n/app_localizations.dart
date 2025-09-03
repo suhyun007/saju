@@ -177,7 +177,7 @@ abstract class AppLocalizations {
   /// No description provided for @birthTimeHint.
   ///
   /// In en, this message translates to:
-  /// **'Please select your birth time'**
+  /// **'Select birth time'**
   String get birthTimeHint;
 
   /// No description provided for @timeUnknown.
@@ -387,19 +387,19 @@ abstract class AppLocalizations {
   /// No description provided for @splashAppName.
   ///
   /// In en, this message translates to:
-  /// **'AstroStar'**
+  /// **'LunaVerse'**
   String get splashAppName;
 
   /// No description provided for @splashSubtitle1.
   ///
   /// In en, this message translates to:
-  /// **'AstroStar creates short stories based on your basic information.'**
+  /// **'LunaVerse creates short stories based on your basic information.'**
   String get splashSubtitle1;
 
   /// No description provided for @splashSubtitle2.
   ///
   /// In en, this message translates to:
-  /// **'AstroStar creates fun literary content\ndaily based on your information.'**
+  /// **'LunaVerse creates fun literary content\ndaily based on your information.'**
   String get splashSubtitle2;
 
   /// No description provided for @splashSubtitle3.
@@ -717,7 +717,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyTeam.
   ///
   /// In en, this message translates to:
-  /// **'AstroStar Team'**
+  /// **'LunaVerse Team'**
   String get privacyPolicyTeam;
 
   /// No description provided for @myPageManagement.
@@ -885,13 +885,13 @@ abstract class AppLocalizations {
   /// No description provided for @tabEpisode.
   ///
   /// In en, this message translates to:
-  /// **'Today\'s Episode'**
+  /// **'Episode'**
   String get tabEpisode;
 
   /// No description provided for @tabPoetry.
   ///
   /// In en, this message translates to:
-  /// **'Today\'s Poetry'**
+  /// **'Poetry'**
   String get tabPoetry;
 
   /// No description provided for @todayGuideDetailButton.

@@ -127,7 +127,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       const SizedBox(height: 17),
                       // 고정 메시지 (로컬라이징 적용)
                       Text(
-                        l10n?.splashSubtitle2 ?? 'AstroStar creates fun literary content daily based on your information.',
+                        l10n?.splashSubtitle2 ?? 'LunaVerse creates fun literary content daily based on your information.',
                         style: TextStyle(
                           fontSize: l10n?.localeName == 'en' ? 20.0 : 19.0, // 영어일 때 20, 한국어일 때 19
                           fontWeight: FontWeight.w300,
@@ -147,7 +147,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       const SizedBox(height: 22),
                       // 시작하기 버튼 (로컬라이징 적용)
                       Container(
-                        width: 370,
+                        width: 360,
                         height: 59,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
@@ -175,7 +175,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                       ),
                                     )
                                   : Text(
-                                      l10n?.splashButtonText ?? 'Start AI Content',
+                                      l10n?.splashButtonText ?? 'AI Content',
                                       style: const TextStyle(
                                         fontSize: 23,
                                         fontWeight: FontWeight.bold,

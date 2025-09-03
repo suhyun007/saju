@@ -13,7 +13,7 @@ class SplashTextService {
       print('스플래시 텍스트 로드 실패: $e');
       // 기본값 설정
       _splashTexts = {
-        "app_name": "AstroStar",
+        "app_name": "LunaVerse",
         "subtitle": "별자리의 신비로움을 통해 운세를 알아보세요",
         "button_text": "시작하기",
         "loading_text": "로딩 중...",
@@ -22,7 +22,7 @@ class SplashTextService {
   }
   
   static String getAppName() {
-    return _splashTexts?['app_name'] ?? 'AstroStar';
+    return _splashTexts?['app_name'] ?? 'LunaVerse';
   }
   
   static String getSubtitle() {

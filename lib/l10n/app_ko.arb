@@ -12,7 +12,7 @@
   "birthDate": "출생일자",
   "birthDateHint": "생년월일을 선택해주세요",
   "birthTime": "출생시간",
-  "birthTimeHint": "출생시간을 선택해주세요",
+  "birthTimeHint": "출생시간 선택",
   "timeUnknown": "시간모름",
   "birthRegion": "태어난 지역",
   "searchRegion": "지역 검색하기",
@@ -47,9 +47,9 @@
   "successFriendInfoSaved": "친구 정보가 저장되었습니다! (띠: {zodiacSign})",
   "errorBirthInfoSaveFailed": "출생 정보 저장에 실패했습니다.",
   "errorFriendInfoSaveFailed": "친구 정보 저장에 실패했습니다.",
-  "splashAppName": "AstroStar",
-  "splashSubtitle1": "AstroStar가 당신의 기본정보를 바탕으로 짧은 이야기를 만들어드립니다.",
-  "splashSubtitle2": "AstroStar가 당신의 정보를 바탕으로 매일 재미있는 문학 콘텐츠를 만들어드립니다.",
+  "splashAppName": "LunaVerse",
+  "splashSubtitle1": "LunaVerse가 당신의 기본정보를 바탕으로 짧은 이야기를 만들어드립니다.",
+  "splashSubtitle2": "LunaVerse가 당신의 정보를 바탕으로 매일 재미있는 문학 콘텐츠를 만들어드립니다.",
   "splashSubtitle3": "당신만의 운세 이야기를 AI가 들려드립니다.",
   "splashSubtitle4": "사주와 별자리를 통해 새로운 인사이트를 얻어보세요.",
   "splashButtonText": "AI 콘텐츠 시작",
@@ -130,7 +130,7 @@
   "wealth": "풍요",
   "mind": "마음",
   "growth": "성장",
-  "tabTodayGuide": "오늘의 가이드",
+  "tabTodayGuide": "가이드",
   "tabEpisode": "에피소드",
   "tabPoetry": "시 낭독",
   "todayGuideDetailButton": "오늘의 가이드 자세히 보기",
@@ -160,5 +160,5 @@
   "privacyPolicySection7Title": "7. 개인정보처리방침 변경 안내",
   "privacyPolicySection7Content": "본 방침은 법령, 정책 또는 보안 기술의 변경에 따라 수정될 수 있으며, 변경 시 앱 내 공지 또는 업데이트를 통해 안내합니다.",
   "privacyPolicyFooter": "개인정보 보호를 위해 최선을 다하겠습니다.",
-  "privacyPolicyTeam": "AstroStar Team"
+  "privacyPolicyTeam": "LunaVerse Team"
 }

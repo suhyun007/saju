@@ -45,7 +45,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get birthTime => '출생시간';
 
   @override
-  String get birthTimeHint => '출생시간을 선택해주세요';
+  String get birthTimeHint => '출생시간 선택';
 
   @override
   String get timeUnknown => '시간모름';
@@ -154,14 +154,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorFriendInfoSaveFailed => '친구 정보 저장에 실패했습니다.';
 
   @override
-  String get splashAppName => 'AstroStar';
+  String get splashAppName => 'LunaVerse';
 
   @override
-  String get splashSubtitle1 => 'AstroStar가 당신의 기본정보를 바탕으로 짧은 이야기를 만들어드립니다.';
+  String get splashSubtitle1 => 'LunaVerse가 당신의 기본정보를 바탕으로 짧은 이야기를 만들어드립니다.';
 
   @override
   String get splashSubtitle2 =>
-      'AstroStar가 당신의 정보를 바탕으로 매일 재미있는 문학 콘텐츠를 만들어드립니다.';
+      'LunaVerse가 당신의 정보를 바탕으로 매일 재미있는 문학 콘텐츠를 만들어드립니다.';
 
   @override
   String get splashSubtitle3 => '당신만의 운세 이야기를 AI가 들려드립니다.';
@@ -334,7 +334,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get privacyPolicyFooter => '개인정보 보호를 위해 최선을 다하겠습니다.';
 
   @override
-  String get privacyPolicyTeam => 'AstroStar Team';
+  String get privacyPolicyTeam => 'LunaVerse Team';
 
   @override
   String get myPageManagement => '관리';
@@ -415,7 +415,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get growth => '성장';
 
   @override
-  String get tabTodayGuide => '오늘의 가이드';
+  String get tabTodayGuide => '가이드';
 
   @override
   String get tabEpisode => '에피소드';

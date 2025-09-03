@@ -45,7 +45,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get birthTime => 'Birth Time';
 
   @override
-  String get birthTimeHint => 'Please select your birth time';
+  String get birthTimeHint => 'Select birth time';
 
   @override
   String get timeUnknown => 'Time Unknown';
@@ -157,15 +157,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorFriendInfoSaveFailed => 'Failed to save friend information.';
 
   @override
-  String get splashAppName => 'AstroStar';
+  String get splashAppName => 'LunaVerse';
 
   @override
   String get splashSubtitle1 =>
-      'AstroStar creates short stories based on your basic information.';
+      'LunaVerse creates short stories based on your basic information.';
 
   @override
   String get splashSubtitle2 =>
-      'AstroStar creates fun literary content\ndaily based on your information.';
+      'LunaVerse creates fun literary content\ndaily based on your information.';
 
   @override
   String get splashSubtitle3 => 'AI tells your unique fortune story.';
@@ -346,7 +346,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'We will do our best to protect your personal information.';
 
   @override
-  String get privacyPolicyTeam => 'AstroStar Team';
+  String get privacyPolicyTeam => 'LunaVerse Team';
 
   @override
   String get myPageManagement => 'Management';
@@ -430,10 +430,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabTodayGuide => 'Guide';
 
   @override
-  String get tabEpisode => 'Today\'s Episode';
+  String get tabEpisode => 'Episode';
 
   @override
-  String get tabPoetry => 'Today\'s Poetry';
+  String get tabPoetry => 'Poetry';
 
   @override
   String get todayGuideDetailButton => 'View Today\'s Guide';

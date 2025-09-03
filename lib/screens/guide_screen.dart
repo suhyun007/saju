@@ -7,14 +7,14 @@ import '../models/saju_api_response.dart';
 import '../l10n/app_localizations.dart';
 
 
-class TodayScreen extends StatefulWidget {
-  const TodayScreen({super.key});
+class GuideScreen extends StatefulWidget {
+  const GuideScreen({super.key});
 
   @override
-  State<TodayScreen> createState() => _TodayScreenState();
+  State<GuideScreen> createState() => _GuideScreenState();
 }
 
-class _TodayScreenState extends State<TodayScreen> {
+class _GuideScreenState extends State<GuideScreen> {
   SajuInfo? _sajuInfo;
   TodayFortune? _todayFortune;
   bool _isLoading = true;
@@ -197,107 +197,27 @@ class _TodayScreenState extends State<TodayScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            // 점수 표시
+            
+            // 통합된 운세 박스
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: border),
+              ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    Localizations.localeOf(context).languageCode == 'en' 
-                        ? '${_todayFortune!.overallScore}'
-                        : '${_todayFortune!.overallScore} ${AppLocalizations.of(context)?.point ?? '점'}',
-                    style: GoogleFonts.notoSans(
-                      fontSize: Localizations.localeOf(context).languageCode == 'en' ? 39 : 40, // 영어일 때 -1 작게
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF7A68B7), //0xFF5C4B8A   //0xFF7A68B7
-                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -1 : 0, // 영어일 때 글자 간격 -1
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  // RadarChart
-                  SizedBox(
-                    height: 180,
-                    child: RadarChart(
-                      RadarChartData(
-                        dataSets: [
-                          RadarDataSet(
-                            dataEntries: [
-                              RadarEntry(value: _todayFortune!.overallScore?.toDouble() ?? 0), // 전체의 흐름
-                              RadarEntry(value: _todayFortune!.loveScore?.toDouble() ?? 0), // 소중한 인연
-                              RadarEntry(value: _todayFortune!.wealthScore?.toDouble() ?? 0), // 풍요로움
-                              RadarEntry(value: _todayFortune!.healthScore?.toDouble() ?? 0), // 몸과 마음
-                              RadarEntry(value: _todayFortune!.studyCore?.toDouble() ?? 0), // 성장과 집중
-                            ],
-                            fillColor: Theme.of(context).brightness == Brightness.dark 
-                                ? const Color(0xFFB488FF).withOpacity(0.4) // 다크모드에서는 투명하게
-                                : const Color(0xFF6E5DE7).withOpacity(0.5), // 라이트모드에서는 원래 색상
-                            borderColor: Colors.transparent,
-                            borderWidth: 0,
-                            entryRadius: 0,
-                          ),
-                        ],
-                        //차트에 보이는 소중한 인연..타이틀
-                        titleTextStyle: GoogleFonts.notoSans(
-                          color: textColor,
-                          fontSize: Localizations.localeOf(context).languageCode == 'en' ? 15 : 16, // 영어일 때 -1 작게
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -1 : 0, // 영어일 때 글자 간격 -1
-                        ),
-                        titlePositionPercentageOffset: 0.15,
-                        //radarBackgroundColor: Colors.blue,
-                        tickCount: 1,
-                        gridBorderData: const BorderSide(color: Colors.transparent),    // 그리드 선 숨김
-                        tickBorderData: const BorderSide(color: Colors.transparent),  // 안쪽 선 숨김
-                        borderData: FlBorderData(show: false),
-                        radarBorderData: const BorderSide(color: Colors.transparent), //제일큰 원
-                        radarBackgroundColor: Theme.of(context).brightness == Brightness.dark 
-                            ? Colors.grey.shade900
-                            : const Color(0xEEE9E6FF).withOpacity(1), //  바탕색  
-                        ticksTextStyle: GoogleFonts.notoSans(
-                          color: Colors.transparent,  // 숫자 숨김
-                          fontSize: 0,               // 숫자 숨김
-                        ),
-                        getTitle: (index, angle) {
-                          switch (index) {
-                            case 0:
-                              return RadarChartTitle(text: AppLocalizations.of(context)?.overall ?? '전체');
-                            case 1:
-                              return RadarChartTitle(text: AppLocalizations.of(context)?.relationship ?? '인연');
-                            case 2:
-                              return RadarChartTitle(text: AppLocalizations.of(context)?.wealth ?? '풍요');
-                            case 3:
-                              return RadarChartTitle(text: AppLocalizations.of(context)?.mind ?? '마음');
-                            case 4:
-                              return RadarChartTitle(text: AppLocalizations.of(context)?.growth ?? '성장');
-                            default:
-                              return const RadarChartTitle(text: '');
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    _truncateAtFirstPeriod(_todayFortune!.overall!),
-                                style: GoogleFonts.notoSans(
-                                fontSize: 17,
-                                color: textColor,
-                                height: 1.4,
-                              ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 10),
-                  
-                  // 오늘의 운세 자세히 보기 버튼
+                  // 오늘의 가이드 자세히 보기 버튼 (박스 위쪽에 배치)
                   Container(
                     width: double.infinity,
                     height: 53,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Color(0xFF5d7df4), // 채도 높은 파란색
-                          Color(0xFF9961f6), // 채도 높은 보라색
+                          Color(0xFF5d7df4),
+                          Color(0xFF9961f6),
                         ],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
@@ -324,23 +244,9 @@ class _TodayScreenState extends State<TodayScreen> {
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // 통합된 운세 박스
-            Container(
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                color: cardBg,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                  
+                  const SizedBox(height: 30),
+                  
                   // 소중한 인연
                   _buildFortuneSection(
                     AppLocalizations.of(context)?.preciousRelationship ?? '소중한 인연',

@@ -14,7 +14,7 @@ class ReadingScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 제목
+            // Poetry UI
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -30,9 +30,9 @@ class ReadingScreen extends StatelessWidget {
                     AppLocalizations.of(context)?.poetryTitle ?? '오늘의 시 낭독',
                     style: GoogleFonts.notoSans(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
-                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.4 : 0,
+                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -42,7 +42,7 @@ class ReadingScreen extends StatelessWidget {
                     style: GoogleFonts.notoSans(
                       fontSize: 15,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.9) : const Color(0xFF1A1A1A).withOpacity(0.9),
-                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.4 : 0,
+                      letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.3 : 0,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -52,7 +52,7 @@ class ReadingScreen extends StatelessWidget {
             
             const SizedBox(height: 10),
             
-            // 시 내용
+            // Poetry 내용만 표시
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -71,8 +71,8 @@ class ReadingScreen extends StatelessWidget {
                       Text(
                         '《오늘, 바람에게 묻다》',
                         style: GoogleFonts.notoSans(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
                           color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                         ),
                         textAlign: TextAlign.center,

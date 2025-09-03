@@ -175,7 +175,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    AppLocalizations.of(context)?.privacyPolicyTeam ?? 'AstroStar Team',
+                    AppLocalizations.of(context)?.privacyPolicyTeam ?? 'LunaVerse Team',
                     style: GoogleFonts.notoSans(
                       fontSize: 12,
                       color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
