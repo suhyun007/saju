@@ -17,7 +17,7 @@ class ReadingScreen extends StatelessWidget {
             // Poetry UI
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
+              padding: const EdgeInsets.only(top: 10, bottom: 20, left: 20, right: 20),
               child: Column(
                 children: [
                   const Icon(
@@ -25,22 +25,22 @@ class ReadingScreen extends StatelessWidget {
                     color: Color(0xFFB3B3FF),
                     size: 40,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 2),
                   Text(
                     AppLocalizations.of(context)?.poetryTitle ?? '오늘의 시 낭독',
                     style: GoogleFonts.notoSans(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                       letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 2),
                   Text(
                     AppLocalizations.of(context)?.poetrySubtitle ?? '매일 당신에게 시 한 편을 지어드려요.',
                     style: GoogleFonts.notoSans(
                       fontSize: 15,
+                      fontWeight: FontWeight.w400,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.9) : const Color(0xFF1A1A1A).withOpacity(0.9),
                       letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.3 : 0,
                     ),
@@ -50,7 +50,7 @@ class ReadingScreen extends StatelessWidget {
               ),
             ),
             
-            const SizedBox(height: 10),
+            const SizedBox(height: 0),
             
             // Poetry 내용만 표시
             Expanded(

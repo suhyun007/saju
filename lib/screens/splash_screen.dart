@@ -182,7 +182,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                           color: Colors.white,
                                           size: 25,
                                         ),
-                                        const SizedBox(width: 10),
+                                        const SizedBox(width: 5),
                                         Text(
                                           l10n?.splashButtonText ?? 'AI Content',
                                           style: const TextStyle(

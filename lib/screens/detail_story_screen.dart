@@ -17,7 +17,7 @@ class DetailStoryScreen extends StatelessWidget {
             // 제목
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(top: 10, bottom: 20, left: 20, right: 20),
               child: Column(
                 children: [
                   const Icon(
@@ -25,22 +25,22 @@ class DetailStoryScreen extends StatelessWidget {
                     color: Color(0xFFB3B3FF),
                     size: 40,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 2),
                   Text(
                     AppLocalizations.of(context)?.episodeTitle ?? '오늘의 에피소드',
                     style: GoogleFonts.notoSans(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                       letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 2),
                   Text(
                     AppLocalizations.of(context)?.episodeSubtitle ?? '매일 새로운 당신의 이야기를 만나보세요.',
                     style: GoogleFonts.notoSans(
                       fontSize: 15,
+                      fontWeight: FontWeight.w400,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.9) : const Color(0xFF1A1A1A).withOpacity(0.9),
                       letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
                     ),
@@ -49,9 +49,6 @@ class DetailStoryScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
-            const SizedBox(height: 10),
-            
             // 이야기 내용 - 전체 화면에서 패딩 20 안에 들어가도록
             Expanded(
               child: Container(

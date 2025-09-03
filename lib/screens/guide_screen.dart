@@ -163,7 +163,7 @@ class _GuideScreenState extends State<GuideScreen> {
             // 가이드 UI (아이콘, 타이틀, 설명글)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(top: 10, bottom: 20, left: 20, right: 20),
               child: Column(
                 children: [
                   // 가이드 아이콘
@@ -172,23 +172,23 @@ class _GuideScreenState extends State<GuideScreen> {
                     size: 40,
                     color: const Color(0xFFB3B3FF),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 2),
                   // 가이드 타이틀
                   Text(
                     'Today\'s Guide',
                     style: GoogleFonts.notoSans(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
                       color: textColor,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 2),
                   // 가이드 설명글
                   Text(
                     'Get personalized guidance for your day ahead.',
                     style: GoogleFonts.notoSans(
                       fontSize: 15,
+                      fontWeight: FontWeight.w400,
                       color: textColor.withOpacity(0.9),
                     ),
                     textAlign: TextAlign.center,
@@ -196,7 +196,7 @@ class _GuideScreenState extends State<GuideScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 0),
             
             // 통합된 운세 박스
             Container(
@@ -322,7 +322,7 @@ class _GuideScreenState extends State<GuideScreen> {
           title,
           style: GoogleFonts.notoSans(
             fontSize: 19,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: textColor,
           ),
         ),
