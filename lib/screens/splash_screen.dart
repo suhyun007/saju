@@ -180,13 +180,13 @@ class _SplashScreenState extends State<SplashScreen> {
                                         Icon(
                                           Icons.auto_awesome,
                                           color: Colors.white,
-                                          size: 25,
+                                          size: 23,
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
                                           l10n?.splashButtonText ?? 'AI Content',
                                           style: const TextStyle(
-                                            fontSize: 23,
+                                            fontSize: 22,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white,
                                             letterSpacing: 1,

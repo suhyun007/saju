@@ -323,17 +323,20 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                               Text(
-                                l10n?.myPageNotificationTime ?? '알림 시간: ',
-                                style: TextStyle(color: Colors.black, fontSize: 16),
+                                l10n?.myPageNotificationTime ?? '알림 시간 ',
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white, 
+                                  fontSize: 16
+                                ),
                               ),
                               // 시간 선택 드롭다운
                               Container(
                                 height: 32,
-                                        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: Colors.white.withOpacity(0.2)),
-        ),
+                                decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: Colors.white.withOpacity(0.2)),
+                              ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
                                   value: _selectedHour,
@@ -359,16 +362,16 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                               ),
                               Text(
                                 ' : ',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
+                                style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white, fontSize: 16),
                               ),
                               // 분 선택 드롭다운
                               Container(
                                 height: 32,
-                                        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: Colors.white.withOpacity(0.2)),
-        ),
+                                decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: Colors.white.withOpacity(0.2)),
+                              ),
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                                 child: DropdownButton<String>(
                                   value: _selectedMinute,
@@ -677,68 +680,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
-            Theme.of(context).scaffoldBackgroundColor,
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        currentIndex: 1, // My 페이지는 항상 1번 인덱스
-        onTap: (index) {
-          if (index == 0) {
-            // Home 아이콘 클릭 시 홈 화면의 첫 번째 탭으로 이동
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
-              ),
-            );
-          }
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        selectedItemColor: Colors.grey.shade700,
-        unselectedItemColor: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
-        selectedLabelStyle: GoogleFonts.notoSans(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: GoogleFonts.notoSans(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person_outline),
-            label: 'My',
-          ),
-        ],
-      ),
-    );
-  }
+  // 공용 AppBottomNavBar 사용으로 기존 구현 제거
 
   void _showProfileSheet() {
     if (_user == null) return;
@@ -840,10 +782,16 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.grey.withOpacity(0.1);
     final border = isDark ? Colors.white.withOpacity(0.2) : Colors.grey.withOpacity(0.3);
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      bottomNavigationBar: _buildBottomNavigationBar(),
-      body: SafeArea(
-        child: Column(
+      backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
+      body: Container(
+        decoration: isDark ? BoxDecoration(
+          image: DecorationImage(
+            image: const AssetImage('assets/design/launch_bg.png'),
+            fit: BoxFit.cover,
+          ),
+        ) : null,
+        child: SafeArea(
+          child: Column(
           children: [
             // Header
             Container(
@@ -959,7 +907,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                       ),
                       
                       // LunaVerse 브랜드 로고
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 60),
                       Center(
                         child: Column(
                           children: [
@@ -999,6 +947,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
             ),
           ],
         ),
+        ),
       ),
     );
   }
@@ -1017,17 +966,12 @@ class _Section extends StatelessWidget {
     final textColor = isDark ? Colors.white70 : const Color(0xFF1A1A1A);
     
     return Container(
-      padding: const EdgeInsets.all(30),
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: border),
-      ),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-                  Text(
+          Text(
           title,
           style: GoogleFonts.notoSans(
             fontSize: 21,

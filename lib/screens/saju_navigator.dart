@@ -1,153 +1,61 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'home_screen.dart';
 import 'myPage.dart';
 
-class SajuNavigator extends StatefulWidget {
-  final int initialIndex;
-  
-  const SajuNavigator({super.key, this.initialIndex = 0});
+class SajuNavigator extends StatelessWidget {
+  const SajuNavigator({
+    super.key,
+    required this.currentTabIndex,
+    required this.onTap,
+  });
 
-  @override
-  State<SajuNavigator> createState() => _SajuNavigatorState();
-}
-
-class _SajuNavigatorState extends State<SajuNavigator> {
-  int _currentIndex = 0; // 기본값
-
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const MyPage(),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _currentIndex = widget.initialIndex;
-  }
-
-  Widget _buildMyPageWithBackHandler() {
-    return WillPopScope(
-      onWillPop: () async {
-        // 뒤로가기 시 홈 화면으로 전환
-        setState(() {
-          _currentIndex = 0;
-        });
-        return false; // 기본 뒤로가기 동작 방지
-      },
-      child: const MyPage(),
-    );
-  }
+  final int currentTabIndex; // 0: Episode, 1: Poetry, 2: Guide
+  final ValueChanged<int> onTap; // 0: Home, 1: My
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _currentIndex == 1 
-          ? _buildMyPageWithBackHandler()
-          : _screens[_currentIndex],
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFF2C1810).withOpacity(0.95),
-              const Color(0xFF2C1810),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            Color(0xFF5d7df4).withOpacity(0.6),
+            Color(0xFF9961f6).withOpacity(0.6),
+          ],
+        ),
+      ),
+      child: BottomNavigationBar(
+        currentIndex: currentTabIndex == 0 ? 0 : 1,
+        onTap: onTap,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        selectedItemColor: const Color(0xFF1A1A1A).withOpacity(0.6),
+        unselectedItemColor: const Color(0xFF1A1A1A).withOpacity(0.6),
+        selectedLabelStyle: GoogleFonts.notoSans(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: GoogleFonts.notoSans(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 150,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _currentIndex = 0;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(
-                        color: _currentIndex == 0 ? Colors.amber : Colors.transparent,
-                        width: 2,
-                      ),
-                    ),
-                  ), 
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _currentIndex == 0 ? Icons.home : Icons.home_outlined,
-                        color: _currentIndex == 0 ? Colors.amber : Colors.white.withOpacity(0.6),
-                        size: 24,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Home',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 12,
-                          fontWeight: _currentIndex == 0 ? FontWeight.w600 : FontWeight.w500,
-                          color: _currentIndex == 0 ? Colors.amber : Colors.white.withOpacity(0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 150,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _currentIndex = 1;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(
-                        color: _currentIndex == 1 ? Colors.amber : Colors.transparent,
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _currentIndex == 1 ? Icons.person : Icons.person_outline,
-                        color: _currentIndex == 1 ? Colors.amber : Colors.white.withOpacity(0.6),
-                        size: 24,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'My',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 12,
-                          fontWeight: _currentIndex == 1 ? FontWeight.w600 : FontWeight.w500,
-                          color: _currentIndex == 1 ? Colors.amber : Colors.white.withOpacity(0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            activeIcon: Icon(Icons.person),
+            label: 'My',
+          ),
+        ],
       ),
     );
   }

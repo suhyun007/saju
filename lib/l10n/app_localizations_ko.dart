@@ -265,6 +265,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get todayDetailTitle => '오늘의 가이드';
 
   @override
+  String get guideSubtitle => '오늘 하루를 위한 맞춤형 가이드를 받아보세요.';
+
+  @override
   String get luckyItem => '행운의 아이템';
 
   @override
@@ -352,7 +355,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get myPageAppInfo => '앱 정보';
 
   @override
-  String get myPageNotificationTime => '알림 시간: ';
+  String get myPageNotificationTime => '알림 시간 ';
 
   @override
   String get myPageLoggedInWithGoogle => '구글에서 로그인';
@@ -440,7 +443,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get todayStoryHint =>
-      '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요.\n당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.';
+      '오늘의 이야기는 별이 전해주는 작은 힌트일 뿐이에요.\n당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.';
 
   @override
   String get episodeTitle => '오늘의 에피소드';

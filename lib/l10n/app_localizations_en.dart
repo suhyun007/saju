@@ -272,6 +272,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get todayDetailTitle => 'Today\'s Guide';
 
   @override
+  String get guideSubtitle => 'Get personalized guidance for your day ahead.';
+
+  @override
   String get luckyItem => 'Lucky Item';
 
   @override
@@ -364,7 +367,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myPageAppInfo => 'App Info';
 
   @override
-  String get myPageNotificationTime => 'Notification time: ';
+  String get myPageNotificationTime => 'Notification time ';
 
   @override
   String get myPageLoggedInWithGoogle => 'Logged in with Google';

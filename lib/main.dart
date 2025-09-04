@@ -102,7 +102,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
       primarySwatch: Colors.brown,
       primaryColor: const Color(0xFF3366FF),
       fontFamily: GoogleFonts.notoSansKr().fontFamily,
-      scaffoldBackgroundColor: Colors.black,
+      scaffoldBackgroundColor: Colors.transparent,
     );
 
     return ValueListenableBuilder<ThemeMode>(

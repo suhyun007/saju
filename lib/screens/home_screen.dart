@@ -17,6 +17,7 @@ import '../models/saju_api_response.dart';
 import '../models/user_model.dart';
 import '../screens/myPage.dart';
 import '../l10n/app_localizations.dart';
+import 'saju_navigator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,9 +36,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   UserModel? _currentUser;
   late TabController _tabController;
   int _currentTabIndex = 0;
-  bool _isEpisodeLoading = false;
-  bool _isPoetryLoading = false;
-  bool _isGuideLoading = false;
 
   @override
   void initState() {
@@ -125,9 +123,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
+      backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
+      body: Container(
+        decoration: isDark ? BoxDecoration(
+          image: DecorationImage(
+            image: const AssetImage('assets/design/launch_bg.png'),
+            fit: BoxFit.cover,
+          ),
+        ) : null,
+        child: SafeArea(
         child: Column(
           children: [
             // 헤더
@@ -144,8 +150,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
           ],
         ),
+        ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      /*bottomNavigationBar: SajuNavigator(
+        currentTabIndex: _currentTabIndex,
+        onTap: (index) {
+          if (index == 0) {
+            _handleTabTap(0);
+          } else if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MyPage()),
+            );
+          }
+        },
+      ),*/
     );
   }
 
@@ -153,72 +172,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return WebViewWidget(controller: _webController);
   }
 
-  Widget _buildBottomNavigationBar() {
-    return Container(
-              decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
-              Theme.of(context).scaffoldBackgroundColor,
-            ],
-          ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _currentTabIndex == 0 ? 0 : 1, // 현재 탭에 따라 인덱스 설정
-        onTap: (index) {
-          if (index == 0) {
-            // Home 아이콘 클릭 시 첫 번째 탭(Episode)으로 이동
-            _handleTabTap(0);
-          } else if (index == 1) {
-            // My 페이지로 이동 - push로 이동하여 뒤로가기 가능하게
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MyPage()),
-            );
-          }
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        selectedItemColor: Colors.grey.shade700,
-        unselectedItemColor: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
-        selectedLabelStyle: GoogleFonts.notoSans(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: GoogleFonts.notoSans(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person_outline),
-            label: 'My',
-          ),
-        ],
-      ),
-    );
-  }
+  // _buildBottomNavigationBar 제거됨 (AppBottomNavBar로 대체)
 
   Widget _buildTabBar() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+  
     return Column(
       children: [
         Container(
@@ -245,19 +203,35 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 ? Theme.of(context).colorScheme.onBackground
                                 : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
                           ),
+                          strutStyle: StrutStyle(
+                            fontSize: _currentTabIndex == 0 ? 18 : 17,
+                            height: 1.0,
+                            leading: 0.0,
+                            forceStrutHeight: true,
+                          ),
+                          textHeightBehavior: const TextHeightBehavior(
+                            applyHeightToFirstAscent: false,
+                            applyHeightToLastDescent: false,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                         if (_currentTabIndex == 0)
                           Container(
-                            margin: const EdgeInsets.only(top: 14),
+                            margin: const EdgeInsets.only(top: 12),  // 에피소드 탭 라인바 위치 조정
                             height: 2,
-                            color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
                           )
                         else
                           Container(
-                            margin: const EdgeInsets.only(top: 16),
+                            margin: const EdgeInsets.only(top: 13),  // 선택되지 않은 탭 라인바 위치 조정
                             height: 1,
-                            color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
                           )
 
                       ],
@@ -283,19 +257,35 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 ? Theme.of(context).colorScheme.onBackground
                                 : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
                           ),
+                          strutStyle: StrutStyle(
+                            fontSize: _currentTabIndex == 1 ? 18 : 17,
+                            height: 1.0,
+                            leading: 0.0,
+                            forceStrutHeight: true,
+                          ),
+                          textHeightBehavior: const TextHeightBehavior(
+                            applyHeightToFirstAscent: false,
+                            applyHeightToLastDescent: false,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                         if (_currentTabIndex == 1)
                           Container(
-                            margin: const EdgeInsets.only(top: 14),
+                            margin: const EdgeInsets.only(top: 12),  // 시 낭독 탭 라인바 위치 조정
                             height: 2,
-                            color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
                           )
                         else
                           Container(
-                            margin: const EdgeInsets.only(top: 16),
+                            margin: const EdgeInsets.only(top: 13),  // 선택되지 않은 탭 라인바 위치 조정
                             height: 1,
-                            color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
                           )
 
                       ],
@@ -319,21 +309,38 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             fontWeight: _currentTabIndex == 2 ? FontWeight.w600 : FontWeight.w500,
                             color: _currentTabIndex == 2
                                 ? Theme.of(context).colorScheme.onBackground
-                                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),                            letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
+                                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                            letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
+                          ),
+                          strutStyle: StrutStyle(
+                            fontSize: _currentTabIndex == 2 ? 18 : 17,
+                            height: 1.0,
+                            leading: 0.0,
+                            forceStrutHeight: true,
+                          ),
+                          textHeightBehavior: const TextHeightBehavior(
+                            applyHeightToFirstAscent: false,
+                            applyHeightToLastDescent: false,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         if (_currentTabIndex == 2)
                           Container(
-                            margin: const EdgeInsets.only(top: 14),
+                            margin: const EdgeInsets.only(top: 12),  // 가이드 탭 라인바 위치 조정
                             height: 2,
-                            color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
                           )
                         else
                           Container(
-                            margin: const EdgeInsets.only(top: 16),
+                            margin: const EdgeInsets.only(top: 13),  // 선택되지 않은 탭 라인바 위치 조정
                             height: 1,
-                            color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
                           )
 
                       ],
@@ -352,72 +359,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return TabBarView(
       controller: _tabController,
       children: [
-        _isEpisodeLoading 
-          ? Container(
-              color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 150),
-                child: Column(
-                  children: [
-                    const CircularProgressIndicator(),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppLocalizations.of(context)?.loading ?? '로딩중...',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : const DetailStoryScreen(),
-        _isPoetryLoading 
-          ? Container(
-              color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 150),
-                child: Column(
-                  children: [
-                    const CircularProgressIndicator(),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppLocalizations.of(context)?.loading ?? '로딩중...',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : const ReadingScreen(),
-        _isGuideLoading 
-          ? Container(
-              color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 150),
-                child: Column(
-                  children: [
-                    const CircularProgressIndicator(),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppLocalizations.of(context)?.loading ?? '로딩중...',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : const GuideScreen(),
+        const DetailStoryScreen(),
+        const ReadingScreen(),
+        const GuideScreen(),
         // MonthScreen(),
         // YearScreen(),
       ],
@@ -425,8 +369,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildMainContent() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      decoration: BoxDecoration(
+      decoration: isDark ? null : BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -451,24 +396,42 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 6),
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 20, 20,20),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'LunaVerse',
-                  style: GoogleFonts.josefinSans(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w600,
-                    //fontStyle: FontStyle.italic,
-                    height: 1.1,
-                    color: Theme.of(context).brightness == Brightness.dark 
-                        ? const Color(0xFFCCCCFF)
-                        : const Color(0xFF3D4B91), //0xFF1A3A8A
-                    letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.7 : -0.7,
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.37,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // 로고 이미지
+                      Image.asset(
+                        Theme.of(context).brightness == Brightness.dark 
+                            ? 'assets/design/32b.png'
+                            : 'assets/design/32.png',
+                        width: 32,
+                        height: 32,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'LunaVerse',
+                        style: GoogleFonts.josefinSans(
+                          fontSize: 23,
+                          fontWeight: FontWeight.w600,
+                          //fontStyle: FontStyle.italic,
+                          height: 1.1,
+                          color: Theme.of(context).brightness == Brightness.dark 
+                              ? const Color(0xFFCCCCFF)
+                              : const Color(0xFF3D4B91), //0xFF1A3A8A
+                          letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.7 : -0.8,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -497,8 +460,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               );
             },
             icon: Container(
-              width: 28,
-              height: 28,
+              width: 35,
+              height: 35,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Theme.of(context).colorScheme.onBackground.withOpacity(0.1),
@@ -507,7 +470,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               child: Icon(
                 Icons.settings,
                 color: Theme.of(context).colorScheme.onBackground,
-                size: 18,
+                size: 22,
               ),
             ),
             tooltip: '환경설정',
@@ -518,234 +481,29 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   void _handleTabTap(int index) async {
-    // 각 탭별로 로딩 레이어를 먼저 표시
-    if (index == 0) {
-      setState(() {
-        _isEpisodeLoading = true;
-      });
-      
-      // 0.9초 후에 로딩 레이어 제거
-      Future.delayed(const Duration(milliseconds: 900), () {
-        if (mounted && _currentTabIndex == 0) {
-          setState(() {
-            _isEpisodeLoading = false;
-          });
-        }
-      });
-    } else if (index == 1) {
-      setState(() {
-        _isPoetryLoading = true;
-      });
-      
-      // 0.9초 후에 로딩 레이어 제거
-      Future.delayed(const Duration(milliseconds: 900), () {
-        if (mounted && _currentTabIndex == 1) {
-          setState(() {
-            _isPoetryLoading = false;
-          });
-        }
-      });
-    } else if (index == 2) {
-      setState(() {
-        _isGuideLoading = true;
-      });
-      
-      // 0.9초 후에 로딩 레이어 제거
-      Future.delayed(const Duration(milliseconds: 900), () {
-        if (mounted && _currentTabIndex == 2) {
-          setState(() {
-            _isGuideLoading = false;
-          });
-        }
-      });
-    }
-    
-    // 로딩 상태 설정 후 약간의 지연을 두고 탭 변경
-    await Future.delayed(const Duration(milliseconds: 50));
-    
     // 탭 컨트롤러 업데이트
     _tabController.animateTo(index);
     
-    if (_sajuInfo == null) {
-      return;
-    }
+    // 현재 탭 인덱스 업데이트
+    setState(() {
+      _currentTabIndex = index;
+    });
     
-    // todayFortune['study'] 값 출력
-    print('=== todayFortune study 값 ===');
-    print('study 값: ${_sajuInfo!.todayFortune['study']}');
-    print('study 값 타입: ${_sajuInfo!.todayFortune['study'].runtimeType}');
-    print('study 값이 null인가?: ${_sajuInfo!.todayFortune['study'] == null}');
-    print('study 값이 빈 문자열인가?: ${_sajuInfo!.todayFortune['study'] == ''}');
-    print('============================');
-    
-    print('=== monthFortune study 값 ===');
-    print('study 값: ${_sajuInfo!.monthFortune['study']}');
-    print('study 값 타입: ${_sajuInfo!.monthFortune['study'].runtimeType}');
-    print('study 값이 null인가?: ${_sajuInfo!.monthFortune['study'] == null}');
-    print('study 값이 빈 문자열인가?: ${_sajuInfo!.monthFortune['study'] == ''}');
-    print('============================');
-    // study 값 확인용 알림창
-    //_showErrorDialog('study 값: ${_sajuInfo!.todayFortune['study']}');
-    
-    // study 값이 없으면 하드코딩으로 추가
-    //if (_sajuInfo!.todayFortune['study'] == null || _sajuInfo!.todayFortune['study'].toString().isEmpty) {
-      await SajuService.updateTodayFortune({
-        'overall': '오늘은 새로운 기회가 찾아올 수 있는 날입니다. 주변을 잘 살펴보세요. 나무가 아닌 숲을 바라보아야 하는 하루입니다. 목표를 향해 나아가는 데 있어 변덕스러운 마음이 일의 추진을 방해할 수 있습니다. 목표를 향해 나아가는 데 있어 변덕스러운 마음이 일의 추진을 방해할 수 있습니다. 난관을 극복하고 원하는 바를 성취하려면 스스로를 믿고 적극적이고 결단력 있게 나아가야 합니다.',
-        'love': '로맨틱한 기운이 가득한 날입니다. 소중한 사람과의 시간을 가져보세요.',
-        'health': '건강에 특별한 문제는 없을 것입니다. 적절한 운동을 해보세요.',
-        'study': '집중력이 높은 하루입니다. 중요한 업무나 공부에 집중하면 좋은 결과를 얻을 수 있습니다.',
-        'wealth': '재정적으로 안정적인 하루가 될 것입니다. 투자나 큰지출은 신중하게 결정하세요.',
-        'luckyItem': '살구색, 모자, 남쪽, 7, 11, 맛집',
-        'todayOutfit': '편안한 캐주얼 복장',
-        'advice': '긍정적인 마음가짐으로 하루를 보내시기 바랍니다.',
-        'overallScore': '70',
-        'healthScore': '80',
-        'loveScore': '50',
-        'wealthScore': '60',
-        'studyScore': '30',
+    // WebView 표시 여부 설정
+    if (index == 0) {
+      setState(() {
+        _showWebView = false;
       });
-      
-      // 업데이트된 SajuInfo 다시 로드
-      await _loadSajuInfo();
-    //}
-
-  if (_sajuInfo!.monthFortune['study'] == null || _sajuInfo!.monthFortune['study'].toString().isEmpty) {
-    await SajuService.updateMonthFortune({
-      'overall': '이번달은 새로운 기회가 찾아올 수 있는 날입니다. 주변을 잘 살펴보세요. 나무가 아닌 숲을 바라보아야 하는 하루입니다. 목표를 향해 나아가는 데 있어 변덕스러운 마음이 일의 추진을 방해할 수 있습니다. 목표를 향해 나아가는 데 있어 변덕스러운 마음이 일의 추진을 방해할 수 있습니다. 난관을 극복하고 원하는 바를 성취하려면 스스로를 믿고 적극적이고 결단력 있게 나아가야 합니다.',
-      'love': '이번달은 로맨틱한 기운이 가득한 날입니다. 소중한 사람과의 시간을 가져보세요.',
-      'health': '이번달은 건강에 특별한 문제는 없을 것입니다. 적절한 운동을 해보세요.',
-      'study': '이번달은 집중력이 높은 하루입니다. 중요한 업무나 공부에 집중하면 좋은 결과를 얻을 수 있습니다.',
-      'wealth': '이번달은 재정적으로 안정적인 하루가 될 것입니다. 투자나 큰지출은 신중하게 결정하세요.',
-      'luckyItem': '이번달은 살구색, 모자, 남쪽, 7, 11, 맛집',
-      'monthOutfit': '이번달은 편안한 캐주얼 복장',
-      'advice': '이번달은 긍정적인 마음가짐으로 하루를 보내시기 바랍니다.',
-    });
-  }
-  if (_sajuInfo!.yearFortune['study'] == null || _sajuInfo!.todayFortune['study'].toString().isEmpty) {
-    await SajuService.updateYearFortune({
-      'overall': '이번년도는 새로운 기회가 찾아올 수 있는 날입니다. 주변을 잘 살펴보세요. 나무가 아닌 숲을 바라보아야 하는 하루입니다. 목표를 향해 나아가는 데 있어 변덕스러운 마음이 일의 추진을 방해할 수 있습니다. 목표를 향해 나아가는 데 있어 변덕스러운 마음이 일의 추진을 방해할 수 있습니다. 난관을 극복하고 원하는 바를 성취하려면 스스로를 믿고 적극적이고 결단력 있게 나아가야 합니다.',
-      'love': '이번년도는 로맨틱한 기운이 가득한 날입니다. 소중한 사람과의 시간을 가져보세요.',
-      'health': '이번년도는 건강에 특별한 문제는 없을 것입니다. 적절한 운동을 해보세요.',
-      'study': '이번년도는 집중력이 높은 하루입니다. 중요한 업무나 공부에 집중하면 좋은 결과를 얻을 수 있습니다.',
-      'wealth': '이번년도는 재정적으로 안정적인 하루가 될 것입니다. 투자나 큰지출은 신중하게 결정하세요.',
-      'luckyItem': '이번년도는 살구색, 모자, 남쪽, 7, 11, 맛집',
-      'yearOutfit': '이번년도는 편안한 캐주얼 복장',
-      'advice': '이번년도는 긍정적인 마음가짐으로 하루를 보내시기 바랍니다.',
-    });
-  }
-
-    // 업데이트된 SajuInfo 다시 로드
-    await _loadSajuInfo();
-
-    final List<String> fortuneTypes = [
-      '오늘의 가이드',
-      '에피소드',
-      '시 낭독',
-      // '이달의 운세', 
-      // '올해의 운세',
-    ];
-    
-    final String selectedFortune = fortuneTypes[index];
-    print('탭 클릭: $selectedFortune');
-    print('index: $index');
-    
-    // 날짜 비교하여 서버 호출 여부 결정
-    bool needServerCall = false;
-    
-    switch (index) {
-      case 0: // 오늘의 운세
-        needServerCall = _sajuInfo!.isTodayFortuneExpired;
-        print('오늘의 운세 - 현재날짜: ${_sajuInfo!.currentTodayDate}, 저장된날짜: ${_sajuInfo!.todayFortune['lastFortuneDate']}');
-        print('서버 호출 필요: $needServerCall');
-        break;
-      case 1: // 오늘의 이야기
-        // 오늘의 이야기는 서버 호출이 필요하지 않음
-        needServerCall = false;
-        print('오늘의 이야기 - 서버 호출 불필요');
-        break;
-      case 2: // 오늘의 낭독시
-        // 오늘의 낭독시는 서버 호출이 필요하지 않음
-        needServerCall = false;
-        print('오늘의 시 낭독 - 서버 호출 불필요');
-        break;
-      // case 1: // 이달의 운세
-      //   needServerCall = _sajuInfo!.isMonthFortuneExpired;
-      //   print('이달의 운세 - 현재달: ${_sajuInfo!.currentMonthDate}, 저장된달: ${_sajuInfo!.monthFortune['lastFortuneDate']}');
-      //   print('서버 호출 필요: $needServerCall');
-      //   break;
-      // case 2: // 올해의 운세
-      //   needServerCall = _sajuInfo!.isYearFortuneExpired;
-      //   print('올해의 운세 - 현재년도: ${_sajuInfo!.currentYearDate}, 저장된년도: ${_sajuInfo!.yearFortune['lastFortuneDate']}');
-      //   print('서버 호출 필요: $needServerCall');
-      //   break;
-    }
-    
-    if (!needServerCall) {
-      print('저장된 운세 데이터가 최신이므로 서버 호출을 건너뜁니다.');
-      return;
-    }
-    
-    try {
-      // API 호출
-      final response = await SajuApiService.getSajuAnalysis(_sajuInfo!);
-      
-      if (response.success && response.data != null) {
-        setState(() {
-          _sajuAnalysis = response;
-        });
-        
-        // 서버 응답을 해당 운세 데이터에 저장
-        await _saveFortuneData(index, response);
-              }
-    } catch (e) {
-      print('API 호출 중 오류: $e');
+    } else if (index == 1) {
+      setState(() {
+        _showWebView = false;
+      });
+    } else if (index == 2) {
+      setState(() {
+        _showWebView = false;
+      });
     }
   }
-
-  void _showLoadingPopup() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  AppLocalizations.of(context)?.loading ?? '로딩중...',
-                  style: GoogleFonts.notoSans(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    // 0.9초 후에 자동으로 팝업 닫기
-    Future.delayed(const Duration(milliseconds: 900), () {
-      if (mounted && Navigator.canPop(context)) {
-        Navigator.of(context).pop();
-      }
-    });
-  }
-
-
 
   void _showErrorDialog(String message) {
     showDialog(

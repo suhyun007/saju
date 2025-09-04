@@ -588,6 +588,12 @@ abstract class AppLocalizations {
   /// **'Today\'s Guide'**
   String get todayDetailTitle;
 
+  /// No description provided for @guideSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get personalized guidance for your day ahead.'**
+  String get guideSubtitle;
+
   /// No description provided for @luckyItem.
   ///
   /// In en, this message translates to:
@@ -753,7 +759,7 @@ abstract class AppLocalizations {
   /// No description provided for @myPageNotificationTime.
   ///
   /// In en, this message translates to:
-  /// **'Notification time: '**
+  /// **'Notification time '**
   String get myPageNotificationTime;
 
   /// No description provided for @myPageLoggedInWithGoogle.

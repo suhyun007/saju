@@ -262,6 +262,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get todayDetailTitle => '今日指南';
 
   @override
+  String get guideSubtitle => '获取为您的一天量身定制的个性化指导。';
+
+  @override
   String get luckyItem => '幸运物品';
 
   @override
@@ -349,7 +352,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get myPageAppInfo => '应用信息';
 
   @override
-  String get myPageNotificationTime => '通知时间：';
+  String get myPageNotificationTime => '通知时间 ';
 
   @override
   String get myPageLoggedInWithGoogle => '通过Google登录';

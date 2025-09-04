@@ -7,8 +7,9 @@ class DetailStoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
       body: Container(
         padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
         child: Column(
@@ -25,11 +26,12 @@ class DetailStoryScreen extends StatelessWidget {
                     color: Color(0xFFB3B3FF),
                     size: 40,
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 3),
                   Text(
                     AppLocalizations.of(context)?.episodeTitle ?? '오늘의 에피소드',
                     style: GoogleFonts.notoSans(
                       fontSize: 22,
+                      height: 1.3,
                       fontWeight: FontWeight.w500,
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
                       letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,

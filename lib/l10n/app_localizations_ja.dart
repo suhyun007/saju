@@ -264,6 +264,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get todayDetailTitle => '今日のガイド';
 
   @override
+  String get guideSubtitle => '今日一日のためのパーソナライズされたガイドを受け取ってください。';
+
+  @override
   String get luckyItem => 'ラッキーアイテム';
 
   @override
@@ -351,7 +354,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get myPageAppInfo => 'アプリ情報';
 
   @override
-  String get myPageNotificationTime => '通知時間：';
+  String get myPageNotificationTime => '通知時間 ';
 
   @override
   String get myPageLoggedInWithGoogle => 'Googleでログイン';

@@ -102,28 +102,49 @@ class _GuideScreenState extends State<GuideScreen> {
     
     if (_isLoading) {
       return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).scaffoldBackgroundColor,
-              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
-            ],
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Theme.of(context).scaffoldBackgroundColor,
+                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
+              ],
+            ),
           ),
-        ),
-        child: Center(
-          child: CircularProgressIndicator(
-            color: Colors.amber,
+          child: Center(
+            child: CircularProgressIndicator(
+              color: Colors.amber,
+            ),
           ),
-        ),
       );
     }
 
     if (_todayFortune == null) {
       return Container(
-        decoration: BoxDecoration(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Theme.of(context).scaffoldBackgroundColor,
+                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
+              ],
+            ),
+          ),
+          child: Center(
+            child: Text(
+              '출생 정보를 먼저 입력해주세요.',
+              style: TextStyle(color: textColor, fontSize: 16),
+            ),
+          ),
+      );
+    }
+
+    return Container(
+        decoration: isDark ? null : BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -134,180 +155,162 @@ class _GuideScreenState extends State<GuideScreen> {
             ],
           ),
         ),
-        child: Center(
-          child: Text(
-            '출생 정보를 먼저 입력해주세요.',
-            style: TextStyle(color: textColor, fontSize: 16),
-          ),
-        ),
-      );
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Theme.of(context).scaffoldBackgroundColor,
-            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
-          ],
-        ),
-      ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 가이드 UI (아이콘, 타이틀, 설명글)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(top: 10, bottom: 20, left: 20, right: 20),
-              child: Column(
-                children: [
-                  // 가이드 아이콘
-                  Icon(
-                    Icons.tips_and_updates,
-                    size: 40,
-                    color: const Color(0xFFB3B3FF),
-                  ),
-                  const SizedBox(height: 2),
-                  // 가이드 타이틀
-                  Text(
-                    'Today\'s Guide',
-                    style: GoogleFonts.notoSans(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: textColor,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 가이드 UI (아이콘, 타이틀, 설명글)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(top: 10, bottom: 20, left: 20, right: 20),
+                child: Column(
+                  children: [
+                    // 가이드 아이콘
+                    Icon(
+                      Icons.tips_and_updates,
+                      size: 40,
+                      color: const Color(0xFFB3B3FF),
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  // 가이드 설명글
-                  Text(
-                    'Get personalized guidance for your day ahead.',
-                    style: GoogleFonts.notoSans(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: textColor.withOpacity(0.9),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 0),
-            
-            // 통합된 운세 박스
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: cardBg,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 오늘의 가이드 자세히 보기 버튼 (박스 위쪽에 배치)
-                  Container(
-                    width: double.infinity,
-                    height: 53,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF5d7df4),
-                          Color(0xFF9961f6),
-                        ],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
+                    const SizedBox(height: 3),
+                    // 가이드 타이틀
+                    Text(
+                      AppLocalizations.of(context)?.todayDetailTitle ?? 'Today\'s Guide',
+                      style: GoogleFonts.notoSans(
+                        fontSize: 22,
+                        height: 1.3,
+                        fontWeight: FontWeight.w500,
+                        color: textColor,
                       ),
-                      borderRadius: BorderRadius.circular(10),
+                      textAlign: TextAlign.center,
                     ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/today-detail');
-                        },
+                    // 가이드 설명글
+                    Text(
+                      AppLocalizations.of(context)?.guideSubtitle ?? '오늘 하루를 위한 맞춤형 가이드를 받아보세요.',
+                      style: GoogleFonts.notoSans(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: textColor.withOpacity(0.9),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 0),
+              
+              // 통합된 운세 박스
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.white.withOpacity(0.1)
+                      : Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 오늘의 가이드 자세히 보기 버튼 (박스 위쪽에 배치)
+                    Container(
+                      width: double.infinity,
+                      height: 53,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFF5d7df4),
+                            Color(0xFF9961f6),
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
                         borderRadius: BorderRadius.circular(10),
-                        child: Center(
-                          child: Text(
-                            AppLocalizations.of(context)?.todayGuideDetailButton ?? '오늘의 가이드 자세히 보기',
-                            style: GoogleFonts.roboto(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/today-detail');
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          child: Center(
+                            child: Text(
+                              AppLocalizations.of(context)?.todayGuideDetailButton ?? '오늘의 가이드 자세히 보기',
+                              style: GoogleFonts.roboto(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // 소중한 인연
-                  _buildFortuneSection(
-                    AppLocalizations.of(context)?.preciousRelationship ?? '소중한 인연',
-                    _truncateAtSecondPeriod(_todayFortune!.love!),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // 풍요로움
-                  _buildFortuneSection(
-                    AppLocalizations.of(context)?.abundance ?? '풍요로움',
-                    _truncateAtSecondPeriod(_todayFortune!.wealth!),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // 몸과 마음
-                  _buildFortuneSection(
-                    AppLocalizations.of(context)?.bodyAndMind ?? '몸과 마음',
-                    _truncateAtSecondPeriod(_todayFortune!.health!),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // 성장과 집중
-                  _buildFortuneSection(
-                    AppLocalizations.of(context)?.growthAndFocus ?? '성장과 집중',
-                    _truncateAtSecondPeriod(_todayFortune!.study!),
-                  ),
-                  
-                  const SizedBox(height: 40),
-                  
-                  // 하단 안내
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.info_outline,
-                          color: Colors.amber,
-                          size: 34,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          (AppLocalizations.of(context)?.todayStoryHint ?? '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요. 당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.').replaceAll('\n', ' '),
-                          style: GoogleFonts.notoSans(
-                            fontSize: 14,
-                            color: textColor.withOpacity(0.7),
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
+                    
+                    const SizedBox(height: 20),
+                    
+                    // 소중한 인연
+                    _buildFortuneSection(
+                      AppLocalizations.of(context)?.preciousRelationship ?? '소중한 인연',
+                      _truncateAtSecondPeriod(_todayFortune!.love!),
                     ),
-                  ),
-                ],
+                    
+                    const SizedBox(height: 20),
+                    
+                    // 풍요로움
+                    _buildFortuneSection(
+                      AppLocalizations.of(context)?.abundance ?? '풍요로움',
+                      _truncateAtSecondPeriod(_todayFortune!.wealth!),
+                    ),
+                    
+                    const SizedBox(height: 20),
+                    
+                    // 몸과 마음
+                    _buildFortuneSection(
+                      AppLocalizations.of(context)?.bodyAndMind ?? '몸과 마음',
+                      _truncateAtSecondPeriod(_todayFortune!.health!),
+                    ),
+                    
+                    const SizedBox(height: 20),
+                    
+                    // 성장과 집중
+                    _buildFortuneSection(
+                      AppLocalizations.of(context)?.growthAndFocus ?? '성장과 집중',
+                      _truncateAtSecondPeriod(_todayFortune!.study!),
+                    ),
+                    
+                    const SizedBox(height: 40),
+                    
+                    // 하단 안내
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.info_outline,
+                            color: Colors.amber,
+                            size: 34,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            (AppLocalizations.of(context)?.todayStoryHint ?? '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요. 당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.').replaceAll('\n', ' '),
+                            style: GoogleFonts.notoSans(
+                              fontSize: 14,
+                              color: textColor.withOpacity(0.7),
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
     );
   }
 
@@ -342,7 +345,7 @@ class _GuideScreenState extends State<GuideScreen> {
   Widget _buildFortuneCard(String title, String content, IconData icon, Color color) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
-    final cardBg = isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
+    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
     final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
     
     return Container(
