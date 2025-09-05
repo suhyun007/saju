@@ -293,56 +293,131 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicyHeader => 'Privacy Policy';
 
   @override
-  String get privacyPolicySection1Title => '1. Personal Information Collection';
+  String get privacyPolicySection1Title =>
+      '1. Purpose of Processing Personal Information';
 
   @override
   String get privacyPolicySection1Content =>
-      'This app may receive your date of birth. The entered date of birth is used only within the app for personalized services (e.g., fortune/weather information provision) and is not stored on servers (DB) or externally. The app only stores your push notification reception settings, and does not collect any personal information other than device tokens for notification delivery.';
+      'The LunaVerse app processes personal information solely to provide and improve services. If the purpose changes, we will take necessary measures, such as obtaining additional consent, in accordance with applicable laws.';
+
+  @override
+  String get privacyPolicySection1_1Title => '1.1 Service Provision';
+
+  @override
+  String get privacyPolicySection1_1Content =>
+      '• Provide literary content such as episodes, poetry readings, and daily guides\n• Deliver personalized content\n• Improve app functions and services';
+
+  @override
+  String get privacyPolicySection1_2Title => '1.2 Customer Support';
+
+  @override
+  String get privacyPolicySection1_2Content =>
+      '• Handle inquiries and complaints\n• Provide service-related guidance\n• Process complaints and resolve disputes';
 
   @override
   String get privacyPolicySection2Title =>
-      '2. Purpose of Personal Information Use';
+      '2. Collection and Processing of Personal Information';
+
+  @override
+  String get privacyPolicySection2Highlight =>
+      'No personal information is collected:';
 
   @override
   String get privacyPolicySection2Content =>
-      'Providing personalized services, novel/poetry/personal guide literature service information, push notification delivery, app function improvement and service quality enhancement';
+      '• The app may request date of birth, gender, or birthplace, but this data is never stored on servers or transmitted externally\n• Entered information is used only within the app for personalized services (episodes, poetry readings, guides)\n• Only the device token for push notifications is stored; no other personal information is collected';
+
+  @override
+  String get privacyPolicySection2LocalTitle => 'Local storage:';
+
+  @override
+  String get privacyPolicySection2LocalContent =>
+      '• User input (e.g., birth info) is temporarily stored only on the device and deleted when the app is uninstalled\n• Device tokens for push notifications are deleted immediately when the user disables notifications or removes the app';
 
   @override
   String get privacyPolicySection3Title =>
-      '3. Personal Information Storage and Disposal';
+      '3. Retention and Deletion of Personal Information';
 
   @override
   String get privacyPolicySection3Content =>
-      'This app does not separately store users\' personal information (date of birth), and data is not retained when the app is terminated. Device identification tokens for push notifications are immediately disposed of when users delete the app or unsubscribe from notifications.';
+      'This app does not store personal information (date of birth) on servers or externally, but temporarily stores it only on the device. Data is retained only on the device until the app is deleted, and all data is immediately deleted when the app is uninstalled. Device tokens for push notifications are immediately deleted when the user disables notifications or removes the app.';
 
   @override
-  String get privacyPolicySection4Title =>
-      '4. Third-Party Personal Information Provision';
+  String get privacyPolicySection3Highlight => 'Data retention policy:';
+
+  @override
+  String get privacyPolicySection3HighlightContent =>
+      '• No personal information stored on servers\n• Minimize external leakage by processing only within the device\n• All data immediately deleted when app is uninstalled';
+
+  @override
+  String get privacyPolicySection4Title => '4. Provision to Third Parties';
 
   @override
   String get privacyPolicySection4Content =>
       'This app does not provide any personal information to third parties.';
 
   @override
-  String get privacyPolicySection5Title => '5. Personal Information Protection';
+  String get privacyPolicySection4Highlight => 'No third-party provision:';
+
+  @override
+  String get privacyPolicySection4HighlightContent =>
+      '• No personal information stored on servers, making third-party provision impossible\n• All data processed only within the device\n• No transmission to external servers or databases';
+
+  @override
+  String get privacyPolicySection5Title =>
+      '5. Protection of Personal Information';
 
   @override
   String get privacyPolicySection5Content =>
-      'This app does not store personal information on servers and processes it only within the device to minimize external leakage possibilities.';
+      'This app does not store personal information on servers and processes it only within the device to minimize external leakage.';
+
+  @override
+  String get privacyPolicySection5Highlight => 'Security measures:';
+
+  @override
+  String get privacyPolicySection5HighlightContent =>
+      '• No personal information stored on servers\n• Minimize external leakage by processing only within the device\n• All data immediately deleted when app is uninstalled';
 
   @override
   String get privacyPolicySection6Title => '6. User Rights';
 
   @override
   String get privacyPolicySection6Content =>
-      'Users can refuse push notifications at any time through app settings. Birth time input is optional, and there are no restrictions on app usage even if not entered.';
+      'Users may opt out of push notifications at any time through app settings. Providing birth information is optional and not required to use the app.';
 
   @override
-  String get privacyPolicySection7Title => '7. Privacy Policy Change Notice';
+  String get privacyPolicySection6Highlight => 'User rights:';
+
+  @override
+  String get privacyPolicySection6HighlightContent =>
+      '• Right to opt out of push notifications\n• Right to choose whether to provide birth information\n• Right to delete all data by uninstalling the app';
+
+  @override
+  String get privacyPolicySection7Title => '7. Changes to this Policy';
 
   @override
   String get privacyPolicySection7Content =>
-      'This policy may be modified according to changes in laws, policies, or security technologies, and users will be notified through app notices or updates when changes occur.';
+      'This policy may be updated due to legal, policy, or technical changes. Users will be notified via app updates or announcements.';
+
+  @override
+  String get privacyPolicySection7Highlight => 'Change history:';
+
+  @override
+  String get privacyPolicySection7HighlightContent =>
+      '• September 1, 2025: Initial implementation\n• September 1, 2025: Policy change to not collect personal information';
+
+  @override
+  String get privacyPolicySection8Title => '8. Contact';
+
+  @override
+  String get privacyPolicySection8Contact => 'Developer Contact';
+
+  @override
+  String get privacyPolicySection8ContactInfo =>
+      'Name: Subak Lee\nRole: Developer\nEmail: slee29709@gmail.com';
+
+  @override
+  String get privacyPolicySection8Content =>
+      'If you have questions about personal information processing, please contact us at the above email address.';
 
   @override
   String get privacyPolicyFooter =>

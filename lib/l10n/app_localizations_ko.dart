@@ -286,31 +286,69 @@ class AppLocalizationsKo extends AppLocalizations {
   String get privacyPolicyHeader => '개인정보 처리방침';
 
   @override
-  String get privacyPolicySection1Title => '1. 수집하는 개인정보';
+  String get privacyPolicySection1Title => '1. 개인정보의 처리 목적';
 
   @override
   String get privacyPolicySection1Content =>
-      '본 앱은 사용자의 생년월일을 입력받을 수 있습니다. 입력된 생년월일은 오직 개인 맞춤형 서비스(예: 운세/날씨 정보 제공 등)를 위해 앱 내에서만 사용되며, 서버(DB)나 외부에 저장되지 않습니다. 앱은 사용자의 푸시 알림 수신 여부 설정만 저장하며, 알림 발송을 위한 기기 토큰 외의 개인정보는 수집하지 않습니다.';
+      'LunaVerse 앱은 다음의 목적을 위하여 개인정보를 처리하고 있으며, 이와 관련한 목적이 변경될 경우에는 개인정보보호법 제18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.';
 
   @override
-  String get privacyPolicySection2Title => '2. 개인정보의 이용 목적';
+  String get privacyPolicySection1_1Title => '1.1 서비스 제공';
+
+  @override
+  String get privacyPolicySection1_1Content =>
+      '• 에피소드, 시 낭독, 오늘의 가이드 등 문학 컨텐츠 제공\n• 사용자 맞춤형 콘텐츠 제공\n• 앱 기능 및 서비스 개선';
+
+  @override
+  String get privacyPolicySection1_2Title => '1.2 고객 지원';
+
+  @override
+  String get privacyPolicySection1_2Content =>
+      '• 문의사항 응대 및 처리\n• 서비스 이용 관련 안내\n• 불만사항 처리 및 분쟁해결';
+
+  @override
+  String get privacyPolicySection2Title => '2. 개인정보 수집 및 처리';
+
+  @override
+  String get privacyPolicySection2Highlight => '개인정보를 수집하지 않습니다:';
 
   @override
   String get privacyPolicySection2Content =>
-      '개인 맞춤형 서비스 제공, 소설/시/개인 가이드 문학 서비스 정보 제공, 푸시 알림 발송, 앱 기능 개선 및 서비스 품질 향상';
+      '• 본 앱은 사용자의 생년월일, 성별, 출생지역 등을 입력받을 수 있지만 이를 서버나 외부에 저장하지 않습니다.\n• 입력된 정보는 오직 개인 맞춤형 서비스(에피소드, 시 낭독, 오늘의 가이드 제공 등)를 위해 앱 내에서만 사용됩니다.\n• 앱은 사용자의 푸시 알림 수신 여부 설정만 저장하며, 알림 발송을 위한 기기 토큰 외의 개인정보는 수집하지 않습니다.';
+
+  @override
+  String get privacyPolicySection2LocalTitle => '로컬 저장 정보:';
+
+  @override
+  String get privacyPolicySection2LocalContent =>
+      '• 사용자가 입력한 출생 정보는 기기 내에서만 임시 저장되며, 앱 삭제 시 모든 데이터가 즉시 파기됩니다.\n• 푸시 알림을 위한 기기 식별 토큰은 사용자가 앱을 삭제하거나 알림 수신을 해제하면 즉시 파기됩니다.';
 
   @override
   String get privacyPolicySection3Title => '3. 개인정보의 보관 및 파기';
 
   @override
   String get privacyPolicySection3Content =>
-      '본 앱은 사용자의 개인정보(생년월일)를 별도로 저장하지 않으며, 앱 종료 시 데이터는 보관되지 않습니다. 푸시 알림을 위한 기기 식별 토큰은 사용자가 앱을 삭제하거나 알림 수신을 해제하면 즉시 파기됩니다.';
+      '본 앱은 사용자의 개인정보(생년월일)를 서버나 외부에 저장하지 않으며, 기기 내에서만 임시 저장됩니다. 앱을 삭제할 때까지 기기 내에서만 보관되며, 앱 삭제 시 모든 데이터가 즉시 파기됩니다. 푸시 알림을 위한 기기 식별 토큰은 사용자가 앱을 삭제하거나 알림 수신을 해제하면 즉시 파기됩니다.';
+
+  @override
+  String get privacyPolicySection3Highlight => '데이터 보관 정책:';
+
+  @override
+  String get privacyPolicySection3HighlightContent =>
+      '• 개인정보를 서버에 저장하지 않음\n• 기기 내에서만 처리하여 외부 유출 가능성을 최소화\n• 앱 삭제 시 모든 데이터 즉시 파기';
 
   @override
   String get privacyPolicySection4Title => '4. 개인정보 제3자 제공';
 
   @override
   String get privacyPolicySection4Content => '본 앱은 어떠한 개인정보도 제3자에게 제공하지 않습니다.';
+
+  @override
+  String get privacyPolicySection4Highlight => '제3자 제공 금지:';
+
+  @override
+  String get privacyPolicySection4HighlightContent =>
+      '• 개인정보를 서버에 저장하지 않으므로 제3자 제공이 불가능\n• 모든 데이터는 기기 내에서만 처리\n• 외부 서버나 데이터베이스에 개인정보 전송 없음';
 
   @override
   String get privacyPolicySection5Title => '5. 개인정보 보호';
@@ -320,6 +358,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '본 앱은 개인정보를 서버에 저장하지 않으며, 기기 내에서만 처리하여 외부 유출 가능성을 최소화합니다.';
 
   @override
+  String get privacyPolicySection5Highlight => '보안 조치:';
+
+  @override
+  String get privacyPolicySection5HighlightContent =>
+      '• 개인정보를 서버에 저장하지 않음\n• 기기 내에서만 처리하여 외부 유출 가능성 최소화\n• 앱 삭제 시 모든 데이터 즉시 파기';
+
+  @override
   String get privacyPolicySection6Title => '6. 이용자 권리';
 
   @override
@@ -327,11 +372,39 @@ class AppLocalizationsKo extends AppLocalizations {
       '사용자는 앱 내 설정을 통해 언제든 푸시 알림을 거부할 수 있습니다. 출생시간 입력은 선택 사항이며, 입력하지 않아도 앱 사용에 제한은 없습니다.';
 
   @override
+  String get privacyPolicySection6Highlight => '이용자 권리:';
+
+  @override
+  String get privacyPolicySection6HighlightContent =>
+      '• 푸시 알림 수신 거부 권리\n• 출생정보 입력 선택권\n• 앱 삭제를 통한 모든 데이터 삭제 권리';
+
+  @override
   String get privacyPolicySection7Title => '7. 개인정보처리방침 변경 안내';
 
   @override
   String get privacyPolicySection7Content =>
       '본 방침은 법령, 정책 또는 보안 기술의 변경에 따라 수정될 수 있으며, 변경 시 앱 내 공지 또는 업데이트를 통해 안내합니다.';
+
+  @override
+  String get privacyPolicySection7Highlight => '변경 이력:';
+
+  @override
+  String get privacyPolicySection7HighlightContent =>
+      '• 2025년 9월 1일: 최초 시행\n• 2025년 9월 1일: 개인정보 수집하지 않음으로 정책 변경';
+
+  @override
+  String get privacyPolicySection8Title => '8. 문의 및 연락처';
+
+  @override
+  String get privacyPolicySection8Contact => '개발팀 연락처';
+
+  @override
+  String get privacyPolicySection8ContactInfo =>
+      '이름: subak lee\n직책: 개발자\n이메일: slee29709@gmail.com';
+
+  @override
+  String get privacyPolicySection8Content =>
+      '개인정보 처리와 관련한 문의사항이 있으시면 위 연락처로 문의해 주시기 바랍니다.';
 
   @override
   String get privacyPolicyFooter => '개인정보 보호를 위해 최선을 다하겠습니다.';

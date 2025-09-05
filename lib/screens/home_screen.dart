@@ -190,6 +190,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 flex: 1, // 더 크게
                 child: GestureDetector(
                   onTap: () => _handleTabTap(0),
+                  behavior: HitTestBehavior.opaque,
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Column(
@@ -244,6 +245,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 flex: 1, // 더 크게
                 child: GestureDetector(
                   onTap: () => _handleTabTap(1),
+                  behavior: HitTestBehavior.opaque,
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Column(
@@ -298,6 +300,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 flex: 1, // 더 작게
                 child: GestureDetector(
                   onTap: () => _handleTabTap(2),
+                  behavior: HitTestBehavior.opaque,
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Column(
@@ -405,9 +408,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width * 0.37,
+                  width: MediaQuery.of(context).size.width * 0.4,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // 로고 이미지
                       Image.asset(
@@ -418,17 +422,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         height: 32,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        'LunaVerse',
-                        style: GoogleFonts.josefinSans(
-                          fontSize: 23,
-                          fontWeight: FontWeight.w600,
-                          //fontStyle: FontStyle.italic,
-                          height: 1.1,
-                          color: Theme.of(context).brightness == Brightness.dark 
-                              ? const Color(0xFFCCCCFF)
-                              : const Color(0xFF3D4B91), //0xFF1A3A8A
-                          letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.7 : -0.8,
+                      Transform.translate(
+                        offset: const Offset(0, 2),
+                        child: Text(
+                          'LunaVerse',
+                          style: GoogleFonts.josefinSans(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                            //fontStyle: FontStyle.italic,
+                            //height: 1,
+                            color: Theme.of(context).brightness == Brightness.dark 
+                                ? const Color(0xFFCCCCFF)
+                                : const Color(0xFF3D4B91), //0xFF1A3A8A
+                            letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.7 : -0.8,
+                          ),
                         ),
                       ),
                     ],

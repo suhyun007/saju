@@ -285,52 +285,125 @@ class AppLocalizationsJa extends AppLocalizations {
   String get privacyPolicyHeader => 'プライバシーポリシー';
 
   @override
-  String get privacyPolicySection1Title => '1. 収集する個人情報';
+  String get privacyPolicySection1Title => '1. 個人情報の処理目的';
 
   @override
   String get privacyPolicySection1Content =>
-      '本アプリはユーザーの生年月日を入力していただく場合があります。入力された生年月日は個人カスタマイズサービス（例：運勢/天気情報提供など）のためにアプリ内でのみ使用され、サーバー（DB）や外部に保存されることはありません。アプリはユーザーのプッシュ通知受信設定のみを保存し、通知送信のためのデバイストークン以外の個人情報は収集しません。';
+      'LunaVerseアプリは、サービスを提供し改善するためにのみ個人情報を処理します。目的が変更される場合は、適用される法律に従って、追加の同意を得るなどの必要な措置を講じます。';
 
   @override
-  String get privacyPolicySection2Title => '2. 個人情報の利用目的';
+  String get privacyPolicySection1_1Title => '1.1 サービス提供';
+
+  @override
+  String get privacyPolicySection1_1Content =>
+      '• エピソード、詩の朗読、日々のガイドなどの文学コンテンツを提供\n• パーソナライズされたコンテンツを提供\n• アプリの機能とサービスを改善';
+
+  @override
+  String get privacyPolicySection1_2Title => '1.2 カスタマーサポート';
+
+  @override
+  String get privacyPolicySection1_2Content =>
+      '• お問い合わせと苦情の処理\n• サービス利用に関する案内\n• 苦情処理と紛争解決';
+
+  @override
+  String get privacyPolicySection2Title => '2. 個人情報の収集と処理';
+
+  @override
+  String get privacyPolicySection2Highlight => '個人情報は収集されません：';
 
   @override
   String get privacyPolicySection2Content =>
-      '個人カスタマイズサービス提供、小説/詩/個人ガイド文学サービス情報提供、プッシュ通知送信、アプリ機能改善およびサービス品質向上';
+      '• アプリは生年月日、性別、出生地を要求する場合がありますが、このデータはサーバーに保存されたり外部に送信されたりすることはありません\n• 入力された情報は、パーソナライズされたサービス（エピソード、詩の朗読、ガイド）のためにアプリ内でのみ使用されます\n• プッシュ通知のデバイストークンのみが保存され、他の個人情報は収集されません';
 
   @override
-  String get privacyPolicySection3Title => '3. 個人情報の保管および廃棄';
+  String get privacyPolicySection2LocalTitle => 'ローカルストレージ：';
+
+  @override
+  String get privacyPolicySection2LocalContent =>
+      '• ユーザー入力（例：出生情報）はデバイス上にのみ一時的に保存され、アプリがアンインストールされると削除されます\n• プッシュ通知のデバイストークンは、ユーザーが通知を無効にしたりアプリを削除したりすると即座に削除されます';
+
+  @override
+  String get privacyPolicySection3Title => '3. 個人情報の保持と削除';
 
   @override
   String get privacyPolicySection3Content =>
-      '本アプリはユーザーの個人情報（生年月日）を別途保存せず、アプリ終了時にデータは保管されません。プッシュ通知のためのデバイス識別トークンは、ユーザーがアプリを削除するか通知受信を解除すると即座に廃棄されます。';
+      'このアプリは個人情報（生年月日）をサーバーや外部に保存せず、デバイス上でのみ一時的に保存します。データはアプリが削除されるまでデバイス上でのみ保持され、アプリがアンインストールされるとすべてのデータが即座に削除されます。プッシュ通知のデバイストークンは、ユーザーが通知を無効にしたりアプリを削除したりすると即座に削除されます。';
 
   @override
-  String get privacyPolicySection4Title => '4. 個人情報第三者提供';
+  String get privacyPolicySection3Highlight => 'データ保持ポリシー：';
 
   @override
-  String get privacyPolicySection4Content => '本アプリは如何なる個人情報も第三者に提供しません。';
+  String get privacyPolicySection3HighlightContent =>
+      '• サーバーに個人情報を保存しない\n• デバイス内でのみ処理して外部漏洩を最小化\n• アプリがアンインストールされるとすべてのデータを即座に削除';
 
   @override
-  String get privacyPolicySection5Title => '5. 個人情報保護';
+  String get privacyPolicySection4Title => '4. 第三者への提供';
+
+  @override
+  String get privacyPolicySection4Content => 'このアプリは第三者に個人情報を提供しません。';
+
+  @override
+  String get privacyPolicySection4Highlight => '第三者提供禁止：';
+
+  @override
+  String get privacyPolicySection4HighlightContent =>
+      '• サーバーに個人情報を保存しないため、第三者への提供は不可能\n• すべてのデータはデバイス内でのみ処理\n• 外部サーバーやデータベースへの個人情報送信なし';
+
+  @override
+  String get privacyPolicySection5Title => '5. 個人情報の保護';
 
   @override
   String get privacyPolicySection5Content =>
-      '本アプリは個人情報をサーバーに保存せず、デバイス内でのみ処理して外部漏洩の可能性を最小化します。';
+      'このアプリは個人情報をサーバーに保存せず、デバイス内でのみ処理して外部漏洩を最小化します。';
 
   @override
-  String get privacyPolicySection6Title => '6. 利用者権利';
+  String get privacyPolicySection5Highlight => 'セキュリティ対策：';
+
+  @override
+  String get privacyPolicySection5HighlightContent =>
+      '• サーバーに個人情報を保存しない\n• デバイス内でのみ処理して外部漏洩を最小化\n• アプリがアンインストールされるとすべてのデータを即座に削除';
+
+  @override
+  String get privacyPolicySection6Title => '6. ユーザーの権利';
 
   @override
   String get privacyPolicySection6Content =>
-      'ユーザーはアプリ内設定を通じていつでもプッシュ通知を拒否できます。出生時刻入力は任意であり、入力しなくてもアプリ使用に制限はありません。';
+      'ユーザーはアプリ設定を通じていつでもプッシュ通知をオプトアウトできます。出生情報の提供は任意であり、アプリを使用するために必要ではありません。';
 
   @override
-  String get privacyPolicySection7Title => '7. プライバシーポリシー変更案内';
+  String get privacyPolicySection6Highlight => 'ユーザーの権利：';
+
+  @override
+  String get privacyPolicySection6HighlightContent =>
+      '• プッシュ通知をオプトアウトする権利\n• 出生情報を提供するかどうかを選択する権利\n• アプリをアンインストールしてすべてのデータを削除する権利';
+
+  @override
+  String get privacyPolicySection7Title => '7. このポリシーの変更';
 
   @override
   String get privacyPolicySection7Content =>
-      '本方針は法令、政策またはセキュリティ技術の変更に従って修正される場合があり、変更時はアプリ内通知またはアップデートを通じて案内します。';
+      'このポリシーは、法律、政策、または技術の変更により更新される場合があります。ユーザーにはアプリの更新またはお知らせを通じて通知されます。';
+
+  @override
+  String get privacyPolicySection7Highlight => '変更履歴：';
+
+  @override
+  String get privacyPolicySection7HighlightContent =>
+      '• 2025年9月1日：初期実装\n• 2025年9月1日：個人情報を収集しないポリシーに変更';
+
+  @override
+  String get privacyPolicySection8Title => '8. お問い合わせ';
+
+  @override
+  String get privacyPolicySection8Contact => '開発者連絡先';
+
+  @override
+  String get privacyPolicySection8ContactInfo =>
+      '名前：Subak Lee\n役職：開発者\nメール：slee29709@gmail.com';
+
+  @override
+  String get privacyPolicySection8Content =>
+      '個人情報の処理に関するご質問がございましたら、上記のメールアドレスまでお問い合わせください。';
 
   @override
   String get privacyPolicyFooter => '個人情報保護のために最善を尽くします。';

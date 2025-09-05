@@ -66,7 +66,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     final statuses = [l10n.married, l10n.inRelationship, l10n.wantRelationship, l10n.noInterest];
 
     return Container(
-      padding: const EdgeInsets.all(30),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(15),
@@ -79,10 +79,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text(l10n.name, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
+              Text(l10n.name, style: GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 3),
           TextFormField(
             controller: _nameController,
             style: GoogleFonts.notoSans(fontSize: 15, color: primary),
@@ -94,20 +94,20 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: border)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: border)),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Colors.amber)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             ),
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 15),
 
           // 성별
           Row(
             children: [
               const SizedBox(width: 4),
-              Text(l10n.gender, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
+              Text(l10n.gender, style: GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 3),
           Row(
             children: [
               // 여성 (30%)
@@ -117,7 +117,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   onTap: () => setState(() => _selectedGender = l10n.female),
                   child: Container(
                     margin: const EdgeInsets.only(right: 2.5),
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
                     color: _selectedGender == l10n.female ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
                     borderRadius: BorderRadius.circular(10),
@@ -126,7 +126,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     child: Text(
                       l10n.female,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w500, color: _selectedGender == l10n.female ? const Color(0xFF5D7DF4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == l10n.female ? const Color(0xFF5D7DF4) : primary),
                     ),
                   ),
                 ),
@@ -138,7 +138,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   onTap: () => setState(() => _selectedGender = l10n.male),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: _selectedGender == l10n.male ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
                       borderRadius: BorderRadius.circular(10),
@@ -147,7 +147,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     child: Text(
                       l10n.male,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w500, color: _selectedGender == l10n.male ? const Color(0xFF5D7DF4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == l10n.male ? const Color(0xFF5D7DF4) : primary),
                     ),
                   ),
                 ),
@@ -159,7 +159,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   onTap: () => setState(() => _selectedGender = l10n.nonBinary),
                   child: Container(
                     margin: const EdgeInsets.only(left: 2.5),
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
                       borderRadius: BorderRadius.circular(10),
@@ -168,7 +168,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     child: Text(
                       l10n.nonBinary,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 12, fontWeight: FontWeight.w500, color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4) : primary),
                     ),
                   ),
                 ),
@@ -176,20 +176,20 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ],
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 15),
 
           // 출생일자
           Row(
             children: [
               const SizedBox(width: 4),
-              Text(l10n.birthDate, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
+              Text(l10n.birthDate, style: GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 3),
           InkWell(
             onTap: _selectDate,
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: border)),
               child: Row(
                 children: [
@@ -207,7 +207,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ),
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 15),
 
           // 출생시간
           Row(
@@ -216,7 +216,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               Text(l10n.birthTime, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.bold, color: primary)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 3),
           Row(
             children: [
               Expanded(
@@ -224,14 +224,14 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                 child: InkWell(
                   onTap: _isTimeUnknown ? null : _selectTime,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     decoration: BoxDecoration(color: _isTimeUnknown ? cardBg.withOpacity(0.5) : cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: border)),
                     child: Row(
                       children: [
                         Expanded(
                           child: Text(
                             _isTimeUnknown ? l10n.timeUnknown : ( _selectedHour != null && _selectedMinute != null ? _formatTimeForDisplay(_selectedHour, _selectedMinute) : l10n.birthTimeHint),
-                            style: GoogleFonts.notoSans(fontSize: 13, color: _isTimeUnknown ? secondary.withOpacity(0.5) : (_selectedHour != null ? primary : secondary)),
+                            style: GoogleFonts.notoSans(fontSize: 15, color: _isTimeUnknown ? secondary.withOpacity(0.5) : (_selectedHour != null ? primary : secondary)),
                             maxLines: 1,
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
@@ -254,7 +254,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                     decoration: BoxDecoration(color: _isTimeUnknown ? const Color(0xFF5d7df4) : cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: _isTimeUnknown ? const Color(0xFF5d7df4) : border)),
                     child: Row(
                       children: [
@@ -275,25 +275,25 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ],
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 15),
 
           // 태어난 지역
           Row(
             children: [
               const SizedBox(width: 4),
-              Text(l10n.birthRegion, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
+              Text(l10n.birthRegion, style: GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 3),
           if (_selectedRegion != null && _selectedRegion!.isNotEmpty)
             Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(bottom: 5),
               decoration: BoxDecoration(color: const Color(0xFF5d7df4).withOpacity(0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF5d7df4).withOpacity(0.3))),
               child: Row(children: [
-                const Icon(Icons.check_circle, color: Color(0xFF5d7df4), size: 17),
+                const Icon(Icons.check_circle, color: Color(0xFF5d7df4), size: 20),
                 const SizedBox(width: 8),
-                Expanded(child: Text(_selectedRegion!, style: GoogleFonts.notoSans(fontSize: 13, color: primary))),
+                Expanded(child: Text(_selectedRegion!, style: GoogleFonts.notoSans(fontSize: 15, color: primary))),
               ]),
             ),
           SizedBox(
@@ -302,7 +302,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               onTap: _searchPlace,
               borderRadius: BorderRadius.circular(10),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(vertical: 9),
                 decoration: BoxDecoration(
                   color: Colors.grey.withOpacity(0.9),
                   borderRadius: BorderRadius.circular(10),
@@ -326,16 +326,17 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ),
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 15),
 
           // 상태
           Row(children: [
             const SizedBox(width: 4),
-            Text(l10n.loveStatus, style: GoogleFonts.notoSans(fontSize: 21, fontWeight: FontWeight.w600, color: primary)),
+            Text(l10n.loveStatus, style: GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
           ]),
-          const SizedBox(height: 10),
+          const SizedBox(height: 3),
           Container(
             width: double.infinity,
+            height: 46,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             decoration: BoxDecoration(
               color: cardBg,
@@ -618,7 +619,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             // 안내 메시지
             _buildInfoMessage(),
             
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
             
             // 통합 입력 카드
             _buildUnifiedFormCard(),
@@ -679,7 +680,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             color: Colors.amber,
             size: 50,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           Text(
             l10n.infoMessage,
             style: GoogleFonts.notoSans(

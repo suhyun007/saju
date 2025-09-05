@@ -633,43 +633,97 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection1Title.
   ///
   /// In en, this message translates to:
-  /// **'1. Personal Information Collection'**
+  /// **'1. Purpose of Processing Personal Information'**
   String get privacyPolicySection1Title;
 
   /// No description provided for @privacyPolicySection1Content.
   ///
   /// In en, this message translates to:
-  /// **'This app may receive your date of birth. The entered date of birth is used only within the app for personalized services (e.g., fortune/weather information provision) and is not stored on servers (DB) or externally. The app only stores your push notification reception settings, and does not collect any personal information other than device tokens for notification delivery.'**
+  /// **'The LunaVerse app processes personal information solely to provide and improve services. If the purpose changes, we will take necessary measures, such as obtaining additional consent, in accordance with applicable laws.'**
   String get privacyPolicySection1Content;
+
+  /// No description provided for @privacyPolicySection1_1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'1.1 Service Provision'**
+  String get privacyPolicySection1_1Title;
+
+  /// No description provided for @privacyPolicySection1_1Content.
+  ///
+  /// In en, this message translates to:
+  /// **'• Provide literary content such as episodes, poetry readings, and daily guides\n• Deliver personalized content\n• Improve app functions and services'**
+  String get privacyPolicySection1_1Content;
+
+  /// No description provided for @privacyPolicySection1_2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'1.2 Customer Support'**
+  String get privacyPolicySection1_2Title;
+
+  /// No description provided for @privacyPolicySection1_2Content.
+  ///
+  /// In en, this message translates to:
+  /// **'• Handle inquiries and complaints\n• Provide service-related guidance\n• Process complaints and resolve disputes'**
+  String get privacyPolicySection1_2Content;
 
   /// No description provided for @privacyPolicySection2Title.
   ///
   /// In en, this message translates to:
-  /// **'2. Purpose of Personal Information Use'**
+  /// **'2. Collection and Processing of Personal Information'**
   String get privacyPolicySection2Title;
+
+  /// No description provided for @privacyPolicySection2Highlight.
+  ///
+  /// In en, this message translates to:
+  /// **'No personal information is collected:'**
+  String get privacyPolicySection2Highlight;
 
   /// No description provided for @privacyPolicySection2Content.
   ///
   /// In en, this message translates to:
-  /// **'Providing personalized services, novel/poetry/personal guide literature service information, push notification delivery, app function improvement and service quality enhancement'**
+  /// **'• The app may request date of birth, gender, or birthplace, but this data is never stored on servers or transmitted externally\n• Entered information is used only within the app for personalized services (episodes, poetry readings, guides)\n• Only the device token for push notifications is stored; no other personal information is collected'**
   String get privacyPolicySection2Content;
+
+  /// No description provided for @privacyPolicySection2LocalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local storage:'**
+  String get privacyPolicySection2LocalTitle;
+
+  /// No description provided for @privacyPolicySection2LocalContent.
+  ///
+  /// In en, this message translates to:
+  /// **'• User input (e.g., birth info) is temporarily stored only on the device and deleted when the app is uninstalled\n• Device tokens for push notifications are deleted immediately when the user disables notifications or removes the app'**
+  String get privacyPolicySection2LocalContent;
 
   /// No description provided for @privacyPolicySection3Title.
   ///
   /// In en, this message translates to:
-  /// **'3. Personal Information Storage and Disposal'**
+  /// **'3. Retention and Deletion of Personal Information'**
   String get privacyPolicySection3Title;
 
   /// No description provided for @privacyPolicySection3Content.
   ///
   /// In en, this message translates to:
-  /// **'This app does not separately store users\' personal information (date of birth), and data is not retained when the app is terminated. Device identification tokens for push notifications are immediately disposed of when users delete the app or unsubscribe from notifications.'**
+  /// **'This app does not store personal information (date of birth) on servers or externally, but temporarily stores it only on the device. Data is retained only on the device until the app is deleted, and all data is immediately deleted when the app is uninstalled. Device tokens for push notifications are immediately deleted when the user disables notifications or removes the app.'**
   String get privacyPolicySection3Content;
+
+  /// No description provided for @privacyPolicySection3Highlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Data retention policy:'**
+  String get privacyPolicySection3Highlight;
+
+  /// No description provided for @privacyPolicySection3HighlightContent.
+  ///
+  /// In en, this message translates to:
+  /// **'• No personal information stored on servers\n• Minimize external leakage by processing only within the device\n• All data immediately deleted when app is uninstalled'**
+  String get privacyPolicySection3HighlightContent;
 
   /// No description provided for @privacyPolicySection4Title.
   ///
   /// In en, this message translates to:
-  /// **'4. Third-Party Personal Information Provision'**
+  /// **'4. Provision to Third Parties'**
   String get privacyPolicySection4Title;
 
   /// No description provided for @privacyPolicySection4Content.
@@ -678,17 +732,41 @@ abstract class AppLocalizations {
   /// **'This app does not provide any personal information to third parties.'**
   String get privacyPolicySection4Content;
 
+  /// No description provided for @privacyPolicySection4Highlight.
+  ///
+  /// In en, this message translates to:
+  /// **'No third-party provision:'**
+  String get privacyPolicySection4Highlight;
+
+  /// No description provided for @privacyPolicySection4HighlightContent.
+  ///
+  /// In en, this message translates to:
+  /// **'• No personal information stored on servers, making third-party provision impossible\n• All data processed only within the device\n• No transmission to external servers or databases'**
+  String get privacyPolicySection4HighlightContent;
+
   /// No description provided for @privacyPolicySection5Title.
   ///
   /// In en, this message translates to:
-  /// **'5. Personal Information Protection'**
+  /// **'5. Protection of Personal Information'**
   String get privacyPolicySection5Title;
 
   /// No description provided for @privacyPolicySection5Content.
   ///
   /// In en, this message translates to:
-  /// **'This app does not store personal information on servers and processes it only within the device to minimize external leakage possibilities.'**
+  /// **'This app does not store personal information on servers and processes it only within the device to minimize external leakage.'**
   String get privacyPolicySection5Content;
+
+  /// No description provided for @privacyPolicySection5Highlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Security measures:'**
+  String get privacyPolicySection5Highlight;
+
+  /// No description provided for @privacyPolicySection5HighlightContent.
+  ///
+  /// In en, this message translates to:
+  /// **'• No personal information stored on servers\n• Minimize external leakage by processing only within the device\n• All data immediately deleted when app is uninstalled'**
+  String get privacyPolicySection5HighlightContent;
 
   /// No description provided for @privacyPolicySection6Title.
   ///
@@ -699,20 +777,68 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection6Content.
   ///
   /// In en, this message translates to:
-  /// **'Users can refuse push notifications at any time through app settings. Birth time input is optional, and there are no restrictions on app usage even if not entered.'**
+  /// **'Users may opt out of push notifications at any time through app settings. Providing birth information is optional and not required to use the app.'**
   String get privacyPolicySection6Content;
+
+  /// No description provided for @privacyPolicySection6Highlight.
+  ///
+  /// In en, this message translates to:
+  /// **'User rights:'**
+  String get privacyPolicySection6Highlight;
+
+  /// No description provided for @privacyPolicySection6HighlightContent.
+  ///
+  /// In en, this message translates to:
+  /// **'• Right to opt out of push notifications\n• Right to choose whether to provide birth information\n• Right to delete all data by uninstalling the app'**
+  String get privacyPolicySection6HighlightContent;
 
   /// No description provided for @privacyPolicySection7Title.
   ///
   /// In en, this message translates to:
-  /// **'7. Privacy Policy Change Notice'**
+  /// **'7. Changes to this Policy'**
   String get privacyPolicySection7Title;
 
   /// No description provided for @privacyPolicySection7Content.
   ///
   /// In en, this message translates to:
-  /// **'This policy may be modified according to changes in laws, policies, or security technologies, and users will be notified through app notices or updates when changes occur.'**
+  /// **'This policy may be updated due to legal, policy, or technical changes. Users will be notified via app updates or announcements.'**
   String get privacyPolicySection7Content;
+
+  /// No description provided for @privacyPolicySection7Highlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Change history:'**
+  String get privacyPolicySection7Highlight;
+
+  /// No description provided for @privacyPolicySection7HighlightContent.
+  ///
+  /// In en, this message translates to:
+  /// **'• September 1, 2025: Initial implementation\n• September 1, 2025: Policy change to not collect personal information'**
+  String get privacyPolicySection7HighlightContent;
+
+  /// No description provided for @privacyPolicySection8Title.
+  ///
+  /// In en, this message translates to:
+  /// **'8. Contact'**
+  String get privacyPolicySection8Title;
+
+  /// No description provided for @privacyPolicySection8Contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer Contact'**
+  String get privacyPolicySection8Contact;
+
+  /// No description provided for @privacyPolicySection8ContactInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Name: Subak Lee\nRole: Developer\nEmail: slee29709@gmail.com'**
+  String get privacyPolicySection8ContactInfo;
+
+  /// No description provided for @privacyPolicySection8Content.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have questions about personal information processing, please contact us at the above email address.'**
+  String get privacyPolicySection8Content;
 
   /// No description provided for @privacyPolicyFooter.
   ///

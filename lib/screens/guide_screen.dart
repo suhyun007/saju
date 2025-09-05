@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../services/saju_service.dart';
 import '../models/saju_info.dart';
 import '../models/saju_api_response.dart';
@@ -22,7 +21,7 @@ class _GuideScreenState extends State<GuideScreen> {
   @override
   void initState() {
     super.initState();
-    _loadTodayFortune();
+    _loadTodayFortune();// 세션같은것(로컬 저장소)
   }
 
   Future<void> _loadTodayFortune() async {
@@ -163,7 +162,7 @@ class _GuideScreenState extends State<GuideScreen> {
               // 가이드 UI (아이콘, 타이틀, 설명글)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.only(top: 10, bottom: 20, left: 20, right: 20),
+                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 20),
                 child: Column(
                   children: [
                     // 가이드 아이콘
@@ -226,6 +225,10 @@ class _GuideScreenState extends State<GuideScreen> {
                           end: Alignment.centerRight,
                         ),
                         borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Color(0xFF1A3A8A), // 짙은 파란색
+                          width: 1,
+                        ),
                       ),
                       child: Material(
                         color: Colors.transparent,

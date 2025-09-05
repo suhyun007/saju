@@ -283,52 +283,124 @@ class AppLocalizationsZh extends AppLocalizations {
   String get privacyPolicyHeader => '隐私政策';
 
   @override
-  String get privacyPolicySection1Title => '1. 个人信息收集';
+  String get privacyPolicySection1Title => '1. 个人信息处理目的';
 
   @override
   String get privacyPolicySection1Content =>
-      '本应用可能会接收您的出生日期。输入的出生日期仅在应用内用于个性化服务（例如：运势/天气信息提供），不会存储在服务器（数据库）或外部。应用仅存储您的推送通知接收设置，除通知发送所需的设备令牌外，不收集任何个人信息。';
+      'LunaVerse应用程序仅为了提供和改进服务而处理个人信息。如果目的发生变化，我们将根据适用法律采取必要措施，例如获得额外同意。';
 
   @override
-  String get privacyPolicySection2Title => '2. 个人信息使用目的';
+  String get privacyPolicySection1_1Title => '1.1 服务提供';
+
+  @override
+  String get privacyPolicySection1_1Content =>
+      '• 提供文学内容，如剧集、诗歌朗诵和每日指南\n• 提供个性化内容\n• 改进应用程序功能和服务';
+
+  @override
+  String get privacyPolicySection1_2Title => '1.2 客户支持';
+
+  @override
+  String get privacyPolicySection1_2Content =>
+      '• 处理询问和投诉\n• 提供与服务相关的指导\n• 处理投诉和解决争议';
+
+  @override
+  String get privacyPolicySection2Title => '2. 个人信息收集和处理';
+
+  @override
+  String get privacyPolicySection2Highlight => '不收集个人信息：';
 
   @override
   String get privacyPolicySection2Content =>
-      '提供个性化服务、小说/诗歌/个人指南文学服务信息、推送通知发送、应用功能改进和服务质量提升';
+      '• 应用程序可能要求出生日期、性别或出生地，但这些数据从不存储在服务器上或外部传输\n• 输入的信息仅在应用程序内用于个性化服务（剧集、诗歌朗诵、指南）\n• 仅存储推送通知的设备令牌；不收集其他个人信息';
 
   @override
-  String get privacyPolicySection3Title => '3. 个人信息存储和处置';
+  String get privacyPolicySection2LocalTitle => '本地存储：';
+
+  @override
+  String get privacyPolicySection2LocalContent =>
+      '• 用户输入（例如出生信息）仅临时存储在设备上，卸载应用程序时删除\n• 当用户禁用通知或删除应用程序时，推送通知的设备令牌立即删除';
+
+  @override
+  String get privacyPolicySection3Title => '3. 个人信息保留和删除';
 
   @override
   String get privacyPolicySection3Content =>
-      '本应用不会单独存储用户的个人信息（出生日期），应用终止时数据不会被保留。推送通知的设备识别令牌在用户删除应用或取消订阅通知时会立即处置。';
+      '此应用程序不在服务器或外部存储个人信息（出生日期），但仅在设备上临时存储。数据仅在设备上保留直到删除应用程序，卸载应用程序时所有数据立即删除。当用户禁用通知或删除应用程序时，推送通知的设备令牌立即删除。';
 
   @override
-  String get privacyPolicySection4Title => '4. 第三方个人信息提供';
+  String get privacyPolicySection3Highlight => '数据保留政策：';
 
   @override
-  String get privacyPolicySection4Content => '本应用不会向第三方提供任何个人信息。';
+  String get privacyPolicySection3HighlightContent =>
+      '• 不在服务器上存储个人信息\n• 仅在设备内处理以最小化外部泄漏\n• 卸载应用程序时立即删除所有数据';
+
+  @override
+  String get privacyPolicySection4Title => '4. 向第三方提供';
+
+  @override
+  String get privacyPolicySection4Content => '此应用程序不向第三方提供任何个人信息。';
+
+  @override
+  String get privacyPolicySection4Highlight => '禁止向第三方提供：';
+
+  @override
+  String get privacyPolicySection4HighlightContent =>
+      '• 不在服务器上存储个人信息，使向第三方提供变得不可能\n• 所有数据仅在设备内处理\n• 不向外部服务器或数据库传输';
 
   @override
   String get privacyPolicySection5Title => '5. 个人信息保护';
 
   @override
   String get privacyPolicySection5Content =>
-      '本应用不会在服务器上存储个人信息，仅在设备内处理以最小化外部泄露可能性。';
+      '此应用程序不在服务器上存储个人信息，仅在设备内处理以最小化外部泄漏。';
+
+  @override
+  String get privacyPolicySection5Highlight => '安全措施：';
+
+  @override
+  String get privacyPolicySection5HighlightContent =>
+      '• 不在服务器上存储个人信息\n• 仅在设备内处理以最小化外部泄漏\n• 卸载应用程序时立即删除所有数据';
 
   @override
   String get privacyPolicySection6Title => '6. 用户权利';
 
   @override
   String get privacyPolicySection6Content =>
-      '用户可以通过应用设置随时拒绝推送通知。出生时间输入是可选的，即使不输入也不会限制应用使用。';
+      '用户可以通过应用程序设置随时选择退出推送通知。提供出生信息是可选的，不是使用应用程序所必需的。';
 
   @override
-  String get privacyPolicySection7Title => '7. 隐私政策变更通知';
+  String get privacyPolicySection6Highlight => '用户权利：';
+
+  @override
+  String get privacyPolicySection6HighlightContent =>
+      '• 选择退出推送通知的权利\n• 选择是否提供出生信息的权利\n• 通过卸载应用程序删除所有数据的权利';
+
+  @override
+  String get privacyPolicySection7Title => '7. 此政策变更';
 
   @override
   String get privacyPolicySection7Content =>
-      '本政策可能会根据法律、政策或安全技术的变化而修改，变更时将通过应用内通知或更新进行通知。';
+      '此政策可能因法律、政策或技术变更而更新。用户将通过应用程序更新或公告得到通知。';
+
+  @override
+  String get privacyPolicySection7Highlight => '变更历史：';
+
+  @override
+  String get privacyPolicySection7HighlightContent =>
+      '• 2025年9月1日：初始实施\n• 2025年9月1日：政策变更为不收集个人信息';
+
+  @override
+  String get privacyPolicySection8Title => '8. 联系';
+
+  @override
+  String get privacyPolicySection8Contact => '开发者联系';
+
+  @override
+  String get privacyPolicySection8ContactInfo =>
+      '姓名：Subak Lee\n职位：开发者\n邮箱：slee29709@gmail.com';
+
+  @override
+  String get privacyPolicySection8Content => '如果您对个人信息处理有疑问，请通过上述邮箱地址联系我们。';
 
   @override
   String get privacyPolicyFooter => '我们将尽最大努力保护您的个人信息。';

@@ -18,7 +18,7 @@ class DetailStoryScreen extends StatelessWidget {
             // 제목
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(top: 10, bottom: 20, left: 20, right: 20),
+              padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 20),
               child: Column(
                 children: [
                   const Icon(
