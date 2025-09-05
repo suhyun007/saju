@@ -113,7 +113,7 @@ class _TodayScreenState extends State<TodayScreen> {
             ],
           ),
         ),
-        child: Center(
+        child: const Center(
           child: CircularProgressIndicator(
             color: Colors.amber,
           ),
@@ -167,10 +167,10 @@ class _TodayScreenState extends State<TodayScreen> {
               child: Column(
                 children: [
                   // 가이드 아이콘
-                  Icon(
+                  const Icon(
                     Icons.tips_and_updates,
                     size: 40,
-                    color: const Color(0xFFB3B3FF),
+                    color: Color(0xFFB3B3FF),
                   ),
                   const SizedBox(height: 8),
                   // 가이드 타이틀
@@ -294,7 +294,7 @@ class _TodayScreenState extends State<TodayScreen> {
                     width: double.infinity,
                     height: 53,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
                           Color(0xFF5d7df4), // 채도 높은 파란색
                           Color(0xFF9961f6), // 채도 높은 보라색

@@ -1085,6 +1085,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I write a poem for you every day.'**
   String get poetrySubtitle;
+
+  /// No description provided for @lightAndHope.
+  ///
+  /// In en, this message translates to:
+  /// **'Light & Hope'**
+  String get lightAndHope;
 }
 
 class _AppLocalizationsDelegate

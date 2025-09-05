@@ -163,17 +163,15 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
 
   Future<void> _onSignIn(UserModel user) async {
     if (!mounted) return;
-    if (user != null) {
-      setState(() {
-        _user = user;
-      });
-      final l10n = AppLocalizations.of(context);
-      final welcomeMessage = l10n?.myPageWelcome(user.displayName ?? '') ?? '${user.displayName}님 환영합니다!';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(welcomeMessage)),
-      );
+    setState(() {
+      _user = user;
+    });
+    final l10n = AppLocalizations.of(context);
+    final welcomeMessage = l10n?.myPageWelcome(user.displayName ?? '') ?? '${user.displayName}님 환영합니다!';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(welcomeMessage)),
+    );
     }
-  }
 
   Future<void> _signOut() async {
     await AuthService.signOut();
@@ -225,7 +223,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       case 'en':
         return name; // 영어: 호칭 없음
       case 'zh':
-        return '$name'; // 중국어: 호칭 없음 (필요시 先生, 女士 등 추가 가능)
+        return name; // 중국어: 호칭 없음 (필요시 先生, 女士 등 추가 가능)
       case 'ja':
         return '$nameさん'; // 일본어: さん
       default:
@@ -341,14 +339,14 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                 child: DropdownButton<String>(
                                   value: _selectedHour,
                                   dropdownColor: Colors.white,
-                                  style: TextStyle(color: Colors.black, fontSize: 16),
+                                  style: const TextStyle(color: Colors.black, fontSize: 16),
                                   underline: Container(),
                                   menuMaxHeight: 130,
                                   items: List.generate(24, (index) {
                                     final hour = index.toString().padLeft(2, '0');
                                     return DropdownMenuItem<String>(
                                       value: hour,
-                                      child: Text(hour, style: TextStyle(color: Colors.black)),
+                                      child: Text(hour, style: const TextStyle(color: Colors.black)),
                                     );
                                   }),
                                   onChanged: (String? value) {
@@ -376,14 +374,14 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                 child: DropdownButton<String>(
                                   value: _selectedMinute,
                                   dropdownColor: Colors.white,
-                                  style: TextStyle(color: Colors.black, fontSize: 16),
+                                  style: const TextStyle(color: Colors.black, fontSize: 16),
                                   underline: Container(),
                                   menuMaxHeight: 130,
                                   items: List.generate(60, (index) {
                                     final minute = index.toString().padLeft(2, '0');
                                     return DropdownMenuItem<String>(
                                       value: minute,
-                                      child: Text(minute, style: TextStyle(color: Colors.black)),
+                                      child: Text(minute, style: const TextStyle(color: Colors.black)),
                                     );
                                   }),
                                   onChanged: (String? value) {
@@ -464,7 +462,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                       SnackBar(
                                         content: Text(l10n?.myPageNotificationDisabledMessage ?? '알림이 비활성화되어 있습니다. 알림을 켜고 다시 시도해주세요.'),
                                         backgroundColor: Colors.orange,
-                                        duration: Duration(seconds: 2),
+                                        duration: const Duration(seconds: 2),
                                       ),
                                     );
                                   }
@@ -784,9 +782,9 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     return Scaffold(
       backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
       body: Container(
-        decoration: isDark ? BoxDecoration(
+        decoration: isDark ? const BoxDecoration(
           image: DecorationImage(
-            image: const AssetImage('assets/design/launch_bg.png'),
+            image: AssetImage('assets/design/launch_bg.png'),
             fit: BoxFit.cover,
           ),
         ) : null,
@@ -808,7 +806,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                       Navigator.pop(context);
                       print('=== Navigator.pop 호출 완료 ===');
                     },
-                    icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onBackground),
+                    icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
                   ),
                   const SizedBox(width: 0),
                   Text(

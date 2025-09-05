@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import '../widgets/feature_button.dart';
+// import '../widgets/feature_button.dart';
 import '../screens/guide_screen.dart';
-import '../screens/detail_story_screen.dart';
+import '../screens/episode_screen.dart';
 import '../screens/reading_screen.dart';
 // import '../screens/month_screen.dart'; // 주석처리
 // import '../screens/year_screen.dart'; // 주석처리
 // import '../widgets/kma_weather_chip.dart'; // 날씨 정보 주석처리
 
 import '../services/saju_service.dart';
-import '../services/saju_api_service.dart';
 import '../services/auth_service.dart';
 import '../models/saju_info.dart';
-import '../models/saju_api_response.dart';
+// import '../models/saju_api_response.dart';
 import '../models/user_model.dart';
 import '../screens/myPage.dart';
 import '../l10n/app_localizations.dart';
-import 'saju_navigator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,11 +27,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
 
   SajuInfo? _sajuInfo;
-  SajuApiResponse? _sajuAnalysis;
-  bool _isLoading = true;
+  // bool _isLoading = true; // 미사용
   late final WebViewController _webController;
   bool _showWebView = false;
-  UserModel? _currentUser;
+  // UserModel? _currentUser; // 미사용
   late TabController _tabController;
   int _currentTabIndex = 0;
 
@@ -58,48 +55,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  void _onAuthStateChanged(UserModel? user) {
-    setState(() {
-      _currentUser = user;
-    });
-  }
+  void _onAuthStateChanged(UserModel? user) {}
 
   String _formatNameWithHonorific(String name) {
     final locale = Localizations.localeOf(context);
     switch (locale.languageCode) {
       case 'ko': return '$name님'; // 한국어: 님
       case 'en': return name;     // 영어: 호칭 없음
-      case 'zh': return '$name';  // 중국어: 호칭 없음
+      case 'zh': return name;  // 중국어: 호칭 없음
       case 'ja': return '$nameさん'; // 일본어: さん
       default: return '$name님';
     }
   }
 
-  Future<void> _loadUserInfo() async {
-    try {
-      final user = await AuthService.getUserFromLocal();
-      if (mounted) {
-        setState(() {
-          _currentUser = user;
-        });
-      }
-    } catch (e) {
-      print('사용자 정보 로드 실패: $e');
-    }
-  }
+  Future<void> _loadUserInfo() async {}
 
-  Future<void> _loadSajuInfo() async {
-    try {
-      final sajuInfo = await SajuService.loadSajuInfo();
-      if (mounted) {
-        setState(() {
-          _sajuInfo = sajuInfo;
-        });
-      }
-    } catch (e) {
-      print('출생 정보 로드 실패: $e');
-    }
-  }
+  // _loadSajuInfo 제거 (미사용)
 
   Future<void> _loadSajuInfoAndAutoLoadFortune() async {
     try {
@@ -127,9 +98,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Scaffold(
       backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
       body: Container(
-        decoration: isDark ? BoxDecoration(
+        decoration: isDark ? const BoxDecoration(
           image: DecorationImage(
-            image: const AssetImage('assets/design/launch_bg.png'),
+            image: AssetImage('assets/design/launch_bg.png'),
             fit: BoxFit.cover,
           ),
         ) : null,
@@ -201,8 +172,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             fontSize: _currentTabIndex == 0 ? 18 : 17,
                             fontWeight: _currentTabIndex == 0 ? FontWeight.w600 : FontWeight.w500,
                             color: _currentTabIndex == 0
-                                ? Theme.of(context).colorScheme.onBackground
-                                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                           ),
                           strutStyle: StrutStyle(
                             fontSize: _currentTabIndex == 0 ? 18 : 17,
@@ -256,8 +227,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             fontSize: _currentTabIndex == 1 ? 18 : 17,
                             fontWeight: _currentTabIndex == 1 ? FontWeight.w600 : FontWeight.w500,
                             color: _currentTabIndex == 1
-                                ? Theme.of(context).colorScheme.onBackground
-                                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                           ),
                           strutStyle: StrutStyle(
                             fontSize: _currentTabIndex == 1 ? 18 : 17,
@@ -311,8 +282,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             fontSize: _currentTabIndex == 2 ? 18 : 17,
                             fontWeight: _currentTabIndex == 2 ? FontWeight.w600 : FontWeight.w500,
                             color: _currentTabIndex == 2
-                                ? Theme.of(context).colorScheme.onBackground
-                                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                             letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
                           ),
                           strutStyle: StrutStyle(
@@ -361,41 +332,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget _buildTabContent() {
     return TabBarView(
       controller: _tabController,
-      children: [
-        const DetailStoryScreen(),
-        const ReadingScreen(),
-        const GuideScreen(),
+      children: const [
+        EpisodeScreen(),
+        PoetryScreen(),
+        GuideScreen(),
         // MonthScreen(),
         // YearScreen(),
       ],
     );
   }
 
-  Widget _buildMainContent() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      decoration: isDark ? null : BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Theme.of(context).scaffoldBackgroundColor,
-            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
-          ],
-        ),
-      ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          children: [
-            // 기능 버튼들
-            _buildFeatureButtons(),
-          ],
-        ),
-      ),
-    );
-  }
+  // _buildMainContent 미사용 삭제
 
   Widget _buildHeader() {
     return Container(
@@ -407,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
+                SizedBox(
                   width: MediaQuery.of(context).size.width * 0.4,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -454,7 +401,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               style: GoogleFonts.notoSans(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -471,12 +418,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               height: 35,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.1),
-                border: Border.all(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.3), width: 1),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3), width: 1),
               ),
               child: Icon(
                 Icons.settings,
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
                 size: 22,
               ),
             ),
@@ -512,139 +459,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     }
   }
 
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: Text(
-            '오류',
-            style: GoogleFonts.notoSans(
-              color: Colors.red,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Text(
-            message,
-            style: GoogleFonts.notoSans(
-              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
-              fontSize: 16,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                '확인',
-                style: GoogleFonts.notoSans(
-                  color: Colors.amber,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // _showErrorDialog 제거 (미사용)
 
-  Widget _buildFeatureButtons() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '사주 서비스',
-          style: GoogleFonts.notoSans(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 15),
-        GridView.count(
-          shrinkWrap: true,
-          crossAxisCount: 2,
-          crossAxisSpacing: 15,
-          mainAxisSpacing: 15,
-          childAspectRatio: 1.2,
-          children: [
-            FeatureButton(
-              icon: Icons.calendar_today,
-              title: '출생 정보',
-              subtitle: '생년월일시 입력',
-              color: const Color(0xFF8B4513),
-              onReturn: () {
-                // 출생 정보 화면에서 돌아왔을 때 출생 정보 새로고침
-                _loadSajuInfo();
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+  // _buildFeatureButtons 제거 (미사용)
 
 
 
-  // 서버 응답을 해당 운세 데이터에 저장
-  Future<void> _saveFortuneData(int index, SajuApiResponse response) async {
-    try {
-      Map<String, dynamic> fortuneData = {};
-      
-      // 서버 응답에서 운세 데이터 추출 (실제 API 응답 구조에 맞게 수정 필요)
-      if (response.data != null && response.data!.todayFortune != null) {
-        final todayFortune = response.data!.todayFortune!;
-        fortuneData = {
-          'overall': todayFortune.overall ?? '',
-          'love': todayFortune.love ?? '',
-          'health': todayFortune.health ?? '',
-          'study': todayFortune.study ?? '',
-          'wealth': todayFortune.wealth ?? '',
-          'luckyItem': todayFortune.luckyItem ?? '',
-          'todayOutfit': todayFortune.todayOutfit ?? '',
-          'serverResponse': response.toJson().toString(),
-        };
-      }
-
-      // 해당 운세 타입에 따라 저장
-      bool success = false;
-      switch (index) {
-        case 0: // 오늘의 운세
-          success = await SajuService.updateTodayFortune(fortuneData);
-          break;
-        case 1: // 오늘의 이야기
-          // 오늘의 이야기는 데이터 저장이 필요하지 않음
-          success = true;
-          break;
-        case 2: // 오늘의 낭독시
-          // 오늘의 낭독시는 데이터 저장이 필요하지 않음
-          success = true;
-          break;
-        // case 1: // 이달의 운세
-        //   success = await SajuService.updateMonthFortune(fortuneData);
-        //   break;
-        // case 2: // 올해의 운세
-        //   success = await SajuService.updateYearFortune(fortuneData);
-        //   break;
-      }
-
-      if (success) {
-        print('운세 데이터 저장 성공');
-        // 저장된 데이터로 _sajuInfo 업데이트
-        await _loadSajuInfo();
-      } else {
-        print('운세 데이터 저장 실패');
-      }
-    } catch (e) {
-      print('운세 데이터 저장 중 오류: $e');
-    }
-  }
+  // 미사용 함수 제거됨
 }

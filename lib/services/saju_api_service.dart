@@ -26,9 +26,10 @@ class SajuApiService {
         'birthDay': sajuInfo.birthDate.day,
         'birthHour': sajuInfo.birthHour,
         'birthMinute': sajuInfo.birthMinute,
-        'gender': sajuInfo.gender == '남성' ? 'male' : 'female',
+        'gender': sajuInfo.gender, // 이미 영어 키값으로 저장됨
         'location': sajuInfo.region,
-        'status': sajuInfo.status,
+        // 서버는 status 키를 기대하므로 호환 유지
+        'status': sajuInfo.loveStatus,
       };
       
       print('API 요청 데이터: ${jsonEncode(requestBody)}');
@@ -77,6 +78,10 @@ class SajuApiService {
 
   // 서버 상태 확인
   static Future<bool> checkServerStatus() async {
+    if (kDebugMode) {
+      // 디버그 모드에서는 네트워크 호출하지 않음
+      return true;
+    }
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/saju'),
@@ -132,7 +137,7 @@ class SajuApiService {
       monthText: '${sajuInfo.birthDate.month}월',
       dayText: '${sajuInfo.birthDate.day}일',
       hourText: '${sajuInfo.birthHour.toString().padLeft(2, '0')}:${sajuInfo.birthMinute.toString().padLeft(2, '0')}',
-      analysis: '당신의 사주를 분석한 결과, ${sajuInfo.gender == '남성' ? '남성' : '여성'}의 운세는 평온하고 안정적입니다. 인내심과 끈기가 당신의 큰 장점입니다.',
+      analysis: '당신의 사주를 분석한 결과, ${sajuInfo.gender == 'male' ? '남성' : sajuInfo.gender == 'female' ? '여성' : '논바이너리'}의 운세는 평온하고 안정적입니다. 인내심과 끈기가 당신의 큰 장점입니다.',
       fortune: '오늘은 새로운 시작에 좋은 날입니다. 용기를 가지고 도전해보세요.',
     );
 

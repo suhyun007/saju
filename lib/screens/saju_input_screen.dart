@@ -1,10 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_android/webview_flutter_android.dart';
 import '../models/saju_info.dart';
 import '../models/friend_info.dart';
 import '../services/saju_service.dart';
@@ -12,7 +9,6 @@ import '../services/friend_service.dart';
 import '../utils/zodiac_utils.dart';
 import 'location_picker_screen.dart';
 import 'home_screen.dart';
-import 'splash_screen.dart';
 
 class SajuInputScreen extends StatefulWidget {
   final bool isFriendInfo;
@@ -35,14 +31,11 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   String? _selectedHour;
   String? _selectedMinute;
   String? _selectedRegion;
-  String? _selectedStatus;
+  String? _selectedLoveStatus;
   bool _isTimeUnknown = false;
   
   // Google Maps API Key는 AndroidManifest.xml과 AppDelegate.swift에 설정됨
   // 현재 구현에서는 geolocator와 geocoding 패키지를 사용하므로 직접적인 API 키 사용 불필요
-  
-  final List<String> _hours = List.generate(24, (index) => index.toString().padLeft(2, '0'));
-  final List<String> _minutes = List.generate(60, (index) => index.toString().padLeft(2, '0'));
 
   @override
   void initState() {
@@ -50,20 +43,19 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     _loadSavedSajuInfo();
   }
   
-
-
   Widget _buildUnifiedFormCard() {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).colorScheme.onBackground;
+    final primary = Theme.of(context).colorScheme.onSurface;
     final secondary = primary.withOpacity(0.7);
     final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
     final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
-    final hasTime = _selectedHour != null && _selectedMinute != null;
     
-    // 성별과 상태 배열을 현재 언어로 정의
-    final genders = [l10n.female, l10n.male, l10n.nonBinary];
+    // 상태 배열을 현재 언어로 정의
     final statuses = [l10n.married, l10n.inRelationship, l10n.wantRelationship, l10n.noInterest];
+    
+    // 영어 키값 매핑
+    final statusKeys = ['married', 'inRelationship', 'wantRelationship', 'noInterest'];
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -113,20 +105,20 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               // 여성 (30%)
               Expanded(
                 flex: 30,
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedGender = l10n.female),
+                child:                 GestureDetector(
+                  onTap: () => setState(() => _selectedGender = 'female'),
                   child: Container(
                     margin: const EdgeInsets.only(right: 2.5),
                     padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                    color: _selectedGender == l10n.female ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
+                    color: _selectedGender == 'female' ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: _selectedGender == l10n.female ? const Color(0xFF5D7DF4) : border),
+                    border: Border.all(color: _selectedGender == 'female' ? const Color(0xFF5D7DF4) : border),
                   ),
                     child: Text(
                       l10n.female,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == l10n.female ? const Color(0xFF5D7DF4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'female' ? const Color(0xFF5D7DF4) : primary),
                     ),
                   ),
                 ),
@@ -134,20 +126,20 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               // 남성 (30%)
               Expanded(
                 flex: 30,
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedGender = l10n.male),
+                child:                 GestureDetector(
+                  onTap: () => setState(() => _selectedGender = 'male'),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: _selectedGender == l10n.male ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
+                      color: _selectedGender == 'male' ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _selectedGender == l10n.male ? const Color(0xFF5D7DF4) : border),
+                      border: Border.all(color: _selectedGender == 'male' ? const Color(0xFF5D7DF4) : border),
                     ),
                     child: Text(
                       l10n.male,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == l10n.male ? const Color(0xFF5D7DF4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'male' ? const Color(0xFF5D7DF4) : primary),
                     ),
                   ),
                 ),
@@ -155,20 +147,20 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               // 논바이너리 (40%)
               Expanded(
                 flex: 40,
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedGender = l10n.nonBinary),
+                child:                 GestureDetector(
+                  onTap: () => setState(() => _selectedGender = 'nonBinary'),
                   child: Container(
                     margin: const EdgeInsets.only(left: 2.5),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
+                      color: _selectedGender == 'nonBinary' ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4) : border),
+                      border: Border.all(color: _selectedGender == 'nonBinary' ? const Color(0xFF5d7df4) : border),
                     ),
                     child: Text(
                       l10n.nonBinary,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == l10n.nonBinary ? const Color(0xFF5d7df4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'nonBinary' ? const Color(0xFF5d7df4) : primary),
                     ),
                   ),
                 ),
@@ -344,17 +336,19 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               border: Border.all(color: border),
             ),
             child: DropdownButton<String>(
-              value: _selectedStatus,
+              value: _mapStatusToEnglishKey(_selectedLoveStatus),
               isExpanded: true,
               underline: Container(),
               style: GoogleFonts.notoSans(
                 fontSize: 15,
                 color: primary,
               ),
-              items: statuses.map((status) {
+              items: statuses.asMap().entries.map((entry) {
+                final index = entry.key;
+                final status = entry.value;
                 return DropdownMenuItem<String>(
-                  value: status,
-                  child: Container(
+                  value: statusKeys[index],
+                  child: SizedBox(
                     width: double.infinity,
                     child: Text(
                       status,
@@ -366,7 +360,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               onChanged: (String? value) {
                 if (value != null) {
                   setState(() {
-                    _selectedStatus = value;
+                    _selectedLoveStatus = value; // 영어 키값으로 저장
                   });
                 }
               },
@@ -385,30 +379,16 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
 
-  String _mapStatusToCurrentLanguage(String? savedStatus) {
-    if (savedStatus == null) return '';
-    
+
+  String? _mapStatusToEnglishKey(String? status) {
+    if (status == null) return null;
     final l10n = AppLocalizations.of(context)!;
-    
-    // 저장된 값이 현재 언어의 값과 일치하는지 확인
-    final currentStatuses = [l10n.married, l10n.inRelationship, l10n.wantRelationship, l10n.noInterest];
-    if (currentStatuses.contains(savedStatus)) {
-      return savedStatus;
-    }
-    
-    // 저장된 값이 다른 언어의 값인 경우 매핑
-    if (savedStatus == '연애중' || savedStatus == 'In a Relationship' || savedStatus == '恋爱中' || savedStatus == '恋愛中') {
-      return l10n.inRelationship;
-    } else if (savedStatus == '결혼' || savedStatus == 'Married' || savedStatus == '已婚' || savedStatus == '結婚') {
-      return l10n.married;
-    } else if (savedStatus == '연애하고 싶음' || savedStatus == 'Want a Relationship' || savedStatus == '想恋爱' || savedStatus == '恋愛したい') {
-      return l10n.wantRelationship;
-    } else if (savedStatus == '관심없음' || savedStatus == 'No Interest' || savedStatus == '不感兴趣' || savedStatus == '興味なし') {
-      return l10n.noInterest;
-    }
-    
-    // 매핑되지 않은 경우 기본값 반환
-    return l10n.inRelationship;
+    if (status == l10n.married) return 'married';
+    if (status == l10n.inRelationship) return 'inRelationship';
+    if (status == l10n.wantRelationship) return 'wantRelationship';
+    if (status == l10n.noInterest) return 'noInterest';
+    if (['married', 'inRelationship', 'wantRelationship', 'noInterest'].contains(status)) return status;
+    return null;
   }
 
   String _formatDateForDisplay(DateTime date) {
@@ -530,33 +510,11 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       }
     } else {
       // 다른 언어: 24시간 형식
-      return '${hour.toString().padLeft(2, '0')}';
+      return hour.toString().padLeft(2, '0');
     }
   }
 
-  String _mapGenderToCurrentLanguage(String? savedGender) {
-    if (savedGender == null) return '';
-    
-    final l10n = AppLocalizations.of(context)!;
-    
-    // 저장된 값이 현재 언어의 값과 일치하는지 확인
-    final currentGenders = [l10n.female, l10n.male, l10n.nonBinary];
-    if (currentGenders.contains(savedGender)) {
-      return savedGender;
-    }
-    
-    // 저장된 값이 다른 언어의 값인 경우 매핑
-    if (savedGender == '여성' || savedGender == 'Female' || savedGender == '女性' || savedGender == '女') {
-      return l10n.female;
-    } else if (savedGender == '남성' || savedGender == 'Male' || savedGender == '男性' || savedGender == '男') {
-      return l10n.male;
-    } else if (savedGender == '논바이너리' || savedGender == 'N-binary' || savedGender == 'ノンバイナリー' || savedGender == '非二元') {
-      return l10n.nonBinary;
-    }
-    
-    // 매핑되지 않은 경우 기본값 반환
-    return l10n.female;
-  }
+
 
   Future<void> _loadSavedSajuInfo() async {
     if (widget.isFriendInfo) {
@@ -564,13 +522,13 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       if (friendInfo != null && mounted) {
         setState(() {
           _nameController.text = friendInfo.name;
-          _selectedGender = _mapGenderToCurrentLanguage(friendInfo.gender);
+          _selectedGender = friendInfo.gender; // 영어 키값으로 저장
           _selectedDate = friendInfo.birthDate;
           _selectedHour = friendInfo.birthHour.toString().padLeft(2, '0');
           _selectedMinute = friendInfo.birthMinute.toString().padLeft(2, '0');
           _selectedRegion = friendInfo.region;
           _regionController.text = friendInfo.region;
-          _selectedStatus = _mapStatusToCurrentLanguage(friendInfo.status);
+          _selectedLoveStatus = friendInfo.loveStatus; // 영어 키값으로 저장
         });
       }
     } else {
@@ -578,13 +536,13 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       if (sajuInfo != null && mounted) {
         setState(() {
           _nameController.text = sajuInfo.name;
-          _selectedGender = _mapGenderToCurrentLanguage(sajuInfo.gender);
+          _selectedGender = sajuInfo.gender; // 영어 키값으로 저장
           _selectedDate = sajuInfo.birthDate;
           _selectedHour = sajuInfo.birthHour.toString().padLeft(2, '0');
           _selectedMinute = sajuInfo.birthMinute.toString().padLeft(2, '0');
           _selectedRegion = sajuInfo.region;
           _regionController.text = sajuInfo.region;
-          _selectedStatus = _mapStatusToCurrentLanguage(sajuInfo.status);
+          _selectedLoveStatus = sajuInfo.loveStatus; // 영어 키값으로 저장
         });
       }
     }
@@ -650,7 +608,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             },
             icon: Icon(
               Icons.arrow_back,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(width: 0),
@@ -659,7 +617,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             style: GoogleFonts.notoSans(
               fontSize: Localizations.localeOf(context).languageCode == 'en' ? 24 : 25, // 영어일 때 -1 작게
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -1 : 0, // 영어일 때 글자 간격 -1
             ),
           ),
@@ -670,7 +628,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
 
   Widget _buildInfoMessage() {
     final l10n = AppLocalizations.of(context)!;
-    final primary = Theme.of(context).colorScheme.onBackground;
+    final primary = Theme.of(context).colorScheme.onSurface;
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
       child: Column(
@@ -695,270 +653,8 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     );
   }
 
-  Widget _buildNameInput() {
-    final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).colorScheme.onBackground;
-    final secondary = primary.withOpacity(0.7);
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
-    final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                l10n.name,
-                style: GoogleFonts.notoSans(
-                  fontSize: 21,
-                  fontWeight: FontWeight.bold,
-                  color: primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          TextFormField(
-            controller: _nameController,
-            style: GoogleFonts.notoSans(
-              fontSize: 17,
-              color: primary,
-            ),
-            decoration: InputDecoration(
-              hintText: l10n.nameHint,
-              hintStyle: GoogleFonts.notoSans(
-                fontSize: 17,
-                color: secondary,
-              ),
-              filled: true,
-              fillColor: cardBg,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: border),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: border),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Colors.amber),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            ),
 
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildDateInput() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).colorScheme.onBackground;
-    final secondary = primary.withOpacity(0.7);
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
-    final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.calendar_today,
-                color: Colors.amber,
-                size: 24,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                '출생일자',
-                style: GoogleFonts.notoSans(
-                  fontSize: 21,
-                  fontWeight: FontWeight.bold,
-                  color: primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          InkWell(
-            onTap: _selectDate,
-            child: Container(
-              padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: cardBg,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: border),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.date_range,
-                    color: secondary,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      _selectedDate != null
-                          ? '${_selectedDate!.year}년 ${_selectedDate!.month}월 ${_selectedDate!.day}일'
-                          : '생년월일을 선택해주세요',
-                      style: GoogleFonts.notoSans(
-                        fontSize: 17,
-                        color: _selectedDate != null ? primary : secondary,
-                      ),
-                    ),
-                  ),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    color: secondary,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTimeInput() {
-    final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).colorScheme.onBackground;
-    final secondary = primary.withOpacity(0.7);
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
-    final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
-    final hasTime = _selectedHour != null && _selectedMinute != null;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.access_time,
-                color: Colors.amber,
-                size: 24,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                '출생시간',
-                style: GoogleFonts.notoSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: InkWell(
-                  onTap: _isTimeUnknown ? null : _selectTime,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-                    decoration: BoxDecoration(
-                      color: _isTimeUnknown ? cardBg.withOpacity(0.5) : cardBg,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: border),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _isTimeUnknown 
-                                ? l10n.timeUnknown
-                                : hasTime
-                                    ? _formatTimeForDisplay(_selectedHour, _selectedMinute)
-                                    : l10n.birthTimeHint,
-                            style: GoogleFonts.notoSans(
-                              fontSize: 17,
-                              color: _isTimeUnknown 
-                                  ? secondary.withOpacity(0.5)
-                                  : hasTime ? primary : secondary,
-                            ),
-                          ),
-                        ),
-                        if (!_isTimeUnknown)
-                          Icon(
-                            Icons.arrow_drop_down,
-                            color: secondary,
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                flex: 1,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _isTimeUnknown = !_isTimeUnknown;
-                      if (_isTimeUnknown) {
-                        _selectedHour = null;
-                        _selectedMinute = null;
-                      }
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-                    decoration: BoxDecoration(
-                      color: _isTimeUnknown ? primary : cardBg,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _isTimeUnknown ? primary : border),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          _isTimeUnknown ? Icons.check_box : Icons.check_box_outline_blank,
-                          color: _isTimeUnknown ? Colors.white : secondary,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '시간모름',
-                          style: GoogleFonts.notoSans(
-                            fontSize: 14,
-                            color: _isTimeUnknown ? Colors.white : secondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Future<void> _selectTime() async {
     final int initHour = int.tryParse(_selectedHour ?? '') ?? DateTime.now().hour;
@@ -1047,7 +743,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                             60,
                             (index) => Center(
                               child: Text(
-                                '${index.toString().padLeft(2, '0')}',
+                                index.toString().padLeft(2, '0'),
                                 style: TextStyle(fontSize: 18, color: onSurface),
                               ),
                             ),
@@ -1072,247 +768,8 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     }
   }
 
-  Widget _buildGenderInput() {
-    final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).colorScheme.onBackground;
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
-    final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
-    
-    // 성별 배열을 현재 언어로 정의
-    final genders = [l10n.female, l10n.male, l10n.nonBinary];
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                '성별',
-                style: GoogleFonts.notoSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: genders.map((gender) {
-              final isSelected = _selectedGender == gender;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedGender = gender;
-                    });
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.amber.withOpacity(0.2) : cardBg,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isSelected ? Colors.amber : border,
-                      ),
-                    ),
-                    child: Text(
-                      gender,
-                      style: GoogleFonts.notoSans(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: isSelected ? Colors.amber[800] : primary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildRegionInput() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).colorScheme.onBackground;
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
-    final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.location_on,
-                color: Colors.amber,
-                size: 24,
-              ),
-              const SizedBox(width: 5),
-              Text(
-                '태어난 지역',
-                style: GoogleFonts.notoSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          if (_selectedRegion != null && _selectedRegion!.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: Colors.amber.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.amber.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.check_circle,
-                    color: Colors.amber,
-                    size: 17,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _selectedRegion!,
-                      style: GoogleFonts.notoSans(
-                        fontSize: 15,
-                        color: primary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _searchPlace,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              icon: const Icon(Icons.search),
-              label: Text(
-                _selectedRegion != null && _selectedRegion!.isNotEmpty
-                    ? '지역 다시 검색'
-                    : '지역 검색하기',
-                style: GoogleFonts.notoSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildStatusInput() {
-    final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).colorScheme.onBackground;
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
-    final border = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.withOpacity(0.3);
-    
-    // 상태 배열을 현재 언어로 정의
-    final statuses = [l10n.married, l10n.inRelationship, l10n.wantRelationship, l10n.noInterest];
-    
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.favorite_outline,
-                color: Colors.amber,
-                size: 24,
-              ),
-              const SizedBox(width: 5),
-              Text(
-                l10n.loveStatus,
-                style: GoogleFonts.notoSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: statuses.map((status) {
-              final isSelected = _selectedStatus == status;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedStatus = status;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.amber.withOpacity(0.2) : cardBg,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isSelected ? Colors.amber : border,
-                      ),
-                    ),
-                    child: Text(
-                      status,
-                      style: GoogleFonts.notoSans(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: isSelected ? Colors.amber[800] : primary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
 
     Future<void> _searchPlace() async {
     final result = await showModalBottomSheet<Map<String, dynamic>>(
@@ -1348,7 +805,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         _selectedDate != null &&
         (_selectedHour != null && _selectedMinute != null || _isTimeUnknown) &&
         _selectedRegion != null &&
-        _selectedStatus != null;
+        _selectedLoveStatus != null;
 
     return SizedBox(
       width: double.infinity,
@@ -1525,7 +982,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       return;
     }
 
-    if (_selectedStatus == null) {
+    if (_selectedLoveStatus == null) {
       _showSnackBar('나의 상태를 선택해주세요.');
       return;
     }
@@ -1540,7 +997,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         birthMinute: _isTimeUnknown ? 0 : int.parse(_selectedMinute!),
         gender: _selectedGender!,
         region: _selectedRegion!,
-        status: _selectedStatus!,
+        loveStatus: _selectedLoveStatus!,
         zodiacSign: zodiacSign,
       );
 
@@ -1563,7 +1020,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         birthMinute: _isTimeUnknown ? 0 : int.parse(_selectedMinute!),
         gender: _selectedGender!,
         region: _selectedRegion!,
-        status: _selectedStatus!,
+        loveStatus: _selectedLoveStatus!,
         zodiacSign: zodiacSign,
       );
 

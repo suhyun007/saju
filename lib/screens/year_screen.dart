@@ -106,7 +106,7 @@ class _YearScreenState extends State<YearScreen> {
             ],
           ),
         ),
-        child: Center(
+        child: const Center(
           child: CircularProgressIndicator(
             color: Colors.amber,
           ),
@@ -176,7 +176,7 @@ class _YearScreenState extends State<YearScreen> {
                   const SizedBox(height: 20),
                   
                   // 올해의 운세 자세히 보기 버튼
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {

@@ -21,8 +21,8 @@ class SajuNavigator extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Color(0xFF5d7df4).withOpacity(0.6),
-            Color(0xFF9961f6).withOpacity(0.6),
+            const Color(0xFF5d7df4).withOpacity(0.6),
+            const Color(0xFF9961f6).withOpacity(0.6),
           ],
         ),
       ),

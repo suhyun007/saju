@@ -1,9 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
+import '../services/poetry_api_service.dart';
+import '../services/saju_service.dart';
+import '../models/saju_info.dart';
 
-class ReadingScreen extends StatelessWidget {
-  const ReadingScreen({super.key});
+class PoetryScreen extends StatefulWidget {
+  const PoetryScreen({super.key});
+
+  @override
+  State<PoetryScreen> createState() => _PoetryScreenState();
+}
+
+class _PoetryScreenState extends State<PoetryScreen> {
+  bool _loading = false;
+  String? _error;
+  String? _poem;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() { _loading = true; _error = null; });
+    try {
+      final SajuInfo? sajuInfo = await SajuService.loadSajuInfo();
+      if (sajuInfo == null) {
+        setState(() { _error = 'no_saju'; _loading = false; });
+        return;
+      }
+      final lang = Localizations.localeOf(context).languageCode;
+      final res = await PoetryApiService.fetchPoetry(sajuInfo: sajuInfo, language: lang);
+      setState(() { _poem = res.content; _loading = false; });
+    } catch (e) {
+      setState(() { _error = '$e'; _loading = false; });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,47 +100,55 @@ class ReadingScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
                 ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        '《오늘, 바람에게 묻다》',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        '아침의 창문은\n호기심으로 반짝였다\n\n바람이 장난처럼\n머리칼을 흔들자\n내 마음도 웃었다\n\n낯선 골목에서\n새로운 대화가 피어났고\n작은 우연이\n오늘의 별자리를 연결했다\n\n머릿속 번개 같은 깨달음\n손끝에서 빛이 흘러\n내일로 가는 길을 비춘다\n\n밤하늘에 한 점 별이\n눈을 깜빡이며 말한다\n"오늘의 용기를 잊지 말 것\n그것이 내일을 부른다"',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 18,
-                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A),
-                          height: 1.8,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        '오늘은 호기심과 대화, 작은 결심이 행운을 불러오는 날이에요.',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.8) : const Color(0xFF1A1A1A).withOpacity(0.8),
-                          fontStyle: FontStyle.italic,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                    ],
-                  ),
-                ),
+                child: _buildBody(context),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    final onText = Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A);
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error == 'no_saju') {
+      return Center(
+        child: Text(
+          AppLocalizations.of(context)?.infoMessage ?? '출생 정보를 먼저 저장해주세요.',
+          style: GoogleFonts.notoSans(fontSize: 16, color: onText),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Error', style: GoogleFonts.notoSans(fontSize: 18, color: onText, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text(_error!, style: GoogleFonts.notoSans(fontSize: 14, color: onText.withOpacity(0.8))),
+            const SizedBox(height: 12),
+            TextButton(onPressed: _load, child: const Text('Retry')),
+          ],
+        ),
+      );
+    }
+    if (_poem == null) {
+      return const SizedBox();
+    }
+    return SingleChildScrollView(
+      child: Text(
+        _poem!,
+        style: GoogleFonts.notoSans(
+          fontSize: 18,
+          color: onText,
+          height: 1.8,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

@@ -106,7 +106,7 @@ class _MonthScreenState extends State<MonthScreen> {
             ],
           ),
         ),
-        child: Center(
+        child: const Center(
           child: CircularProgressIndicator(
             color: Colors.amber,
           ),
@@ -176,7 +176,7 @@ class _MonthScreenState extends State<MonthScreen> {
                   const SizedBox(height: 20),
                   
                   // 이번달 운세 자세히 보기 버튼
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {

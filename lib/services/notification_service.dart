@@ -397,7 +397,7 @@ class NotificationService {
   static Future<PermissionStatus> getPermissionStatus() async {
     // Prefer native UNUserNotificationCenter via MethodChannel on iOS
     if (Platform.isIOS || Platform.isMacOS) {
-      final MethodChannel channel = const MethodChannel('app.notificationStatus');
+      const MethodChannel channel = MethodChannel('app.notificationStatus');
       try {
         final String status = await channel.invokeMethod('getAuthorizationStatus');
         // Map native statuses to PermissionStatus

@@ -34,7 +34,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             icon: Icon(
               Icons.arrow_back,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           Text(
@@ -42,7 +42,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             style: GoogleFonts.notoSans(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],
@@ -59,7 +59,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 제목
-            Container(
+            SizedBox(
               width: double.infinity,
               child: Column(
                 children: [
@@ -74,7 +74,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     style: GoogleFonts.notoSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -98,7 +98,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   width: 1,
                 ),
               ),
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(28),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -107,7 +107,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     style: GoogleFonts.notoSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -116,65 +116,66 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 7),
                   
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection1_1Title ?? '1.1 서비스 제공',
                     style: GoogleFonts.notoSans(
-                      fontSize: 18,
+                      fontSize: 17,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 3),
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection1_1Content ?? '• 에피소드, 시 낭독, 오늘의 가이드 등 문학 컨텐츠 제공\n• 사용자 맞춤형 콘텐츠 제공\n• 앱 기능 및 서비스 개선',
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 3),
                   
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection1_2Title ?? '1.2 고객 지원',
                     style: GoogleFonts.notoSans(
-                      fontSize: 18,
+                      fontSize: 17,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 3),
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection1_2Content ?? '• 문의사항 응대 및 처리\n• 서비스 이용 관련 안내\n• 불만사항 처리 및 분쟁해결',
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 18),
                   
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection2Title ?? '2. 개인정보 수집 및 처리',
                     style: GoogleFonts.notoSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
                   Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
                       color: isDark ? Colors.blue[900]?.withOpacity(0.3) : Colors.blue[50],
@@ -192,17 +193,17 @@ class PrivacyPolicyScreen extends StatelessWidget {
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 5),
                         Text(
                           AppLocalizations.of(context)?.privacyPolicySection2Content ?? '• 본 앱은 사용자의 생년월일, 성별, 출생지역 등을 입력받을 수 있지만 이를 서버나 외부에 저장하지 않습니다.\n• 입력된 정보는 오직 개인 맞춤형 서비스(에피소드, 시 낭독, 오늘의 가이드 제공 등)를 위해 앱 내에서만 사용됩니다.\n• 앱은 사용자의 푸시 알림 수신 여부 설정만 저장하며, 알림 발송을 위한 기기 토큰 외의 개인정보는 수집하지 않습니다.',
                           textAlign: TextAlign.left,
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
-                            color: Theme.of(context).colorScheme.onBackground,
-                            height: 1.6,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            height: 1.5,
                           ),
                         ),
                       ],
@@ -214,9 +215,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection2LocalTitle ?? '로컬 저장 정보:',
                     style: GoogleFonts.notoSans(
-                      fontSize: 18,
+                      fontSize: 17,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -225,19 +226,19 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 18),
                   
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection3Title ?? '3. 개인정보의 보관 및 파기',
                     style: GoogleFonts.notoSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -246,14 +247,15 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   
                   Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
                       color: isDark ? Colors.blue[900]?.withOpacity(0.3) : Colors.blue[50],
@@ -271,31 +273,31 @@ class PrivacyPolicyScreen extends StatelessWidget {
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 5),
                         Text(
                           AppLocalizations.of(context)?.privacyPolicySection3HighlightContent ?? '• 개인정보를 서버에 저장하지 않음\n• 기기 내에서만 처리하여 외부 유출 가능성을 최소화\n• 앱 삭제 시 모든 데이터 즉시 파기',
                           textAlign: TextAlign.left,
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
-                            color: Theme.of(context).colorScheme.onBackground,
-                            height: 1.6,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            height: 1.5,
                           ),
                         ),
                       ],
                     ),
                   ),
                   
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 18),
                   
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection4Title ?? '4. 개인정보 제3자 제공',
                     style: GoogleFonts.notoSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -304,12 +306,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   
                   Container(
                     padding: const EdgeInsets.all(15),
@@ -329,31 +331,31 @@ class PrivacyPolicyScreen extends StatelessWidget {
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 5),
                         Text(
                           AppLocalizations.of(context)?.privacyPolicySection4HighlightContent ?? '• 개인정보를 서버에 저장하지 않으므로 제3자 제공이 불가능\n• 모든 데이터는 기기 내에서만 처리\n• 외부 서버나 데이터베이스에 개인정보 전송 없음',
                           textAlign: TextAlign.left,
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
-                            color: Theme.of(context).colorScheme.onBackground,
-                            height: 1.6,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            height: 1.5,
                           ),
                         ),
                       ],
                     ),
                   ),
                   
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 18),
                   
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection5Title ?? '5. 개인정보 보호',
                     style: GoogleFonts.notoSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -362,12 +364,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   
                   Container(
                     padding: const EdgeInsets.all(15),
@@ -387,31 +389,31 @@ class PrivacyPolicyScreen extends StatelessWidget {
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 5),
                         Text(
                           AppLocalizations.of(context)?.privacyPolicySection5HighlightContent ?? '• 개인정보를 서버에 저장하지 않음\n• 기기 내에서만 처리하여 외부 유출 가능성 최소화\n• 앱 삭제 시 모든 데이터 즉시 파기',
                           textAlign: TextAlign.left,
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
-                            color: Theme.of(context).colorScheme.onBackground,
-                            height: 1.6,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            height: 1.5,
                           ),
                         ),
                       ],
                     ),
                   ),
                   
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 18),
                   
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection6Title ?? '6. 이용자 권리',
                     style: GoogleFonts.notoSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -420,12 +422,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   
                   Container(
                     padding: const EdgeInsets.all(15),
@@ -445,31 +447,31 @@ class PrivacyPolicyScreen extends StatelessWidget {
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 5),
                         Text(
                           AppLocalizations.of(context)?.privacyPolicySection6HighlightContent ?? '• 푸시 알림 수신 거부 권리\n• 출생정보 입력 선택권\n• 앱 삭제를 통한 모든 데이터 삭제 권리',
                           textAlign: TextAlign.left,
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
-                            color: Theme.of(context).colorScheme.onBackground,
-                            height: 1.6,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            height: 1.5,
                           ),
                         ),
                       ],
                     ),
                   ),
                   
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 18),
                   
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection7Title ?? '7. 개인정보처리방침 변경 안내',
                     style: GoogleFonts.notoSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -478,12 +480,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   
                   Container(
                     padding: const EdgeInsets.all(15),
@@ -503,7 +505,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -512,22 +514,22 @@ class PrivacyPolicyScreen extends StatelessWidget {
                           textAlign: TextAlign.left,
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
-                            color: Theme.of(context).colorScheme.onBackground,
-                            height: 1.6,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            height: 1.5,
                           ),
                         ),
                       ],
                     ),
                   ),
                   
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 18),
                   
                   Text(
                     AppLocalizations.of(context)?.privacyPolicySection8Title ?? '8. 문의 및 연락처',
                     style: GoogleFonts.notoSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -549,17 +551,17 @@ class PrivacyPolicyScreen extends StatelessWidget {
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 5),
                         Text(
                           AppLocalizations.of(context)?.privacyPolicySection8ContactInfo ?? '이름: subak lee\n직책: 개발자\n이메일: slee29709@gmail.com',
                           textAlign: TextAlign.left,
                           style: GoogleFonts.notoSans(
                             fontSize: 17,
-                            color: Theme.of(context).colorScheme.onBackground,
-                            height: 1.6,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            height: 1.5,
                           ),
                         ),
                       ],
@@ -573,8 +575,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: GoogleFonts.notoSans(
                       fontSize: 17,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
                     ),
                   ),
                   
@@ -597,7 +599,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                           style: GoogleFonts.notoSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -612,14 +614,13 @@ class PrivacyPolicyScreen extends StatelessWidget {
                       AppLocalizations.of(context)?.privacyPolicyTeam ?? 'LunaVerse Team',
                       style: GoogleFonts.notoSans(
                         fontSize: 12,
-                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            
             const SizedBox(height: 20),
           ],
         ),

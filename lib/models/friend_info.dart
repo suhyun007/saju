@@ -5,7 +5,7 @@ class FriendInfo {
   final int birthMinute;
   final String gender;
   final String region;
-  final String? status;
+  final String? loveStatus;
   final String? zodiacSign;
   final DateTime createdAt;
 
@@ -16,7 +16,7 @@ class FriendInfo {
     required this.birthMinute,
     required this.gender,
     required this.region,
-    this.status,
+    this.loveStatus,
     this.zodiacSign,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
@@ -30,7 +30,7 @@ class FriendInfo {
       'birthMinute': birthMinute,
       'gender': gender,
       'region': region,
-      'status': status,
+      'loveStatus': loveStatus,
       'zodiacSign': zodiacSign,
       'createdAt': createdAt.toIso8601String(),
     };
@@ -45,7 +45,7 @@ class FriendInfo {
       birthMinute: json['birthMinute'],
       gender: json['gender'],
       region: json['region'] ?? '',
-      status: json['status'],
+      loveStatus: json['loveStatus'] ?? json['status'],
       zodiacSign: json['zodiacSign'],
       createdAt: DateTime.parse(json['createdAt']),
     );

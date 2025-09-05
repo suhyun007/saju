@@ -48,9 +48,9 @@ class _YearDetailScreenState extends State<YearDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF1A1A1A),
-        body: const Center(
+      return const Scaffold(
+        backgroundColor: Color(0xFF1A1A1A),
+        body: Center(
           child: CircularProgressIndicator(
             color: Colors.amber,
           ),
@@ -59,9 +59,9 @@ class _YearDetailScreenState extends State<YearDetailScreen> {
     }
 
     if (_sajuInfo == null) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF1A1A1A),
-        body: const Center(
+      return const Scaffold(
+        backgroundColor: Color(0xFF1A1A1A),
+        body: Center(
           child: Text(
             '출생 정보를 먼저 입력해주세요.',
             style: TextStyle(color: Colors.white, fontSize: 16),
@@ -268,7 +268,7 @@ class _YearDetailScreenState extends State<YearDetailScreen> {
   }
 
   void _shareFortune() {
-    final String shareText = '''
+    const String shareText = '''
       🌟 올해의 운세 🌟
       #올해의운세 #사주앱
 ''';

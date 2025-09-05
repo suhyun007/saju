@@ -118,7 +118,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
         print('=== AppLocalizations.delegate: ${AppLocalizations.delegate} ===');
         
         return MaterialApp(
-          title: '사주앱',
+          title: 'LunaVerse 앱',
           debugShowCheckedModeBanner: false,
           locale: languageService.currentLocale,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -141,7 +141,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
           },
           builder: (context, child) {
             return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
               child: child!,
             );
           },

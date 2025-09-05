@@ -114,7 +114,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // 앱 아이콘
-                      Container(
+                      SizedBox(
                         width: 200,
                         height: 200,
                         child: ClipRRect(
@@ -177,7 +177,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                   : Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Icon(
+                                        const Icon(
                                           Icons.auto_awesome,
                                           color: Colors.white,
                                           size: 23,

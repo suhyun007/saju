@@ -529,4 +529,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get poetrySubtitle => '매일 당신에게 시 한 편을 지어드려요.';
+
+  @override
+  String get lightAndHope => '빛과 희망';
 }

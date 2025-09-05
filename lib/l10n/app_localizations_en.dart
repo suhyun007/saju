@@ -543,4 +543,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get poetrySubtitle => 'I write a poem for you every day.';
+
+  @override
+  String get lightAndHope => 'Light & Hope';
 }

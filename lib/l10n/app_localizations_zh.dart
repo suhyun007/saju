@@ -524,4 +524,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get poetrySubtitle => '每天为您写一首诗。';
+
+  @override
+  String get lightAndHope => '光与希望';
 }

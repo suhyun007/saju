@@ -65,7 +65,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
         body: Center(
           child: Text(
             '출생 정보를 먼저 입력해주세요.',
-            style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
           ),
         ),
       );
@@ -77,14 +77,14 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onBackground),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           AppLocalizations.of(context)?.todayDetailTitle ?? '오늘의 가이드',
           textAlign: TextAlign.left,
           style: GoogleFonts.notoSans(
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 25,
             fontWeight: FontWeight.w600,
           ),
@@ -92,7 +92,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onBackground),
+            icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onSurface),
             onPressed: () => _shareFortune(),
           ),
         ],
@@ -178,7 +178,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
               style: GoogleFonts.notoSans(
                 fontSize: 21,
                 fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(width: 12),
@@ -211,7 +211,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             style: GoogleFonts.notoSans(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
               height: 1.5,
             ),
           ),
@@ -234,7 +234,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
               style: GoogleFonts.notoSans(
                 fontSize: 21,
                 fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],
@@ -256,7 +256,7 @@ class _TodayDetailScreenState extends State<TodayDetailScreen> {
             style: GoogleFonts.notoSans(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
               height: 1.3,
             ),
           ),
