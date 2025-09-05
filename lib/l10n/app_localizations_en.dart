@@ -546,4 +546,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lightAndHope => 'Light & Hope';
+
+  @override
+  String get summaryLabel => 'Summary';
 }

@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/saju_service.dart';
+import '../services/saju_api_service.dart';
 import '../models/saju_info.dart';
 import '../models/saju_api_response.dart';
 import '../l10n/app_localizations.dart';
-
+import 'dart:developer' as dev;
 
 class GuideScreen extends StatefulWidget {
-  const GuideScreen({super.key});
+  final ValueNotifier<int> activeTab;
+  final int tabIndex;
+  
+  const GuideScreen({
+    super.key,
+    required this.activeTab,
+    required this.tabIndex,
+  });
 
   @override
   State<GuideScreen> createState() => _GuideScreenState();
@@ -21,28 +29,55 @@ class _GuideScreenState extends State<GuideScreen> {
   @override
   void initState() {
     super.initState();
-    _loadTodayFortune();// 세션같은것(로컬 저장소)
+    _loadTodayFortune();
   }
 
   Future<void> _loadTodayFortune() async {
     try {
       final sajuInfo = await SajuService.loadSajuInfo();
-      if (sajuInfo != null) {
-        setState(() {
-          _sajuInfo = sajuInfo;
-          _todayFortune = _createTodayFortuneFromSajuInfo(sajuInfo);
-          _isLoading = false;
-        });
-      } else {
+      if (sajuInfo == null) {
         setState(() {
           _isLoading = false;
         });
+        return;
       }
+      final locale = Localizations.localeOf(context).languageCode;
+      // 캐시 유효하면 캐시로 표시
+      final bool expired = sajuInfo.isTodayFortuneExpiredFor(locale);
+      final String cachedContent = (sajuInfo.todayFortune['overall'] ?? '').toString();
+      if (!expired && cachedContent.isNotEmpty) {
+        final cached = _createTodayFortuneFromSajuInfo(sajuInfo);
+        setState(() { _todayFortune = cached; _isLoading = false; });
+        return;
+      }
+
+      // 만료 시에만 서버 호출
+      final result = await SajuApiService.fetchGuide(
+        sajuInfo: sajuInfo,
+        language: locale,
+        forceNetwork: true,
+      );
+      // 캐시에 저장 (날짜/지문/언어)
+      sajuInfo.todayFortune['overall'] = result.overall;
+      sajuInfo.todayFortune['love'] = result.love;
+      sajuInfo.todayFortune['health'] = result.health;
+      sajuInfo.todayFortune['study'] = result.study;
+      sajuInfo.todayFortune['wealth'] = result.wealth;
+      sajuInfo.todayFortune['lastFortuneDate'] = DateTime.now().toIso8601String();
+      sajuInfo.todayFortune['lastRequestFingerprint'] = sajuInfo.currentRequestFingerprint;
+      sajuInfo.todayFortune['lastLanguage'] = locale;
+      await SajuService.saveSajuInfo(sajuInfo);
+      final todayFortune = TodayFortune(
+        overall: result.overall,
+        love: result.love,
+        health: result.health,
+        study: result.study,
+        wealth: result.wealth,
+      );
+      setState(() { _todayFortune = todayFortune; _isLoading = false; });
     } catch (e) {
-      print('오늘의 운세 로드 실패: $e');
-      setState(() {
-        _isLoading = false;
-      });
+      dev.log('[GuideScreen] Guide load failed: $e');
+      setState(() { _isLoading = false; });
     }
   }
 
@@ -64,463 +99,343 @@ class _GuideScreenState extends State<GuideScreen> {
     );
   }
 
-  // 텍스트를 첫 번째 마침표까지만 자르는 메서드
-  String _truncateAtFirstPeriod(String text) {
-    final periodIndex = text.indexOf('.');
-    if (periodIndex == -1) {
-      return text; // 마침표가 없으면 전체 텍스트 반환
-    }
-    return text.substring(0, periodIndex + 1); // 마침표 포함해서 반환
-  }
-
-  // 텍스트를 두 번째 마침표까지만 자르고 ..을 붙이는 메서드
-  String _truncateAtSecondPeriod(String text) {
-    if (text.length <= 35) {
-      return text; // 35자 이하면 그대로 반환
-    }
-    
-    final firstPeriodIndex = text.indexOf('.');
-    if (firstPeriodIndex == -1) {
-      return text; // 마침표가 없으면 전체 텍스트 반환
-    }
-    
-    final secondPeriodIndex = text.indexOf('.', firstPeriodIndex + 1);
-    if (secondPeriodIndex == -1) {
-      return text; // 두 번째 마침표가 없으면 전체 텍스트 반환
-    }
-    
-    return '${text.substring(0, secondPeriodIndex + 1)}..'; // 두 번째 마침표까지 + ..
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
-    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
-    
-    if (_isLoading) {
-      return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).scaffoldBackgroundColor,
-                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
-              ],
-            ),
-          ),
-          child: const Center(
-            child: CircularProgressIndicator(
-              color: Colors.amber,
-            ),
-          ),
-      );
-    }
+        
 
-    if (_todayFortune == null) {
-      return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).scaffoldBackgroundColor,
-                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
-              ],
-            ),
-          ),
-          child: Center(
-            child: Text(
-              '출생 정보를 먼저 입력해주세요.',
-              style: TextStyle(color: textColor, fontSize: 16),
-            ),
-          ),
-      );
-    }
-
-    return Container(
-        decoration: isDark ? null : BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).scaffoldBackgroundColor,
-              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-              Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
-            ],
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 가이드 UI (아이콘, 타이틀, 설명글)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 20),
-                child: Column(
-                  children: [
-                    // 가이드 아이콘
-                    const Icon(
-                      Icons.tips_and_updates,
-                      size: 40,
-                      color: Color(0xFFB3B3FF),
-                    ),
-                    const SizedBox(height: 3),
-                    // 가이드 타이틀
-                    Text(
-                      AppLocalizations.of(context)?.todayDetailTitle ?? 'Today\'s Guide',
-                      style: GoogleFonts.notoSans(
-                        fontSize: 22,
-                        height: 1.3,
-                        fontWeight: FontWeight.w500,
-                        color: textColor,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    // 가이드 설명글
-                    Text(
-                      AppLocalizations.of(context)?.guideSubtitle ?? '오늘 하루를 위한 맞춤형 가이드를 받아보세요.',
-                      style: GoogleFonts.notoSans(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        color: textColor.withOpacity(0.9),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+        if (_todayFortune == null) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Theme.of(context).scaffoldBackgroundColor,
+                  Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+                  Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
+                ],
               ),
-              const SizedBox(height: 0),
-              
-              // 오늘의 가이드 자세히 보기 버튼 (상단) - 주석 유지
-              // Container(
-              //   width: double.infinity,
-              //   height: 53,
-              //   decoration: BoxDecoration(
-              //     gradient: LinearGradient(
-              //       colors: [
-              //         Color(0xFF5d7df4),
-              //         Color(0xFF9961f6),
-              //       ],
-              //       begin: Alignment.centerLeft,
-              //       end: Alignment.centerRight,
-              //     ),
-              //     borderRadius: BorderRadius.circular(10),
-              //     border: Border.all(
-              //       color: Color(0xFF1A3A8A),
-              //       width: 1,
-              //     ),
-              //   ),
-              //   child: Material(
-              //     color: Colors.transparent,
-              //     child: InkWell(
-              //       onTap: () {
-              //         Navigator.pushNamed(context, '/today-detail');
-              //       },
-              //       borderRadius: BorderRadius.circular(10),
-              //       child: Center(
-              //         child: Text(
-              //           AppLocalizations.of(context)?.todayGuideDetailButton ?? '오늘의 가이드 자세히 보기',
-              //           style: GoogleFonts.roboto(
-              //             fontSize: 17,
-              //             fontWeight: FontWeight.w900,
-              //             color: Colors.white,
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 64,
+                    color: textColor.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '출생 정보를 입력해주세요',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: textColor.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
 
-              // 각각의 가이드 박스
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
-                height: 90,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white.withOpacity(0.1)
-                      : Theme.of(context).colorScheme.surface.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Theme.of(context).scaffoldBackgroundColor,
+                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
+              ],
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 오늘의 가이드 헤더
+                Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.tips_and_updates,
+                        size: 40,
+                        color: const Color(0xFFB3B3FF),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        AppLocalizations.of(context)!.todayDetailTitle,
+                        style: GoogleFonts.notoSans(
+                          fontSize: 22,
+                          height: 1.3,
+                          fontWeight: FontWeight.w500,
+                          color: textColor,
+                          letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.2 : 0,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.guideSubtitle,
+                        style: GoogleFonts.notoSans(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: textColor.withOpacity(0.9),
+                          letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.3 : 0,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 5),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image.asset(
+                // 빛과 희망
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
                         'assets/icons/g5.png',
                         width: 30,
                         height: 30,
                         fit: BoxFit.contain,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildFortuneSection(
-                        AppLocalizations.of(context)?.lightAndHope ?? '빛과 희망',
-                        _truncateAtSecondPeriod(_todayFortune!.overall!),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.lightAndHope,
+                              style: GoogleFonts.notoSans(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _todayFortune?.overall ?? '',
+                              style: GoogleFonts.notoSans(
+                                fontSize: 14,
+                                color: textColor.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                
+                // 성장과 집중
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
                     ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
-                height: 90,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white.withOpacity(0.1)
-                      : Theme.of(context).colorScheme.surface.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image.asset(
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
                         'assets/icons/g2.png',
                         width: 30,
                         height: 30,
                         fit: BoxFit.contain,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildFortuneSection(
-                        AppLocalizations.of(context)?.growthAndFocus ?? '성장과 집중',
-                        _truncateAtSecondPeriod(_todayFortune!.study!),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.growthAndFocus,
+                              style: GoogleFonts.notoSans(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _todayFortune?.study ?? '',
+                              style: GoogleFonts.notoSans(
+                                fontSize: 14,
+                                color: textColor.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                
+                // 풍요로움
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
                     ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
-                height: 90,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white.withOpacity(0.1)
-                      : Theme.of(context).colorScheme.surface.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image.asset(
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
                         'assets/icons/g6.png',
                         width: 30,
                         height: 30,
                         fit: BoxFit.contain,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildFortuneSection(
-                        AppLocalizations.of(context)?.abundance ?? '풍요로움',
-                        _truncateAtSecondPeriod(_todayFortune!.wealth!),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.abundance,
+                              style: GoogleFonts.notoSans(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _todayFortune?.wealth ?? '',
+                              style: GoogleFonts.notoSans(
+                                fontSize: 14,
+                                color: textColor.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                
+                // 몸과 마음
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
                     ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
-                height: 90,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white.withOpacity(0.1)
-                      : Theme.of(context).colorScheme.surface.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image.asset(
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
                         'assets/icons/g3.png',
                         width: 30,
                         height: 30,
                         fit: BoxFit.contain,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildFortuneSection(
-                        AppLocalizations.of(context)?.bodyAndMind ?? '몸과 마음',
-                        _truncateAtSecondPeriod(_todayFortune!.health!),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.bodyAndMind,
+                              style: GoogleFonts.notoSans(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _todayFortune?.health ?? '',
+                              style: GoogleFonts.notoSans(
+                                fontSize: 14,
+                                color: textColor.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                
+                // 소중한 인연
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
                     ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
-                height: 90,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white.withOpacity(0.1)
-                      : Theme.of(context).colorScheme.surface.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image.asset(
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
                         'assets/icons/g4.png',
                         width: 30,
                         height: 30,
                         fit: BoxFit.contain,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildFortuneSection(
-                        AppLocalizations.of(context)?.preciousRelationship ?? '소중한 인연',
-                        _truncateAtSecondPeriod(_todayFortune!.love!),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.preciousRelationship,
+                              style: GoogleFonts.notoSans(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _todayFortune?.love ?? '',
+                              style: GoogleFonts.notoSans(
+                                fontSize: 14,
+                                color: textColor.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: 35),
-
-              // 하단 안내
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.info_outline,
-                      color: Colors.amber,
-                      size: 34,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      (AppLocalizations.of(context)?.todayStoryHint ?? '오늘의 이야기는 별칭이 전해주는 작은 힌트일 뿐이에요. 당신의 선택과 걸어가는 길은 오롯이 당신만의 것이에요.').replaceAll('\n', ' '),
-                      style: GoogleFonts.notoSans(
-                        fontSize: 14,
-                        color: textColor.withOpacity(0.7),
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-    );
-  }
-
-  Widget _buildFortuneSection(String title, String content) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black;
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.notoSans(
-            fontSize: 17,
-            fontWeight: FontWeight.w500,
-            color: textColor,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          content,
-          style: GoogleFonts.notoSans(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            color: textColor,
-            height: 1.4,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFortuneCard(String title, String content, IconData icon, Color color) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black;
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05);
-    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
-    
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.notoSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            content,
-            style: GoogleFonts.notoSans(
-              fontSize: 16,
-              color: textColor,
-              height: 1.4,
+              ],
             ),
           ),
-        ],
-      ),
-    );
+        );
   }
 }

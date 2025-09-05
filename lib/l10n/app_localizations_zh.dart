@@ -527,4 +527,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get lightAndHope => '光与希望';
+
+  @override
+  String get summaryLabel => '摘要';
 }

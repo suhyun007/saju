@@ -5,11 +5,94 @@ import '../models/saju_info.dart';
 class SajuService {
   static const String _sajuKey = 'saju_info';
 
+  static const Set<String> _allowedGenders = {'female','male','nonBinary'};
+  static const Set<String> _allowedLove = {'married','inRelationship','wantRelationship','noInterest'};
+
+  static String _normalizeGender(String gender) {
+    switch (gender) {
+      case 'female':
+      case 'male':
+      case 'nonBinary':
+        return gender;
+      case '여성':
+      case '女':
+      case '女性':
+        return 'female';
+      case '남성':
+      case '男':
+      case '男性':
+        return 'male';
+      case '논바이너리':
+      case 'ノンバイナリー':
+      case '非二元':
+        return 'nonBinary';
+      default:
+        return 'female';
+    }
+  }
+
+  static String? _normalizeLoveStatus(String? status) {
+    if (status == null) return null;
+    switch (status) {
+      case 'married':
+      case 'inRelationship':
+      case 'wantRelationship':
+      case 'noInterest':
+        return status;
+      // English UI variants
+      case 'Married':
+        return 'married';
+      case 'In a Relationship':
+        return 'inRelationship';
+      case 'Want a Relationship':
+        return 'wantRelationship';
+      case 'No Interest':
+        return 'noInterest';
+      // Korean
+      case '결혼':
+        return 'married';
+      case '연애중':
+        return 'inRelationship';
+      case '연애하고 싶음':
+      case '연애하고싶음':
+        return 'wantRelationship';
+      case '관심없음':
+        return 'noInterest';
+      // Japanese
+      case '既婚':
+        return 'married';
+      case '恋愛中':
+        return 'inRelationship';
+      case '恋愛希望':
+        return 'wantRelationship';
+      case '興味なし':
+        return 'noInterest';
+      // Chinese
+      case '已婚':
+        return 'married';
+      case '恋爱中':
+      case '戀愛中':
+        return 'inRelationship';
+      case '希望恋爱':
+      case '希望戀愛':
+        return 'wantRelationship';
+      case '不感兴趣':
+      case '不感興趣':
+      case '沒有興趣':
+        return 'noInterest';
+      default:
+        return status;
+    }
+  }
+
   // 출생 정보 저장
   static Future<bool> saveSajuInfo(SajuInfo sajuInfo) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final jsonString = jsonEncode(sajuInfo.toJson());
+      final jsonMap = sajuInfo.toJson();
+      jsonMap['gender'] = _normalizeGender(jsonMap['gender'] as String);
+      jsonMap['loveStatus'] = _normalizeLoveStatus(jsonMap['loveStatus'] as String?);
+      final jsonString = jsonEncode(jsonMap);
       return await prefs.setString(_sajuKey, jsonString);
     } catch (e) {
       print('출생 정보 저장 실패: $e');
@@ -25,7 +108,17 @@ class SajuService {
       
       if (jsonString != null) {
         final json = jsonDecode(jsonString);
-        return SajuInfo.fromJson(json);
+        // normalize on load if legacy values exist
+        if (json['gender'] != null && !_allowedGenders.contains(json['gender'])) {
+          json['gender'] = _normalizeGender(json['gender']);
+        }
+        if (json['loveStatus'] != null && !_allowedLove.contains(json['loveStatus'])) {
+          json['loveStatus'] = _normalizeLoveStatus(json['loveStatus']);
+        }
+        final info = SajuInfo.fromJson(json);
+        // write-back once if normalized
+        await saveSajuInfo(info);
+        return info;
       }
       return null;
     } catch (e) {

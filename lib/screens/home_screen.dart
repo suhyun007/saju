@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:developer' as dev;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 // import '../widgets/feature_button.dart';
@@ -33,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   // UserModel? _currentUser; // 미사용
   late TabController _tabController;
   int _currentTabIndex = 0;
+  final ValueNotifier<int> _activeTab = ValueNotifier<int>(0);
 
   @override
   void initState() {
@@ -332,10 +335,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget _buildTabContent() {
     return TabBarView(
       controller: _tabController,
-      children: const [
-        EpisodeScreen(),
-        PoetryScreen(),
-        GuideScreen(),
+      children: [
+        EpisodeScreen(activeTab: _activeTab, tabIndex: 0),
+        PoetryScreen(activeTab: _activeTab, tabIndex: 1),
+        GuideScreen(activeTab: _activeTab, tabIndex: 2),
         // MonthScreen(),
         // YearScreen(),
       ],
@@ -442,12 +445,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     setState(() {
       _currentTabIndex = index;
     });
+    _activeTab.value = index; // 선택된 탭 알림
     
     // WebView 표시 여부 설정
     if (index == 0) {
       setState(() {
         _showWebView = false;
       });
+      if (kDebugMode) {
+        dev.log('Episode tab tapped', name: 'HomeScreen');
+        dev.debugger(when: kDebugMode, message: 'Episode tab tapped');
+      }
     } else if (index == 1) {
       setState(() {
         _showWebView = false;

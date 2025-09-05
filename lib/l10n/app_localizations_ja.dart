@@ -531,4 +531,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get lightAndHope => '光と希望';
+
+  @override
+  String get summaryLabel => '要約';
 }

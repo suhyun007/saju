@@ -1091,6 +1091,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Light & Hope'**
   String get lightAndHope;
+
+  /// No description provided for @summaryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get summaryLabel;
 }
 
 class _AppLocalizationsDelegate

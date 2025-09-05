@@ -4,17 +4,34 @@ import 'package:http/http.dart' as http;
 import '../models/saju_info.dart';
 
 class EpisodeApiService {
-  // 서버 베이스 URL은 기존 사주 API와 동일
-  static const String _baseUrl = 'https://saju-server-j9ti.vercel.app/api';
+  // 서버 베이스 URL (디버그는 로컬, 릴리즈는 Vercel)
+  static String get _baseUrl => kDebugMode
+      ? 'http://localhost:3000/api'
+      : 'https://saju-server-j9ti.vercel.app/api';
+  static const List<String> _allowedGenres = [
+    'romance', 'fantasy', 'comedy', 'drama', 'historical', 'healing',
+  ];
+
+  static String _dailyGenreFor(DateTime date) {
+    final key = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    final idx = key.hashCode.abs() % _allowedGenres.length;
+    return _allowedGenres[idx];
+  }
 
   static Future<EpisodeResult> fetchEpisode({
     required SajuInfo sajuInfo,
     String genre = 'daily',
     required String language,
+    bool forceNetwork = false,
   }) async {
     final currentDate = DateTime.now();
     final String currentDateStr =
         '${currentDate.year.toString().padLeft(4, '0')}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}';
+
+    // 하루 한 번 고정 장르 선택 (기본값 'daily'일 때만)
+    final String resolvedGenre = (genre == 'daily')
+        ? _dailyGenreFor(currentDate)
+        : (_allowedGenres.contains(genre) ? genre : _dailyGenreFor(currentDate));
 
     final body = {
       'birthYear': sajuInfo.birthDate.year,
@@ -22,15 +39,15 @@ class EpisodeApiService {
       'birthDay': sajuInfo.birthDate.day,
       'birthHour': sajuInfo.birthHour,
       'birthMinute': sajuInfo.birthMinute,
-      'gender': sajuInfo.gender,
+      'gender': _normalizeGender(sajuInfo.gender),
       'location': sajuInfo.region,
-      'loveStatus': sajuInfo.loveStatus,
+      'loveStatus': _normalizeLoveStatus(sajuInfo.loveStatus),
       'currentDate': currentDateStr,
-      'genre': genre,
+      'genre': resolvedGenre,
       'language': _normalizeLanguage(language),
     };
 
-    if (kDebugMode) {
+    if (kDebugMode && !forceNetwork) {
       // 간단한 더미 응답 (개발 중 서버 미연결 대비)
       return EpisodeResult(
         title: 'Dummy Episode',
@@ -79,6 +96,10 @@ class EpisodeApiService {
         return 'en';
     }
   }
+
+  // moved to SajuService during save/load normalization
+  static String _normalizeGender(String gender) => gender;
+  static String? _normalizeLoveStatus(String? status) => status;
 }
 
 class EpisodeResult {

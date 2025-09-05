@@ -532,4 +532,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get lightAndHope => '빛과 희망';
+
+  @override
+  String get summaryLabel => '요약';
 }
