@@ -534,4 +534,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get summaryLabel => '要約';
+
+  @override
+  String get shareTitle => '共有';
+
+  @override
+  String get shareTextCopy => 'テキストをコピー';
+
+  @override
+  String get shareTextCopied => 'テキストがクリップボードにコピーされました';
+
+  @override
+  String get shareSummaryPrefix => '💡 要約：';
+
+  @override
+  String get shareTomorrowPrefix => '🔮 明日のエピソードプレビュー：';
+
+  @override
+  String get shareAppPromotion => '✨ LunaVerseで毎日新しい物語を発見しましょう！';
 }

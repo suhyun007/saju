@@ -184,5 +184,11 @@
   "privacyPolicyFooter": "개인정보 보호를 위해 최선을 다하겠습니다.",
   "privacyPolicyTeam": "LunaVerse Team",
   "lightAndHope": "빛과 희망",
-  "summaryLabel": "요약"
+  "summaryLabel": "요약",
+  "shareTitle": "공유하기",
+  "shareTextCopy": "텍스트 복사",
+  "shareTextCopied": "텍스트가 클립보드에 복사되었습니다",
+  "shareSummaryPrefix": "💡 요약:",
+  "shareTomorrowPrefix": "🔮 내일의 에피소드 미리보기:",
+  "shareAppPromotion": "✨ LunaVerse에서 매일 새로운 이야기를 만나보세요!"
 }

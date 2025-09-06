@@ -83,12 +83,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           _sajuInfo = sajuInfo;
         });
         
-        // 사주 정보가 있으면 자동으로 오늘의 운세 로드
-        if (sajuInfo != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _handleTabTap(0);
-          });
-        }
+        // 자동 탭 선택 제거 - 사용자가 직접 탭을 클릭할 때만 API 호출
       }
     } catch (e) {
       print('출생 정보 로드 실패: $e');
@@ -452,10 +447,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       setState(() {
         _showWebView = false;
       });
-      if (kDebugMode) {
+      /*if (kDebugMode) {
         dev.log('Episode tab tapped', name: 'HomeScreen');
         dev.debugger(when: kDebugMode, message: 'Episode tab tapped');
-      }
+      }*/
     } else if (index == 1) {
       setState(() {
         _showWebView = false;

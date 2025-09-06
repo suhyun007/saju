@@ -1097,6 +1097,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Summary'**
   String get summaryLabel;
+
+  /// No description provided for @shareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareTitle;
+
+  /// No description provided for @shareTextCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Text'**
+  String get shareTextCopy;
+
+  /// No description provided for @shareTextCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Text has been copied to clipboard'**
+  String get shareTextCopied;
+
+  /// No description provided for @shareSummaryPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'💡 Summary:'**
+  String get shareSummaryPrefix;
+
+  /// No description provided for @shareTomorrowPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'🔮 Tomorrow\'s Episode Preview:'**
+  String get shareTomorrowPrefix;
+
+  /// No description provided for @shareAppPromotion.
+  ///
+  /// In en, this message translates to:
+  /// **'✨ Discover new stories every day with LunaVerse!'**
+  String get shareAppPromotion;
 }
 
 class _AppLocalizationsDelegate

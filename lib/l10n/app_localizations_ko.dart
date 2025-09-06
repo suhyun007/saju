@@ -535,4 +535,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get summaryLabel => '요약';
+
+  @override
+  String get shareTitle => '공유하기';
+
+  @override
+  String get shareTextCopy => '텍스트 복사';
+
+  @override
+  String get shareTextCopied => '텍스트가 클립보드에 복사되었습니다';
+
+  @override
+  String get shareSummaryPrefix => '💡 요약:';
+
+  @override
+  String get shareTomorrowPrefix => '🔮 내일의 에피소드 미리보기:';
+
+  @override
+  String get shareAppPromotion => '✨ LunaVerse에서 매일 새로운 이야기를 만나보세요!';
 }

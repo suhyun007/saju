@@ -47,6 +47,7 @@ class EpisodeApiService {
       'language': _normalizeLanguage(language),
     };
 
+    // 배포 모드에서는 항상 실제 API 호출
     if (kDebugMode && !forceNetwork) {
       // 간단한 더미 응답 (개발 중 서버 미연결 대비)
       return EpisodeResult(

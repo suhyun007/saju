@@ -549,4 +549,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get summaryLabel => 'Summary';
+
+  @override
+  String get shareTitle => 'Share';
+
+  @override
+  String get shareTextCopy => 'Copy Text';
+
+  @override
+  String get shareTextCopied => 'Text has been copied to clipboard';
+
+  @override
+  String get shareSummaryPrefix => '💡 Summary:';
+
+  @override
+  String get shareTomorrowPrefix => '🔮 Tomorrow\'s Episode Preview:';
+
+  @override
+  String get shareAppPromotion =>
+      '✨ Discover new stories every day with LunaVerse!';
 }

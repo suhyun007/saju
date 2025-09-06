@@ -849,6 +849,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                           });
                         },
                       ),
+                     /*
                       _Tile(
                         icon: Icons.person,
                         title: _user == null ? (l10n?.myPageProfile ?? '프로필') : (_user!.displayName ?? (l10n?.myPageUser ?? '사용자')),
@@ -871,6 +872,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                             _showLogoutSheet();
                           },
                         ),
+                       */ 
                       _SubSectionTitle(l10n?.myPageGeneral ?? '일반'),
                       _Tile(
                         icon: Icons.color_lens,

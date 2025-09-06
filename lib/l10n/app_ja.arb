@@ -176,5 +176,11 @@
   "privacyPolicyFooter": "個人情報保護のために最善を尽くします。",
   "privacyPolicyTeam": "LunaVerseチーム",
   "lightAndHope": "光と希望",
-  "summaryLabel": "要約"
+  "summaryLabel": "要約",
+  "shareTitle": "共有",
+  "shareTextCopy": "テキストをコピー",
+  "shareTextCopied": "テキストがクリップボードにコピーされました",
+  "shareSummaryPrefix": "💡 要約：",
+  "shareTomorrowPrefix": "🔮 明日のエピソードプレビュー：",
+  "shareAppPromotion": "✨ LunaVerseで毎日新しい物語を発見しましょう！"
 }

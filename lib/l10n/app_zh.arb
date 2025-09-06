@@ -176,5 +176,11 @@
   "privacyPolicyFooter": "我们将尽最大努力保护您的个人信息。",
   "privacyPolicyTeam": "LunaVerse团队",
   "lightAndHope": "光与希望",
-  "summaryLabel": "摘要"
+  "summaryLabel": "摘要",
+  "shareTitle": "分享",
+  "shareTextCopy": "复制文本",
+  "shareTextCopied": "文本已复制到剪贴板",
+  "shareSummaryPrefix": "💡 摘要：",
+  "shareTomorrowPrefix": "🔮 明日剧集预览：",
+  "shareAppPromotion": "✨ 在LunaVerse中每天发现新故事！"
 }

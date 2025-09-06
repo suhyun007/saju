@@ -184,5 +184,11 @@
   "poetryTitle": "Today's Poetry",
   "poetrySubtitle": "I write a poem for you every day.",
   "lightAndHope": "Light & Hope",
-  "summaryLabel": "Summary"
+  "summaryLabel": "Summary",
+  "shareTitle": "Share",
+  "shareTextCopy": "Copy Text",
+  "shareTextCopied": "Text has been copied to clipboard",
+  "shareSummaryPrefix": "💡 Summary:",
+  "shareTomorrowPrefix": "🔮 Tomorrow's Episode Preview:",
+  "shareAppPromotion": "✨ Discover new stories every day with LunaVerse!"
 }
