@@ -43,16 +43,16 @@ class SajuInfo {
 
   // 날짜 비교 메서드들
   bool get isTodayFortuneExpired {
-    final lastDate = todayFortune['lastFortuneDate'] ?? '';
-    final lastFp = todayFortune['lastRequestFingerprint'] ?? '';
+    final lastDate = guide['lastFortuneDate'] ?? '';
+    final lastFp = guide['lastRequestFingerprint'] ?? '';
     return lastDate != currentTodayDate || lastFp != currentRequestFingerprint;
   }
 
   // 언어 포함 만료 체크 (가이드)
   bool isTodayFortuneExpiredFor(String languageCode) {
-    final lastDate = todayFortune['lastFortuneDate'] ?? '';
-    final lastFp = todayFortune['lastRequestFingerprint'] ?? '';
-    final lastLang = todayFortune['lastLanguage'] ?? '';
+    final lastDate = guide['lastFortuneDate'] ?? '';
+    final lastFp = guide['lastRequestFingerprint'] ?? '';
+    final lastLang = guide['lastLanguage'] ?? '';
     return lastDate != currentTodayDate || lastFp != currentRequestFingerprint || lastLang != languageCode;
   }
 
@@ -85,16 +85,6 @@ class SajuInfo {
     return lastDate != currentTodayDate || lastFp != currentRequestFingerprint || lastLang != languageCode;
   }
 
-  bool get isMonthFortuneExpired {
-    final lastDate = monthFortune['lastFortuneDate'] ?? '';
-    return lastDate != currentMonthDate;
-  }
-
-  bool get isYearFortuneExpired {
-    final lastDate = yearFortune['lastFortuneDate'] ?? '';
-    return lastDate != currentYearDate;
-  }
-
   // JSON 직렬화를 위한 메서드
   Map<String, dynamic> toJson() {
     return {
@@ -107,9 +97,7 @@ class SajuInfo {
       'loveStatus': loveStatus,
       'zodiacSign': zodiacSign,
       'createdAt': createdAt.toIso8601String(),
-      'todayFortune': todayFortune,
-      'monthFortune': monthFortune,
-      'yearFortune': yearFortune,
+      'guide': guide,
       'episode': episode,
       'poetry': poetry,
     };
@@ -129,17 +117,10 @@ class SajuInfo {
       createdAt: DateTime.parse(json['createdAt']),
     );
     
-    // 운세 데이터 로드
-    if (json['todayFortune'] != null) {
-      sajuInfo.todayFortune = Map<String, dynamic>.from(json['todayFortune']);
+    // 가이드 데이터 로드
+    if (json['guide'] != null) {
+      sajuInfo.guide = Map<String, dynamic>.from(json['guide']);
     }
-    if (json['monthFortune'] != null) {
-      sajuInfo.monthFortune = Map<String, dynamic>.from(json['monthFortune']);
-    }
-    if (json['yearFortune'] != null) {
-      sajuInfo.yearFortune = Map<String, dynamic>.from(json['yearFortune']);
-    }
-
     // 에피소드/시 낭독 데이터 로드
     if (json['episode'] != null) {
       sajuInfo.episode = Map<String, dynamic>.from(json['episode']);
@@ -152,20 +133,12 @@ class SajuInfo {
   }
 
   // 오늘의 운세
-  Map<String, dynamic> todayFortune = {
+  Map<String, dynamic> guide = {
     'overall': '', // 전체운
     'love': '', // 애정운
     'health': '', // 건강운
     'study': '', // 학업운
     'wealth': '', // 재물운
-    'business': '', // 사업운
-    'advice': '', // 조언
-    'luckyItem': '', // 행운의 아이템
-    'overallScore': '',//오늘의 총운 점수
-    'studyCore': '',//오늘의 학업/직장 점수
-    'healthScore': '',//오늘의 건강운 점수  
-    'loveScore': '',//오늘의 애정운 점수
-    'wealthScore': '',//오늘의 재물운 점수
     'serverResponse': '', // 서버 결과값
     'lastFortuneDate': '', // 20250101 형식
     'lastRequestFingerprint': '', // 출생정보 변경 감지용
@@ -181,33 +154,6 @@ class SajuInfo {
     'lastEpisodeDate': '', // 20250101 형식
     'lastRequestFingerprint': '', // 출생정보 변경 감지용
     'lastLanguage': '', // 요청 당시 언어
-  };
-  // 이달의 운세
-  Map<String, dynamic> monthFortune = {
-    'overall': '', // 전체운
-    'love': '', // 애정운
-    'health': '', // 건강운
-    'study': '', // 학업운
-    'wealth': '', // 재물운
-    'business': '', // 사업운
-    'advice': '', // 조언
-    'luckyItem': '', // 행운의 아이템
-    'serverResponse': '', // 서버 결과값
-    'lastFortuneDate': '', // 202501 형식
-  };
-
-  // 올해의 운세
-  Map<String, dynamic> yearFortune = {
-    'overall': '', // 전체운
-    'love': '', // 애정운
-    'health': '', // 건강운
-    'study': '', // 학업운
-    'wealth': '', // 재물운
-    'business': '', // 사업운
-    'advice': '', // 조언
-    'luckyItem': '', // 행운의 아이템
-    'serverResponse': '', // 서버 결과값
-    'lastFortuneDate': '', // 2025 형식
   };
 
   // 오늘의 시 낭독 (서버 결과 캐시 및 날짜 비교용)

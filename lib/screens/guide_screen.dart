@@ -7,7 +7,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/saju_service.dart';
 import '../services/saju_api_service.dart';
 import '../models/saju_info.dart';
-import '../models/saju_api_response.dart';
 import '../l10n/app_localizations.dart';
 import 'dart:developer' as dev;
 
@@ -27,7 +26,7 @@ class GuideScreen extends StatefulWidget {
 
 class _GuideScreenState extends State<GuideScreen> {
   SajuInfo? _sajuInfo;
-  TodayFortune? _todayFortune;
+  GuideResult? _guideResult;
   bool _loading = false;
   VoidCallback? _tabListener;
 
@@ -54,10 +53,10 @@ class _GuideScreenState extends State<GuideScreen> {
     super.dispose();
   }
 
-  void _loadIfNeeded() {
-    dev.log('[GuideScreen] _loadIfNeeded called - todayFortune: $_todayFortune, activeTab: ${widget.activeTab.value}, tabIndex: ${widget.tabIndex}');
+  void _loadIfNeeded() async {
+    dev.log('[GuideScreen] _loadIfNeeded called - guideResult: $_guideResult, activeTab: ${widget.activeTab.value}, tabIndex: ${widget.tabIndex}');
     if (_loading) return;
-    if (_todayFortune != null) {
+    if (_guideResult != null) {
       dev.log('[GuideScreen] Already loaded, skipping');
       return;
     }
@@ -66,6 +65,28 @@ class _GuideScreenState extends State<GuideScreen> {
       dev.log('[GuideScreen] Different tab active, skipping');
       return;
     }
+    
+    // 캐시 먼저 확인
+    final sajuInfo = await SajuService.loadSajuInfo();
+    if (sajuInfo != null) {
+      final locale = Localizations.localeOf(context).languageCode;
+      final bool expired = sajuInfo.isTodayFortuneExpiredFor(locale);
+      final String cachedContent = (sajuInfo.guide['overall'] ?? '').toString();
+      
+      if (!expired && cachedContent.isNotEmpty) {
+        dev.log('[GuideScreen] Cache found, using cached data');
+        final cached = GuideResult(
+          overall: (sajuInfo.guide['overall'] ?? '').toString(),
+          love: (sajuInfo.guide['love'] ?? '').toString(),
+          health: (sajuInfo.guide['health'] ?? '').toString(),
+          study: (sajuInfo.guide['study'] ?? '').toString(),
+          wealth: (sajuInfo.guide['wealth'] ?? '').toString(),
+        );
+        setState(() { _guideResult = cached; _loading = false; });
+        return;
+      }
+    }
+    
     dev.log('[GuideScreen] Starting load...');
     _loadTodayFortune();
   }
@@ -78,90 +99,66 @@ class _GuideScreenState extends State<GuideScreen> {
       if (sajuInfo == null) {
         dev.log('[GuideScreen] No sajuInfo');
         setState(() {
-          _todayFortune = null; // 명시적으로 null 설정
+          _guideResult = null; // 명시적으로 null 설정
         });
         return;
       }
       final locale = Localizations.localeOf(context).languageCode;
       // 캐시 유효하면 캐시로 표시
       final bool expired = sajuInfo.isTodayFortuneExpiredFor(locale);
-      final String cachedContent = (sajuInfo.todayFortune['overall'] ?? '').toString();
+      final String cachedContent = (sajuInfo.guide['overall'] ?? '').toString();
       
       dev.log('[GuideScreen] Cache check - expired: $expired, cachedContent length: ${cachedContent.length}');
-      dev.log('[GuideScreen] Cache details - lastDate: ${sajuInfo.todayFortune['lastFortuneDate']}, currentDate: ${sajuInfo.currentTodayDate}');
-      dev.log('[GuideScreen] Cache details - lastFingerprint: ${sajuInfo.todayFortune['lastRequestFingerprint']}, currentFingerprint: ${sajuInfo.currentRequestFingerprint}');
-      dev.log('[GuideScreen] Cache details - lastLanguage: ${sajuInfo.todayFortune['lastLanguage']}, currentLanguage: $locale');
+      dev.log('[GuideScreen] Cache details - lastDate: ${sajuInfo.guide['lastFortuneDate']}, currentDate: ${sajuInfo.currentTodayDate}');
+      dev.log('[GuideScreen] Cache details - lastFingerprint: ${sajuInfo.guide['lastRequestFingerprint']}, currentFingerprint: ${sajuInfo.currentRequestFingerprint}');
+      dev.log('[GuideScreen] Cache details - lastLanguage: ${sajuInfo.guide['lastLanguage']}, currentLanguage: $locale');
       
       if (!expired && cachedContent.isNotEmpty) {
         dev.log('[GuideScreen] Using cached data');
-        final cached = _createTodayFortuneFromSajuInfo(sajuInfo);
-        setState(() { _todayFortune = cached; _loading = false; });
+        final cached = GuideResult(
+          overall: (sajuInfo.guide['overall'] ?? '').toString(),
+          love: (sajuInfo.guide['love'] ?? '').toString(),
+          health: (sajuInfo.guide['health'] ?? '').toString(),
+          study: (sajuInfo.guide['study'] ?? '').toString(),
+          wealth: (sajuInfo.guide['wealth'] ?? '').toString(),
+        );
+        setState(() { _guideResult = cached; _loading = false; });
         return;
       }
-
       // 만료 시에만 서버 호출 - 이때만 로딩 표시
       dev.log('[GuideScreen] Cache expired, calling server');
+      dev.log('[GuideScreen] 🚨 API 호출 시도 - 과금 방지를 위해 주석 처리됨');
       setState(() { _loading = true; });
+
+      // API 호출 주석 처리 (과금 방지)
+      
       final result = await SajuApiService.fetchGuide(
         sajuInfo: sajuInfo,
         language: locale,
         forceNetwork: true,
       );
-      // 캐시에 저장 (날짜/지문/언어)
-      sajuInfo.todayFortune['overall'] = result.overall;
-      sajuInfo.todayFortune['love'] = result.love;
-      sajuInfo.todayFortune['health'] = result.health;
-      sajuInfo.todayFortune['study'] = result.study;
-      sajuInfo.todayFortune['wealth'] = result.wealth;
-      sajuInfo.todayFortune['lastFortuneDate'] = sajuInfo.currentTodayDate;
-      sajuInfo.todayFortune['lastRequestFingerprint'] = sajuInfo.currentRequestFingerprint;
-      sajuInfo.todayFortune['lastLanguage'] = locale;
+      
+
       await SajuService.saveSajuInfo(sajuInfo);
-      final todayFortune = TodayFortune(
-        overall: result.overall,
-        love: result.love,
-        health: result.health,
-        study: result.study,
-        wealth: result.wealth,
-      );
-      setState(() { _todayFortune = todayFortune; _loading = false; });
+      setState(() { _guideResult = result; _loading = false; });
     } catch (e) {
       dev.log('[GuideScreen] Guide load failed: $e');
       setState(() { _loading = false; });
     }
   }
 
-  TodayFortune _createTodayFortuneFromSajuInfo(SajuInfo sajuInfo) {
-    return TodayFortune(
-      overall: sajuInfo.todayFortune['overall'] ?? '오늘은 새로운 기회가 찾아올 수 있는 날입니다. 주변을 잘 살펴보세요.',
-      love: sajuInfo.todayFortune['love'] ?? '로맨틱한 기운이 가득한 날입니다. 소중한 사람과의 시간을 가져보세요.',
-      health: sajuInfo.todayFortune['health'] ?? '건강에 특별한 문제는 없을 것입니다. 적절한 운동을 해보세요.',
-      study: sajuInfo.todayFortune['study'] ?? '집중력이 높은 하루입니다. 중요한 업무나 공부에 집중하면 좋은 결과를 얻을 수 있습니다.',
-      wealth: sajuInfo.todayFortune['wealth'] ?? '재정적으로 안정적인 하루가 될 것입니다. 투자나 큰지출은 신중하게 결정하세요.',
-      luckyItem: sajuInfo.todayFortune['luckyItem'] ?? '살구색, 모자, 남쪽, 7, 11, 맛집',
-      todayOutfit: sajuInfo.todayFortune['todayOutfit'] ?? '편안한 캐주얼 복장',
-      advice: sajuInfo.todayFortune['advice'] ?? '긍정적인 마음가짐으로 하루를 보내시기 바랍니다.',
-      overallScore: int.tryParse(sajuInfo.todayFortune['overallScore'] ?? '70'),
-      healthScore: int.tryParse(sajuInfo.todayFortune['healthScore'] ?? '80'),
-      loveScore: int.tryParse(sajuInfo.todayFortune['loveScore'] ?? '50'),
-      wealthScore: int.tryParse(sajuInfo.todayFortune['wealthScore'] ?? '60'),
-      studyCore: int.tryParse(sajuInfo.todayFortune['studyScore'] ?? '30'),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
-        
-
-        
         if (_loading) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (_todayFortune == null) {
-          // 에피소드 화면과 동일하게 빈 화면 반환
-          return const SizedBox();
+        if (_guideResult == null) {
+          // 데이터 로드 시도 - API 호출 방지를 위해 주석 처리
+          dev.log('[GuideScreen] _guideResult is null, showing message');
+          // WidgetsBinding.instance.addPostFrameCallback((_) => _loadIfNeeded());
+          return const Center(child: Text('가이드 데이터가 없습니다.'));
         }
 
         return Container(
@@ -251,7 +248,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _todayFortune?.overall ?? '',
+                              _guideResult?.overall ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -299,7 +296,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _todayFortune?.study ?? '',
+                              _guideResult?.study ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -347,7 +344,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _todayFortune?.wealth ?? '',
+                              _guideResult?.wealth ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -395,7 +392,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _todayFortune?.health ?? '',
+                              _guideResult?.health ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -443,7 +440,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _todayFortune?.love ?? '',
+                              _guideResult?.love ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -544,22 +541,22 @@ class _GuideScreenState extends State<GuideScreen> {
   }
 
   String _getShareText() {
-    if (_todayFortune == null) return '';
+    if (_guideResult == null) return '';
     
     final l10n = AppLocalizations.of(context)!;
     
     return '''
     📖 ${l10n.todayDetailTitle}
 
-    💕 ${l10n.preciousRelationship}: ${_todayFortune!.love}
+    💕 ${l10n.preciousRelationship}: ${_guideResult!.love}
 
-    💰 ${l10n.abundance}: ${_todayFortune!.wealth}
+    💰 ${l10n.abundance}: ${_guideResult!.wealth}
 
-    🧘 ${l10n.bodyAndMind}: ${_todayFortune!.health}
+    🧘 ${l10n.bodyAndMind}: ${_guideResult!.health}
 
-    📚 ${l10n.growthAndFocus}: ${_todayFortune!.study}
+    📚 ${l10n.growthAndFocus}: ${_guideResult!.study}
 
-    ✨ ${l10n.lightAndHope}: ${_todayFortune!.overall}
+    ✨ ${l10n.lightAndHope}: ${_guideResult!.overall}
 
     ${l10n.shareAppPromotion}
     ''';

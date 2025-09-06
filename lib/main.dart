@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'screens/splash_screen.dart';
-import 'screens/today_detail_screen.dart';
-import 'screens/month_detail_screen.dart';
-import 'screens/year_detail_screen.dart';
 import 'screens/myPage.dart';
 import 'services/theme_service.dart';
 import 'services/notification_service.dart';
@@ -134,9 +131,6 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
           initialRoute: '/',
           routes: {
             '/': (context) => const SplashScreen(),
-            '/today-detail': (context) => const TodayDetailScreen(),
-            '/month-detail': (context) => const MonthDetailScreen(),
-            '/year-detail': (context) => const YearDetailScreen(),
             '/settings': (context) => const MyPage(),
           },
           builder: (context, child) {

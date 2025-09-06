@@ -89,6 +89,43 @@ class SajuService {
   static Future<bool> saveSajuInfo(SajuInfo sajuInfo) async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      
+      // 기존 정보와 비교하여 시간 정보만 변경된 경우 캐시 유지
+      final existingJsonString = prefs.getString(_sajuKey);
+      if (existingJsonString != null) {
+        final existingJson = jsonDecode(existingJsonString) as Map<String, dynamic>;
+        final existingSajuInfo = SajuInfo.fromJson(existingJson);
+        
+        // 완전히 동일한 경우 저장하지 않음
+        if (existingSajuInfo.birthDate == sajuInfo.birthDate &&
+            existingSajuInfo.birthHour == sajuInfo.birthHour &&
+            existingSajuInfo.birthMinute == sajuInfo.birthMinute &&
+            existingSajuInfo.gender == sajuInfo.gender &&
+            existingSajuInfo.region == sajuInfo.region &&
+            existingSajuInfo.loveStatus == sajuInfo.loveStatus) {
+          print('출생정보 변경 없음 - 저장하지 않음');
+          return true; // 성공으로 처리
+        }
+        
+        // fingerprint 비교 (시간 정보 제외)
+        if (existingSajuInfo.currentRequestFingerprint == sajuInfo.currentRequestFingerprint) {
+          // 시간 정보만 변경된 경우 - 기존 캐시 데이터 유지
+          print('시간 정보만 변경됨 - 기존 캐시 데이터 유지');
+          final jsonMap = sajuInfo.toJson();
+          jsonMap['gender'] = _normalizeGender(jsonMap['gender'] as String);
+          jsonMap['loveStatus'] = _normalizeLoveStatus(jsonMap['loveStatus'] as String?);
+          
+          // 기존 캐시 데이터 복사
+          jsonMap['episode'] = existingJson['episode'] ?? {};
+          jsonMap['poetry'] = existingJson['poetry'] ?? {};
+          jsonMap['guide'] = existingJson['guide'] ?? {};
+          
+          final jsonString = jsonEncode(jsonMap);
+          return await prefs.setString(_sajuKey, jsonString);
+        }
+      }
+      
+      // 다른 정보가 변경된 경우 - 정상 저장
       final jsonMap = sajuInfo.toJson();
       jsonMap['gender'] = _normalizeGender(jsonMap['gender'] as String);
       jsonMap['loveStatus'] = _normalizeLoveStatus(jsonMap['loveStatus'] as String?);
@@ -108,16 +145,25 @@ class SajuService {
       
       if (jsonString != null) {
         final json = jsonDecode(jsonString);
+        bool needsSave = false;
+        
         // normalize on load if legacy values exist
         if (json['gender'] != null && !_allowedGenders.contains(json['gender'])) {
           json['gender'] = _normalizeGender(json['gender']);
+          needsSave = true;
         }
         if (json['loveStatus'] != null && !_allowedLove.contains(json['loveStatus'])) {
           json['loveStatus'] = _normalizeLoveStatus(json['loveStatus']);
+          needsSave = true;
         }
+        
         final info = SajuInfo.fromJson(json);
-        // write-back once if normalized
-        await saveSajuInfo(info);
+        
+        // 정규화가 필요한 경우에만 저장
+        if (needsSave) {
+          await saveSajuInfo(info);
+        }
+        
         return info;
       }
       return null;
@@ -150,44 +196,12 @@ class SajuService {
       final sajuInfo = await loadSajuInfo();
       if (sajuInfo == null) return false;
       
-      sajuInfo.todayFortune.addAll(fortuneData);
-      sajuInfo.todayFortune['lastFortuneDate'] = sajuInfo.currentTodayDate;
+      sajuInfo.guide.addAll(fortuneData);
+      sajuInfo.guide['lastFortuneDate'] = sajuInfo.currentTodayDate;
       
       return await saveSajuInfo(sajuInfo);
     } catch (e) {
       print('오늘의 운세 업데이트 실패: $e');
-      return false;
-    }
-  }
-
-  // 이달의 운세 데이터 업데이트
-  static Future<bool> updateMonthFortune(Map<String, dynamic> fortuneData) async {
-    try {
-      final sajuInfo = await loadSajuInfo();
-      if (sajuInfo == null) return false;
-      
-      sajuInfo.monthFortune.addAll(fortuneData);
-      sajuInfo.monthFortune['lastFortuneDate'] = sajuInfo.currentMonthDate;
-      
-      return await saveSajuInfo(sajuInfo);
-    } catch (e) {
-      print('이달의 운세 업데이트 실패: $e');
-      return false;
-    }
-  }
-
-  // 올해의 운세 데이터 업데이트
-  static Future<bool> updateYearFortune(Map<String, dynamic> fortuneData) async {
-    try {
-      final sajuInfo = await loadSajuInfo();
-      if (sajuInfo == null) return false;
-      
-      sajuInfo.yearFortune.addAll(fortuneData);
-      sajuInfo.yearFortune['lastFortuneDate'] = sajuInfo.currentYearDate;
-      
-      return await saveSajuInfo(sajuInfo);
-    } catch (e) {
-      print('올해의 운세 업데이트 실패: $e');
       return false;
     }
   }
