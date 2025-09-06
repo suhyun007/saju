@@ -560,13 +560,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareTextCopied => 'Text has been copied to clipboard';
 
   @override
-  String get shareSummaryPrefix => '💡 Summary:';
+  String get shareSummaryPrefix => '💡Summary:';
 
   @override
-  String get shareTomorrowPrefix => '🔮 Tomorrow\'s Episode Preview:';
+  String get shareTomorrowPrefix => '🔮Tomorrow\'s Episode Preview:';
 
   @override
-  String get shareTomorrowPoetryPrefix => '🔮 Tomorrow\'s Poetry Preview:';
+  String get shareTomorrowPoetryPrefix => '🔮Tomorrow\'s Poetry Preview:';
 
   @override
   String get shareAppPromotion =>

@@ -28,6 +28,7 @@ class GuideScreen extends StatefulWidget {
 class _GuideScreenState extends State<GuideScreen> {
   SajuInfo? _sajuInfo;
   TodayFortune? _todayFortune;
+  bool _loading = false;
   VoidCallback? _tabListener;
 
   @override
@@ -55,6 +56,7 @@ class _GuideScreenState extends State<GuideScreen> {
 
   void _loadIfNeeded() {
     dev.log('[GuideScreen] _loadIfNeeded called - todayFortune: $_todayFortune, activeTab: ${widget.activeTab.value}, tabIndex: ${widget.tabIndex}');
+    if (_loading) return;
     if (_todayFortune != null) {
       dev.log('[GuideScreen] Already loaded, skipping');
       return;
@@ -93,12 +95,13 @@ class _GuideScreenState extends State<GuideScreen> {
       if (!expired && cachedContent.isNotEmpty) {
         dev.log('[GuideScreen] Using cached data');
         final cached = _createTodayFortuneFromSajuInfo(sajuInfo);
-        setState(() { _todayFortune = cached; });
+        setState(() { _todayFortune = cached; _loading = false; });
         return;
       }
 
-      // 만료 시에만 서버 호출
+      // 만료 시에만 서버 호출 - 이때만 로딩 표시
       dev.log('[GuideScreen] Cache expired, calling server');
+      setState(() { _loading = true; });
       final result = await SajuApiService.fetchGuide(
         sajuInfo: sajuInfo,
         language: locale,
@@ -121,9 +124,10 @@ class _GuideScreenState extends State<GuideScreen> {
         study: result.study,
         wealth: result.wealth,
       );
-      setState(() { _todayFortune = todayFortune; });
+      setState(() { _todayFortune = todayFortune; _loading = false; });
     } catch (e) {
       dev.log('[GuideScreen] Guide load failed: $e');
+      setState(() { _loading = false; });
     }
   }
 
@@ -152,6 +156,9 @@ class _GuideScreenState extends State<GuideScreen> {
         
 
         
+        if (_loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
         if (_todayFortune == null) {
           // 에피소드 화면과 동일하게 빈 화면 반환
           return const SizedBox();

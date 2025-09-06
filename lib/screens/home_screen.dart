@@ -330,6 +330,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget _buildTabContent() {
     return TabBarView(
       controller: _tabController,
+      physics: const NeverScrollableScrollPhysics(),
       children: [
         EpisodeScreen(activeTab: _activeTab, tabIndex: 0),
         PoetryScreen(activeTab: _activeTab, tabIndex: 1),

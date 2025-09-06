@@ -541,13 +541,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shareTextCopied => '文本已复制到剪贴板';
 
   @override
-  String get shareSummaryPrefix => '💡 摘要：';
+  String get shareSummaryPrefix => '💡摘要：';
 
   @override
-  String get shareTomorrowPrefix => '🔮 明日剧集预览：';
+  String get shareTomorrowPrefix => '🔮明日剧集预览：';
 
   @override
-  String get shareTomorrowPoetryPrefix => '🔮 明日诗歌预览：';
+  String get shareTomorrowPoetryPrefix => '🔮明日诗歌预览：';
 
   @override
   String get shareAppPromotion => '✨ 在LunaVerse中每天发现新故事！';

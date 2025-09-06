@@ -1119,19 +1119,19 @@ abstract class AppLocalizations {
   /// No description provided for @shareSummaryPrefix.
   ///
   /// In en, this message translates to:
-  /// **'💡 Summary:'**
+  /// **'💡Summary:'**
   String get shareSummaryPrefix;
 
   /// No description provided for @shareTomorrowPrefix.
   ///
   /// In en, this message translates to:
-  /// **'🔮 Tomorrow\'s Episode Preview:'**
+  /// **'🔮Tomorrow\'s Episode Preview:'**
   String get shareTomorrowPrefix;
 
   /// No description provided for @shareTomorrowPoetryPrefix.
   ///
   /// In en, this message translates to:
-  /// **'🔮 Tomorrow\'s Poetry Preview:'**
+  /// **'🔮Tomorrow\'s Poetry Preview:'**
   String get shareTomorrowPoetryPrefix;
 
   /// No description provided for @shareAppPromotion.

@@ -545,13 +545,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shareTextCopied => 'テキストがクリップボードにコピーされました';
 
   @override
-  String get shareSummaryPrefix => '💡 要約：';
+  String get shareSummaryPrefix => '💡要約：';
 
   @override
-  String get shareTomorrowPrefix => '🔮 明日のエピソードプレビュー：';
+  String get shareTomorrowPrefix => '🔮明日のエピソードプレビュー：';
 
   @override
-  String get shareTomorrowPoetryPrefix => '🔮 明日の詩プレビュー：';
+  String get shareTomorrowPoetryPrefix => '🔮明日の詩プレビュー：';
 
   @override
   String get shareAppPromotion => '✨ LunaVerseで毎日新しい物語を発見しましょう！';

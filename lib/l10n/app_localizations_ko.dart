@@ -546,10 +546,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shareTextCopied => '텍스트가 클립보드에 복사되었습니다';
 
   @override
-  String get shareSummaryPrefix => '💡 요약:';
+  String get shareSummaryPrefix => '💡요약:';
 
   @override
-  String get shareTomorrowPrefix => '🔮 내일의 에피소드 미리보기:';
+  String get shareTomorrowPrefix => '🔮내일의 에피소드 미리보기:';
 
   @override
   String get shareTomorrowPoetryPrefix => '🔮 내일의 시 미리보기:';
