@@ -930,21 +930,6 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         _selectedDate = picked;
       });
 
-      final zodiacSign = ZodiacUtils.getZodiacSign(picked);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '별자리: $zodiacSign (${ZodiacUtils.getZodiacPeriod(zodiacSign)})',
-              style: GoogleFonts.notoSans(fontSize: 16, color: Colors.white),
-            ),
-            backgroundColor: Colors.amber,
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        );
-      }
     }
   }
 
@@ -1005,10 +990,12 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       final success = await FriendService.saveFriendInfo(friendInfo);
       
       if (success) {
-        _showSnackBar('친구 정보가 저장되었습니다! (별자리: $zodiacSign)');
+        final l10n = AppLocalizations.of(context)!;
+        _showSnackBar(l10n.successFriendInfoSaved(zodiacSign));
         Navigator.pop(context, true);
       } else {
-        _showSnackBar('친구 정보 저장에 실패했습니다.');
+        final l10n = AppLocalizations.of(context)!;
+        _showSnackBar(l10n.errorFriendInfoSaveFailed);
       }
     } else {
       // 내 정보 생성
@@ -1028,14 +1015,16 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       final success = await SajuService.saveSajuInfo(sajuInfo);
       
       if (success) {
-        _showSnackBar('출생 정보가 저장되었습니다! (별자리: $zodiacSign)');
+        final l10n = AppLocalizations.of(context)!;
+        _showSnackBar(l10n.successBirthInfoSaved(zodiacSign));
         // 홈 화면으로 이동
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
           (route) => false, // 모든 이전 화면 제거
         );
       } else {
-        _showSnackBar('출생 정보 저장에 실패했습니다.');
+        final l10n = AppLocalizations.of(context)!;
+        _showSnackBar(l10n.errorBirthInfoSaveFailed);
       }
     }
   }

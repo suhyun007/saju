@@ -555,4 +555,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shareAppPromotion => '✨ LunaVerseで毎日新しい物語を発見しましょう！';
+
+  @override
+  String get shareButton => '共有';
 }

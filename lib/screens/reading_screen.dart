@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:developer' as dev;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../services/poetry_api_service.dart';
 import '../services/saju_service.dart';
@@ -68,8 +65,18 @@ class _PoetryScreenState extends State<PoetryScreen> {
       // 캐시 우선
       final bool expired = sajuInfo.isPoetryExpiredFor(lang);
       final String cachedContent = (sajuInfo.poetry['content'] ?? '').toString();
+      // Debug: cache keys and comparison details
+      final lastDate = (sajuInfo.poetry['lastPoetryDate'] ?? '').toString();
+      final lastFp = (sajuInfo.poetry['lastRequestFingerprint'] ?? '').toString();
+      final lastLang = (sajuInfo.poetry['lastLanguage'] ?? '').toString();
+      final todayYmd = sajuInfo.currentTodayDate;
+      final birthYmdDebug = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
+          '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
+          '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
+      final expectedComposite = '$birthYmdDebug|${sajuInfo.gender}|${sajuInfo.loveStatus ?? ''}|$lastDate';
+      dev.log('[Poetry cache check] today=$todayYmd lastDate=$lastDate lastFp=$lastFp expected=$expectedComposite lang=$lang lastLang=$lastLang expired=$expired', name: 'PoetryScreen');
       if (!expired && cachedContent.isNotEmpty) {
-        dev.log('Poetry using cached data', name: 'PoetryScreen');
+        dev.log('바뀐 데이터 없음!! 서버 호출 안함!!', name: 'PoetryScreen');
         final cached = PoetryResult(
           title: (sajuInfo.poetry['title'] ?? '').toString(),
           content: cachedContent,
@@ -81,12 +88,13 @@ class _PoetryScreenState extends State<PoetryScreen> {
       }
 
       // 만료 시 호출 - 이때만 로딩 표시
-      dev.log('Poetry cache expired, calling server', name: 'PoetryScreen');
+      dev.log('바뀐 데이터 있음!! 서버 호출!!!', name: 'PoetryScreen');
       setState(() { _loading = true; });
       final res = await PoetryApiService.fetchPoetry(
         sajuInfo: sajuInfo,
         language: lang,
         forceNetwork: true,
+        needDummy: true,
       );
       // 저장
       sajuInfo.poetry['title'] = res.title;
@@ -94,10 +102,18 @@ class _PoetryScreenState extends State<PoetryScreen> {
       sajuInfo.poetry['summary'] = res.summary;
       sajuInfo.poetry['tomorrowHint'] = res.tomorrowHint;
       sajuInfo.poetry['serverResponse'] = 'ok';
-      sajuInfo.poetry['lastPoetryDate'] = sajuInfo.currentTodayDate;
+      final servedDate = (res.servedDate ?? '').replaceAll('-', '');
+      sajuInfo.poetry['lastPoetryDate'] = servedDate.isNotEmpty ? servedDate : sajuInfo.currentTodayDate;
+      // 조합 지문: YYYYMMDD|gender|loveStatus|servedDate(YYYYMMDD)
+      final birthYmd = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
+          '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
+          '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
+      final loveStatus = sajuInfo.loveStatus ?? '';
+      final compositeFingerprint = '$birthYmd|${sajuInfo.gender}|$loveStatus|${sajuInfo.poetry['lastPoetryDate'] ?? ''}';
+      sajuInfo.poetry['lastRequestFingerprint'] = compositeFingerprint;
       sajuInfo.poetry['lastRequestFingerprint'] = sajuInfo.currentRequestFingerprint;
       sajuInfo.poetry['lastLanguage'] = lang;
-      await SajuService.saveSajuInfo(sajuInfo);
+      await SajuService.saveSajuInfoContent(sajuInfo);
       setState(() { _poem = res; _loading = false; });
     } catch (e) {
       dev.log('Poetry load failed', name: 'PoetryScreen', error: e);
@@ -105,6 +121,30 @@ class _PoetryScreenState extends State<PoetryScreen> {
     }
   }
 
+  void _showShareOptions() {
+    final text = _getShareText();
+    final subject = '${AppLocalizations.of(context)?.poetryTitle ?? 'Poetry'} - ${_poem?.title ?? ''}';
+    Share.share('Subject: $subject\n\n$text', subject: subject);
+  }
+
+  String _getShareText() {
+    if (_poem == null) return '';
+    
+    final l10n = AppLocalizations.of(context)!;
+    
+    return '''
+    📖 ${_poem!.title}
+
+    ${_poem!.content}
+
+    ${_poem!.summary.isNotEmpty ? '${l10n.shareSummaryPrefix} ${_poem!.summary}' : ''}
+
+    ${_poem!.tomorrowHint.isNotEmpty ? '${l10n.shareTomorrowPrefix} ${_poem!.tomorrowHint}' : ''}
+
+    ${l10n.shareAppPromotion}
+    ''';
+  }
+  
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -275,7 +315,7 @@ class _PoetryScreenState extends State<PoetryScreen> {
                   Icon(Icons.arrow_outward, size: 18, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
                   const SizedBox(width: 3), // 간격을 2로 줄임
                     Text(
-                      '공유',
+                      AppLocalizations.of(context)?.shareButton ?? '공유',
                       style: GoogleFonts.roboto(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
@@ -288,252 +328,6 @@ class _PoetryScreenState extends State<PoetryScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  void _showShareOptions() {
-    final text = _getShareText();
-    final subject = '오늘의 시 - ${_poem?.title ?? ''}';
-    Share.share('Subject: $subject\n\n$text', subject: subject);
-  }
-
-  Widget _buildShareOption({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Icon(
-              icon,
-              size: 30,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 34, // 두 줄 텍스트를 위한 고정 높이
-            child: Text(
-              label,
-              style: GoogleFonts.notoSans(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    ),
-    );
-  }
-
-  String _getShareText() {
-    if (_poem == null) return '';
-    
-    final l10n = AppLocalizations.of(context)!;
-    
-    return '''
-    📖 ${_poem!.title}
-
-    ${_poem!.content}
-
-    ${_poem!.summary.isNotEmpty ? '${l10n.shareSummaryPrefix} ${_poem!.summary}' : ''}
-
-    ${_poem!.tomorrowHint.isNotEmpty ? '${l10n.shareTomorrowPrefix} ${_poem!.tomorrowHint}' : ''}
-
-    ${l10n.shareAppPromotion}
-    ''';
-  }
-
-  void _shareToGmail() {
-    final text = _getShareText();
-    final subject = '오늘의 시 - ${_poem?.title ?? ''}';
-    
-    // 디버깅을 위한 로그 추가
-    dev.log('Gmail 공유 시도: $subject', name: 'PoetryScreen');
-    
-    // 여러 방법을 순차적으로 시도
-    _tryGmailMethods(subject, text);
-  }
-
-  Future<void> _tryGmailMethods(String subject, String text) async {
-    // 시뮬레이터에서는 기본 공유 시트 사용
-    if (kDebugMode) {
-      dev.log('시뮬레이터 환경: 기본 공유 시트 사용', name: 'PoetryScreen');
-      await Share.share('Subject: $subject\n\n$text', subject: subject);
-      return;
-    }
-    
-    // 방법 1: Gmail 앱 직접 호출 (canLaunchUrl 우회)
-    final gmailUri = Uri.parse('googlegmail://co?to=&subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(text)}');
-    dev.log('Gmail URI 시도: $gmailUri', name: 'PoetryScreen');
-    
-    try {
-      dev.log('Gmail 앱 직접 실행 시도', name: 'PoetryScreen');
-      await launchUrl(gmailUri, mode: LaunchMode.externalApplication);
-      dev.log('Gmail 앱 실행 성공', name: 'PoetryScreen');
-      return;
-    } catch (e) {
-      dev.log('Gmail 실행 실패: $e', name: 'PoetryScreen');
-    }
-    
-    // 방법 2: 기본 mailto (canLaunchUrl 우회)
-    final mailtoUri = Uri.parse('mailto:?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(text)}');
-    dev.log('Mailto URI 시도: $mailtoUri', name: 'PoetryScreen');
-    
-    try {
-      dev.log('Mailto 직접 실행 시도', name: 'PoetryScreen');
-      await launchUrl(mailtoUri, mode: LaunchMode.externalApplication);
-      dev.log('Mailto 실행 성공', name: 'PoetryScreen');
-      return;
-    } catch (e) {
-      dev.log('Mailto 실행 실패: $e', name: 'PoetryScreen');
-    }
-    
-    // 방법 3: 기본 공유 기능
-    dev.log('모든 방법 실패, 기본 공유 사용', name: 'PoetryScreen');
-    await Share.share('Subject: $subject\n\n$text', subject: subject);
-  }
-
-  void _shareToFacebook() {
-    final text = _getShareText();
-    final uri = Uri.parse('https://www.facebook.com/sharer/sharer.php?u=${Uri.encodeComponent('https://lunaverse.app')}&quote=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToFacebookMessage() {
-    final text = _getShareText();
-    final uri = Uri.parse('fb-messenger://share?link=${Uri.encodeComponent('https://lunaverse.app')}&app_id=YOUR_APP_ID');
-    _launchUrl(uri);
-  }
-
-  void _shareToWhatsApp() {
-    final text = _getShareText();
-    final uri = Uri.parse('https://wa.me/?text=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToIMessage() {
-    final text = _getShareText();
-    final uri = Uri.parse('sms:?body=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToTelegram() {
-    final text = _getShareText();
-    final uri = Uri.parse('https://t.me/share/url?url=&text=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToKakaoTalk() {
-    final text = _getShareText();
-    // 카카오톡 앱 공유 URL
-    final uri = Uri.parse('kakaotalk://sendurl?url=&text=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  Future<void> _launchUrl(Uri uri) async {
-    try {
-      dev.log('URL 실행 시도: $uri', name: 'PoetryScreen');
-      
-      // launchMode를 명시적으로 설정
-      if (await canLaunchUrl(uri)) {
-        dev.log('URL 실행 가능, 실행 중...', name: 'PoetryScreen');
-        await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication,
-        );
-        dev.log('URL 실행 완료', name: 'PoetryScreen');
-      } else {
-        dev.log('URL 실행 불가능, 기본 공유 기능 사용', name: 'PoetryScreen');
-        // URL을 열 수 없는 경우 기본 공유 기능 사용
-        await Share.share(_getShareText());
-      }
-    } catch (e) {
-      dev.log('URL 실행 오류: $e', name: 'PoetryScreen');
-      // 오류 발생 시 기본 공유 기능 사용
-      await Share.share(_getShareText());
-    }
-  }
-
-  Future<void> _launchUrlWithFallback(Uri primaryUri, Uri fallbackUri) async {
-    try {
-      // 먼저 Gmail 앱 시도
-      if (await canLaunchUrl(primaryUri)) {
-        await launchUrl(primaryUri);
-      } else {
-        // Gmail 앱이 없으면 기본 메일 앱 시도
-        if (await canLaunchUrl(fallbackUri)) {
-          await launchUrl(fallbackUri);
-        } else {
-          // 메일 앱도 없으면 기본 공유 기능 사용
-          await Share.share(_getShareText());
-        }
-      }
-    } catch (e) {
-      // 오류 발생 시 기본 공유 기능 사용
-      await Share.share(_getShareText());
-    }
-  }
-
-  Future<void> _launchGmailWithMultipleFallbacks(List<Uri> gmailUris, Uri mailtoUri) async {
-    try {
-      // 여러 Gmail URL scheme 시도
-      for (Uri gmailUri in gmailUris) {
-        if (await canLaunchUrl(gmailUri)) {
-          await launchUrl(gmailUri);
-          return; // 성공하면 종료
-        }
-      }
-      
-      // Gmail 앱이 없으면 기본 메일 앱 시도
-      if (await canLaunchUrl(mailtoUri)) {
-        await launchUrl(mailtoUri);
-      } else {
-        // 메일 앱도 없으면 기본 공유 기능 사용
-        await Share.share(_getShareText());
-      }
-    } catch (e) {
-      // 오류 발생 시 기본 공유 기능 사용
-      await Share.share(_getShareText());
-    }
-  }
-
-  void _copyToClipboard() {
-    final text = _getShareText();
-    Clipboard.setData(ClipboardData(text: text));
-    
-    // 복사 완료 메시지 표시
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          AppLocalizations.of(context)!.shareTextCopied,
-          style: GoogleFonts.notoSans(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
       ),
     );
   }

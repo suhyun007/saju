@@ -551,4 +551,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get shareAppPromotion => '✨ 在LunaVerse中每天发现新故事！';
+
+  @override
+  String get shareButton => '分享';
 }

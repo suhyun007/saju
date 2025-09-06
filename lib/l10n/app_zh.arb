@@ -183,5 +183,6 @@
   "shareSummaryPrefix": "💡摘要：",
   "shareTomorrowPrefix": "🔮明日剧集预览：",
   "shareTomorrowPoetryPrefix": "🔮明日诗歌预览：",
-  "shareAppPromotion": "✨ 在LunaVerse中每天发现新故事！"
+  "shareAppPromotion": "✨ 在LunaVerse中每天发现新故事！",
+  "shareButton": "分享"
 }

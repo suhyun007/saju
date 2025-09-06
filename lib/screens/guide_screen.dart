@@ -1,46 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:developer' as dev;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../services/saju_service.dart';
-import '../services/saju_api_service.dart';
-import '../models/saju_info.dart';
 import '../l10n/app_localizations.dart';
-import 'dart:developer' as dev;
+import '../services/saju_api_service.dart';
+import '../services/saju_service.dart';
+import '../models/saju_info.dart';
 
 class GuideScreen extends StatefulWidget {
-  final ValueNotifier<int> activeTab;
+  final ValueNotifier<int>? activeTab;
   final int tabIndex;
-  
-  const GuideScreen({
-    super.key,
-    required this.activeTab,
-    required this.tabIndex,
-  });
+  const GuideScreen({super.key, this.activeTab, this.tabIndex = 2});
 
   @override
   State<GuideScreen> createState() => _GuideScreenState();
 }
 
 class _GuideScreenState extends State<GuideScreen> {
-  SajuInfo? _sajuInfo;
-  GuideResult? _guideResult;
+  GuideResult? _guide;
   bool _loading = false;
+  String? _error;
   VoidCallback? _tabListener;
 
   @override
   void initState() {
     super.initState();
     _tabListener = () {
-      if (widget.activeTab.value == widget.tabIndex) {
+      if (widget.activeTab?.value == widget.tabIndex) {
         _loadIfNeeded();
       }
     };
-    widget.activeTab.addListener(_tabListener!);
+    widget.activeTab?.addListener(_tabListener!);
     // 최초 선택된 탭과 일치하면 지연 호출
-    if (widget.activeTab.value == widget.tabIndex) {
+    if (widget.activeTab?.value == widget.tabIndex) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _loadIfNeeded());
     }
   }
@@ -48,73 +40,46 @@ class _GuideScreenState extends State<GuideScreen> {
   @override
   void dispose() {
     if (_tabListener != null) {
-      widget.activeTab.removeListener(_tabListener!);
+      widget.activeTab!.removeListener(_tabListener!);
     }
     super.dispose();
   }
 
   void _loadIfNeeded() async {
-    dev.log('[GuideScreen] _loadIfNeeded called - guideResult: $_guideResult, activeTab: ${widget.activeTab.value}, tabIndex: ${widget.tabIndex}');
     if (_loading) return;
-    if (_guideResult != null) {
-      dev.log('[GuideScreen] Already loaded, skipping');
-      return;
-    }
+    if (_guide != null) return;
     // 다른 탭이 활성화되어 있으면 로드하지 않음
-    if (widget.activeTab.value != widget.tabIndex) {
-      dev.log('[GuideScreen] Different tab active, skipping');
-      return;
-    }
-    
-    // 캐시 먼저 확인
-    final sajuInfo = await SajuService.loadSajuInfo();
-    if (sajuInfo != null) {
-      final locale = Localizations.localeOf(context).languageCode;
-      final bool expired = sajuInfo.isTodayFortuneExpiredFor(locale);
-      final String cachedContent = (sajuInfo.guide['overall'] ?? '').toString();
-      
-      if (!expired && cachedContent.isNotEmpty) {
-        dev.log('[GuideScreen] Cache found, using cached data');
-        final cached = GuideResult(
-          overall: (sajuInfo.guide['overall'] ?? '').toString(),
-          love: (sajuInfo.guide['love'] ?? '').toString(),
-          health: (sajuInfo.guide['health'] ?? '').toString(),
-          study: (sajuInfo.guide['study'] ?? '').toString(),
-          wealth: (sajuInfo.guide['wealth'] ?? '').toString(),
-        );
-        setState(() { _guideResult = cached; _loading = false; });
-        return;
-      }
-    }
-    
-    dev.log('[GuideScreen] Starting load...');
-    _loadTodayFortune();
+    if (widget.activeTab?.value != widget.tabIndex) return;
+    // 최초 진입/탭 리스너 중복 호출 방지
+    setState(() { _loading = true; });
+    _load();
   }
 
-  Future<void> _loadTodayFortune() async {
-    dev.log('[GuideScreen] _loadTodayFortune started');
+  Future<void> _load() async {
+    setState(() { _error = null; });
     try {
-      final sajuInfo = await SajuService.loadSajuInfo();
-      dev.log('[GuideScreen] SajuInfo loaded: ${sajuInfo != null}');
+      final SajuInfo? sajuInfo = await SajuService.loadSajuInfo();
       if (sajuInfo == null) {
-        dev.log('[GuideScreen] No sajuInfo');
-        setState(() {
-          _guideResult = null; // 명시적으로 null 설정
-        });
+        dev.log('Guide load aborted: no saju info', name: 'GuideScreen');
+        setState(() { _error = 'no_saju'; _loading = false; });
         return;
       }
       final locale = Localizations.localeOf(context).languageCode;
       // 캐시 유효하면 캐시로 표시
       final bool expired = sajuInfo.isTodayFortuneExpiredFor(locale);
       final String cachedContent = (sajuInfo.guide['overall'] ?? '').toString();
-      
-      dev.log('[GuideScreen] Cache check - expired: $expired, cachedContent length: ${cachedContent.length}');
-      dev.log('[GuideScreen] Cache details - lastDate: ${sajuInfo.guide['lastFortuneDate']}, currentDate: ${sajuInfo.currentTodayDate}');
-      dev.log('[GuideScreen] Cache details - lastFingerprint: ${sajuInfo.guide['lastRequestFingerprint']}, currentFingerprint: ${sajuInfo.currentRequestFingerprint}');
-      dev.log('[GuideScreen] Cache details - lastLanguage: ${sajuInfo.guide['lastLanguage']}, currentLanguage: $locale');
-      
+      // Debug: cache keys and comparison details
+      final lastDate = (sajuInfo.guide['lastFortuneDate'] ?? '').toString();
+      final lastFp = (sajuInfo.guide['lastRequestFingerprint'] ?? '').toString();
+      final lastLang = (sajuInfo.guide['lastLanguage'] ?? '').toString();
+      final todayYmd = sajuInfo.currentTodayDate;
+      final birthYmdDebug = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
+          '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
+          '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
+      final expectedComposite = '$birthYmdDebug|${sajuInfo.gender}|${sajuInfo.loveStatus ?? ''}|$lastDate';
+      dev.log('[Guide cache check] today=$todayYmd lastDate=$lastDate lastFp=$lastFp expected=$expectedComposite lang=$locale lastLang=$lastLang expired=$expired', name: 'GuideScreen');
       if (!expired && cachedContent.isNotEmpty) {
-        dev.log('[GuideScreen] Using cached data');
+        dev.log('바뀐 데이터 없음!! 서버 호출 안함!!', name: 'GuideScreen');
         final cached = GuideResult(
           overall: (sajuInfo.guide['overall'] ?? '').toString(),
           love: (sajuInfo.guide['love'] ?? '').toString(),
@@ -122,29 +87,73 @@ class _GuideScreenState extends State<GuideScreen> {
           study: (sajuInfo.guide['study'] ?? '').toString(),
           wealth: (sajuInfo.guide['wealth'] ?? '').toString(),
         );
-        setState(() { _guideResult = cached; _loading = false; });
+        setState(() { _guide = cached; _loading = false; });
         return;
       }
       // 만료 시에만 서버 호출 - 이때만 로딩 표시
-      dev.log('[GuideScreen] Cache expired, calling server');
-      dev.log('[GuideScreen] 🚨 API 호출 시도 - 과금 방지를 위해 주석 처리됨');
-      setState(() { _loading = true; });
-
-      // API 호출 주석 처리 (과금 방지)
-      
+      dev.log('바뀐 데이터 있음!! 서버 호출!!!', name: 'GuideScreen');
+      // 이미 _loadIfNeeded에서 _loading=true로 설정됨
       final result = await SajuApiService.fetchGuide(
         sajuInfo: sajuInfo,
         language: locale,
         forceNetwork: true,
+        needDummy: true,
       );
-      
-
-      await SajuService.saveSajuInfo(sajuInfo);
-      setState(() { _guideResult = result; _loading = false; });
+      // 캐시에 저장(날짜/지문/언어)
+      sajuInfo.guide['overall'] = result.overall;
+      sajuInfo.guide['love'] = result.love;
+      sajuInfo.guide['health'] = result.health;
+      sajuInfo.guide['study'] = result.study;
+      sajuInfo.guide['wealth'] = result.wealth;
+      sajuInfo.guide['serverResponse'] = 'ok';
+      var servedDate = (result.servedDate ?? '').replaceAll('-', '');
+      if (servedDate.isEmpty) servedDate = todayYmd;
+      // 타임존 오차 등으로 과거 날짜가 오면 오늘 날짜로 보정
+      if (servedDate.compareTo(todayYmd) < 0) servedDate = todayYmd;
+      sajuInfo.guide['lastFortuneDate'] = servedDate;
+      // 조합 지문: YYYYMMDD|gender|loveStatus|servedDate(YYYYMMDD)
+      final birthYmd = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
+          '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
+          '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
+      final loveStatus = sajuInfo.loveStatus ?? '';
+      final compositeFingerprint = '$birthYmd|${sajuInfo.gender}|$loveStatus|${sajuInfo.guide['lastFortuneDate'] ?? ''}';
+      sajuInfo.guide['lastRequestFingerprint'] = compositeFingerprint;
+      sajuInfo.guide['lastLanguage'] = locale;
+      await SajuService.saveSajuInfoContent(sajuInfo);
+      setState(() { _guide = result; _loading = false; });
+      dev.log('[GuideScreen] saved cache: date=' + (sajuInfo.guide['lastFortuneDate'] ?? '') + ' fp=' + (sajuInfo.guide['lastRequestFingerprint'] ?? '') + ' lang=' + (sajuInfo.guide['lastLanguage'] ?? '') + ' servedRaw=' + (result.servedDate ?? 'null'));
     } catch (e) {
-      dev.log('[GuideScreen] Guide load failed: $e');
-      setState(() { _loading = false; });
+      dev.log('Guide load failed', name: 'GuideScreen', error: e);
+      setState(() { _error = '$e'; _loading = false; });
     }
+  }
+
+  void _showShareOptions() {
+    final text = _getShareText();
+    final subject = "${AppLocalizations.of(context)?.todayDetailTitle ?? "Today's Guide"}";
+    Share.share('Subject: $subject\n\n$text', subject: subject);
+  }
+
+  String _getShareText() {
+    if (_guide == null) return '';
+    
+    final l10n = AppLocalizations.of(context)!;
+    
+    return '''
+    📖 ${l10n.todayDetailTitle}
+
+    💕 ${l10n.preciousRelationship}: ${_guide!.love}
+
+    💰 ${l10n.abundance}: ${_guide!.wealth}
+
+    🧘 ${l10n.bodyAndMind}: ${_guide!.health}
+
+    📚 ${l10n.growthAndFocus}: ${_guide!.study}
+
+    ✨ ${l10n.lightAndHope}: ${_guide!.overall}
+
+    ${l10n.shareAppPromotion}
+    ''';
   }
 
   @override
@@ -154,9 +163,9 @@ class _GuideScreenState extends State<GuideScreen> {
         if (_loading) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (_guideResult == null) {
+        if (_guide == null) {
           // 데이터 로드 시도 - API 호출 방지를 위해 주석 처리
-          dev.log('[GuideScreen] _guideResult is null, showing message');
+          dev.log('[GuideScreen] _guide is null, showing message');
           // WidgetsBinding.instance.addPostFrameCallback((_) => _loadIfNeeded());
           return const Center(child: Text('가이드 데이터가 없습니다.'));
         }
@@ -248,7 +257,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _guideResult?.overall ?? '',
+                              _guide?.overall ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -296,7 +305,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _guideResult?.study ?? '',
+                              _guide?.study ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -344,7 +353,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _guideResult?.wealth ?? '',
+                              _guide?.wealth ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -392,7 +401,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _guideResult?.health ?? '',
+                              _guide?.health ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -440,7 +449,7 @@ class _GuideScreenState extends State<GuideScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _guideResult?.love ?? '',
+                              _guide?.love ?? '',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
                                 color: textColor.withOpacity(0.8),
@@ -472,7 +481,7 @@ class _GuideScreenState extends State<GuideScreen> {
                         Icon(Icons.arrow_outward, size: 18, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
                         const SizedBox(width: 3), // 간격을 2로 줄임
                           Text(
-                            '공유',
+                            AppLocalizations.of(context)?.shareButton ?? '공유',
                             style: GoogleFonts.roboto(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
@@ -488,255 +497,5 @@ class _GuideScreenState extends State<GuideScreen> {
             ),
           ),
         );
-  }
-
-  void _showShareOptions() {
-    final text = _getShareText();
-    final subject = '오늘의 가이드';
-    Share.share('Subject: $subject\n\n$text', subject: subject);
-  }
-
-  Widget _buildShareOption({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Icon(
-              icon,
-              size: 30,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 34, // 두 줄 텍스트를 위한 고정 높이
-            child: Text(
-              label,
-              style: GoogleFonts.notoSans(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    ),
-    );
-  }
-
-  String _getShareText() {
-    if (_guideResult == null) return '';
-    
-    final l10n = AppLocalizations.of(context)!;
-    
-    return '''
-    📖 ${l10n.todayDetailTitle}
-
-    💕 ${l10n.preciousRelationship}: ${_guideResult!.love}
-
-    💰 ${l10n.abundance}: ${_guideResult!.wealth}
-
-    🧘 ${l10n.bodyAndMind}: ${_guideResult!.health}
-
-    📚 ${l10n.growthAndFocus}: ${_guideResult!.study}
-
-    ✨ ${l10n.lightAndHope}: ${_guideResult!.overall}
-
-    ${l10n.shareAppPromotion}
-    ''';
-  }
-
-  void _shareToGmail() {
-    final text = _getShareText();
-    final subject = '오늘의 가이드';
-    
-    // 디버깅을 위한 로그 추가
-    dev.log('Gmail 공유 시도: $subject', name: 'GuideScreen');
-    
-    // 여러 방법을 순차적으로 시도
-    _tryGmailMethods(subject, text);
-  }
-
-  Future<void> _tryGmailMethods(String subject, String text) async {
-    // 시뮬레이터에서는 기본 공유 시트 사용
-    if (kDebugMode) {
-      dev.log('시뮬레이터 환경: 기본 공유 시트 사용', name: 'GuideScreen');
-      await Share.share('Subject: $subject\n\n$text', subject: subject);
-      return;
-    }
-    
-    // 방법 1: Gmail 앱 직접 호출 (canLaunchUrl 우회)
-    final gmailUri = Uri.parse('googlegmail://co?to=&subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(text)}');
-    dev.log('Gmail URI 시도: $gmailUri', name: 'GuideScreen');
-    
-    try {
-      dev.log('Gmail 앱 직접 실행 시도', name: 'GuideScreen');
-      await launchUrl(gmailUri, mode: LaunchMode.externalApplication);
-      dev.log('Gmail 앱 실행 성공', name: 'GuideScreen');
-      return;
-    } catch (e) {
-      dev.log('Gmail 실행 실패: $e', name: 'GuideScreen');
-    }
-    
-    // 방법 2: 기본 mailto (canLaunchUrl 우회)
-    final mailtoUri = Uri.parse('mailto:?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(text)}');
-    dev.log('Mailto URI 시도: $mailtoUri', name: 'GuideScreen');
-    
-    try {
-      dev.log('Mailto 직접 실행 시도', name: 'GuideScreen');
-      await launchUrl(mailtoUri, mode: LaunchMode.externalApplication);
-      dev.log('Mailto 실행 성공', name: 'GuideScreen');
-      return;
-    } catch (e) {
-      dev.log('Mailto 실행 실패: $e', name: 'GuideScreen');
-    }
-    
-    // 방법 3: 기본 공유 기능
-    dev.log('모든 방법 실패, 기본 공유 사용', name: 'GuideScreen');
-    await Share.share('Subject: $subject\n\n$text', subject: subject);
-  }
-
-  void _shareToFacebook() {
-    final text = _getShareText();
-    final uri = Uri.parse('https://www.facebook.com/sharer/sharer.php?u=${Uri.encodeComponent('https://lunaverse.app')}&quote=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToFacebookMessage() {
-    final text = _getShareText();
-    final uri = Uri.parse('fb-messenger://share?link=${Uri.encodeComponent('https://lunaverse.app')}&app_id=YOUR_APP_ID');
-    _launchUrl(uri);
-  }
-
-  void _shareToWhatsApp() {
-    final text = _getShareText();
-    final uri = Uri.parse('https://wa.me/?text=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToIMessage() {
-    final text = _getShareText();
-    final uri = Uri.parse('sms:?body=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToTelegram() {
-    final text = _getShareText();
-    final uri = Uri.parse('https://t.me/share/url?url=&text=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToKakaoTalk() {
-    final text = _getShareText();
-    // 카카오톡 앱 공유 URL
-    final uri = Uri.parse('kakaotalk://sendurl?url=&text=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  Future<void> _launchUrl(Uri uri) async {
-    try {
-      dev.log('URL 실행 시도: $uri', name: 'GuideScreen');
-      
-      // launchMode를 명시적으로 설정
-      if (await canLaunchUrl(uri)) {
-        dev.log('URL 실행 가능, 실행 중...', name: 'GuideScreen');
-        await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication,
-        );
-        dev.log('URL 실행 완료', name: 'GuideScreen');
-      } else {
-        dev.log('URL 실행 불가능, 기본 공유 기능 사용', name: 'GuideScreen');
-        // URL을 열 수 없는 경우 기본 공유 기능 사용
-        await Share.share(_getShareText());
-      }
-    } catch (e) {
-      dev.log('URL 실행 오류: $e', name: 'GuideScreen');
-      // 오류 발생 시 기본 공유 기능 사용
-      await Share.share(_getShareText());
-    }
-  }
-
-  Future<void> _launchUrlWithFallback(Uri primaryUri, Uri fallbackUri) async {
-    try {
-      // 먼저 Gmail 앱 시도
-      if (await canLaunchUrl(primaryUri)) {
-        await launchUrl(primaryUri);
-      } else {
-        // Gmail 앱이 없으면 기본 메일 앱 시도
-        if (await canLaunchUrl(fallbackUri)) {
-          await launchUrl(fallbackUri);
-        } else {
-          // 메일 앱도 없으면 기본 공유 기능 사용
-          await Share.share(_getShareText());
-        }
-      }
-    } catch (e) {
-      // 오류 발생 시 기본 공유 기능 사용
-      await Share.share(_getShareText());
-    }
-  }
-
-  Future<void> _launchGmailWithMultipleFallbacks(List<Uri> gmailUris, Uri mailtoUri) async {
-    try {
-      // 여러 Gmail URL scheme 시도
-      for (Uri gmailUri in gmailUris) {
-        if (await canLaunchUrl(gmailUri)) {
-          await launchUrl(gmailUri);
-          return; // 성공하면 종료
-        }
-      }
-      
-      // Gmail 앱이 없으면 기본 메일 앱 시도
-      if (await canLaunchUrl(mailtoUri)) {
-        await launchUrl(mailtoUri);
-      } else {
-        // 메일 앱도 없으면 기본 공유 기능 사용
-        await Share.share(_getShareText());
-      }
-    } catch (e) {
-      // 오류 발생 시 기본 공유 기능 사용
-      await Share.share(_getShareText());
-    }
-  }
-
-  void _copyToClipboard() {
-    final text = _getShareText();
-    Clipboard.setData(ClipboardData(text: text));
-    
-    // 복사 완료 메시지 표시
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          AppLocalizations.of(context)!.shareTextCopied,
-          style: GoogleFonts.notoSans(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    );
   }
 }

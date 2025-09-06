@@ -1139,6 +1139,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'✨ Discover new stories every day with LunaVerse!'**
   String get shareAppPromotion;
+
+  /// No description provided for @shareButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareButton;
 }
 
 class _AppLocalizationsDelegate

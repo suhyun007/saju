@@ -571,4 +571,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get shareAppPromotion =>
       '✨ Discover new stories every day with LunaVerse!';
+
+  @override
+  String get shareButton => 'Share';
 }

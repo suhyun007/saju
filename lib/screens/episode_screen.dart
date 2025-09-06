@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:developer' as dev;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../services/episode_api_service.dart';
 import '../services/saju_service.dart';
@@ -69,8 +66,19 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
       // 캐시 유효하면 캐시로 표시
       final bool expired = sajuInfo.isEpisodeExpiredFor(locale);
       final String cachedContent = (sajuInfo.episode['content'] ?? '').toString();
+      // Debug: cache keys and comparison details
+      final lastDate = (sajuInfo.episode['lastEpisodeDate'] ?? '').toString();
+      final lastFp = (sajuInfo.episode['lastRequestFingerprint'] ?? '').toString();
+      final lastLang = (sajuInfo.episode['lastLanguage'] ?? '').toString();
+      final todayYmd = sajuInfo.currentTodayDate;
+      final birthYmdDebug = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
+          '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
+          '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
+      final expectedComposite = '$birthYmdDebug|${sajuInfo.gender}|${sajuInfo.loveStatus ?? ''}|$lastDate';
+      dev.log('[Episode cache check] today=$todayYmd lastDate=$lastDate lastFp=$lastFp expected=$expectedComposite lang=$locale lastLang=$lastLang expired=$expired', name: 'EpisodeScreen');
+      dev.log('[Episode] expired=$expired cachedLen=${cachedContent.length} today=$todayYmd lastDate=$lastDate fpOk=${lastFp==expectedComposite} langOk=${lastLang==locale}', name: 'EpisodeScreen');
       if (!expired && cachedContent.isNotEmpty) {
-        dev.log('Episode using cached data', name: 'EpisodeScreen');
+        dev.log('바뀐 데이터 없음!! 서버 호출 안함!!', name: 'EpisodeScreen');
         final cached = EpisodeResult(
           title: (sajuInfo.episode['title'] ?? '').toString(),
           content: cachedContent,
@@ -81,14 +89,14 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
         setState(() { _episode = cached; _loading = false; });
         return;
       }
-
       // 만료 시에만 서버 호출 - 이때만 로딩 표시
-      dev.log('Episode cache expired, calling server', name: 'EpisodeScreen');
+      dev.log('바뀐 데이터 있음!! 서버 호출!!!', name: 'EpisodeScreen');
       setState(() { _loading = true; });
       final result = await EpisodeApiService.fetchEpisode(
         sajuInfo: sajuInfo,
         language: locale,
         forceNetwork: true,
+        needDummy: true,
       );
       // 캐시에 저장 (날짜/지문/언어)
       sajuInfo.episode['title'] = result.title;
@@ -96,10 +104,18 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
       sajuInfo.episode['tomorrowSummary'] = result.tomorrowSummary;
       sajuInfo.episode['summary'] = result.summary;
       sajuInfo.episode['serverResponse'] = 'ok';
-      sajuInfo.episode['lastEpisodeDate'] = sajuInfo.currentTodayDate;
-      sajuInfo.episode['lastRequestFingerprint'] = sajuInfo.currentRequestFingerprint;
+      // 서버 제공 servedDate 우선 사용, 없으면 디바이스 날짜 사용
+      final servedDate = (result.servedDate ?? '').replaceAll('-', '');
+      sajuInfo.episode['lastEpisodeDate'] = servedDate.isNotEmpty ? servedDate : sajuInfo.currentTodayDate;
+      // 조합 지문: YYYYMMDD|gender|loveStatus|servedDate(YYYYMMDD)
+      final birthYmd = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
+          '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
+          '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
+      final loveStatus = sajuInfo.loveStatus ?? '';
+      final compositeFingerprint = '$birthYmd|${sajuInfo.gender}|$loveStatus|${sajuInfo.episode['lastEpisodeDate'] ?? ''}';
+      sajuInfo.episode['lastRequestFingerprint'] = compositeFingerprint;
       sajuInfo.episode['lastLanguage'] = locale;
-      await SajuService.saveSajuInfo(sajuInfo);
+      await SajuService.saveSajuInfoContent(sajuInfo);
       setState(() { _episode = result; _loading = false; });
     } catch (e) {
       dev.log('Episode load failed', name: 'EpisodeScreen', error: e);
@@ -109,52 +125,8 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
 //_shareToDefault
   void _showShareOptions() {
     final text = _getShareText();
-    final subject = '오늘의 에피소드 - ${_episode?.title ?? ''}';
+    final subject = '${AppLocalizations.of(context)?.episodeTitle ?? 'Episode'} - ${_episode?.title ?? ''}';
     Share.share('Subject: $subject\n\n$text', subject: subject);
-  }
-
-  Widget _buildShareOption({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Icon(
-              icon,
-              size: 30,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 34, // 두 줄 텍스트를 위한 고정 높이
-            child: Text(
-              label,
-              style: GoogleFonts.notoSans(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    ),
-    );
   }
 
   String _getShareText() {
@@ -173,82 +145,6 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
 
     ${l10n.shareAppPromotion}
     ''';
-  }
-
-  void _shareToDefault() {
-    final text = _getShareText();
-    final subject = '오늘의 에피소드 - ${_episode?.title ?? ''}';
-    
-    // 기본 공유 시트 사용
-    Share.share('Subject: $subject\n\n$text', subject: subject);
-  }
-
-  Future<void> _launchUrl(Uri uri) async {
-    try {
-      dev.log('URL 실행 시도: $uri', name: 'EpisodeScreen');
-      
-      // launchMode를 명시적으로 설정
-      if (await canLaunchUrl(uri)) {
-        dev.log('URL 실행 가능, 실행 중...', name: 'EpisodeScreen');
-        await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication,
-        );
-        dev.log('URL 실행 완료', name: 'EpisodeScreen');
-      } else {
-        dev.log('URL 실행 불가능, 기본 공유 기능 사용', name: 'EpisodeScreen');
-        // URL을 열 수 없는 경우 기본 공유 기능 사용
-        await Share.share(_getShareText());
-      }
-    } catch (e) {
-      dev.log('URL 실행 오류: $e', name: 'EpisodeScreen');
-      // 오류 발생 시 기본 공유 기능 사용
-      await Share.share(_getShareText());
-    }
-  }
-
-  Future<void> _launchUrlWithFallback(Uri primaryUri, Uri fallbackUri) async {
-    try {
-      // 먼저 Gmail 앱 시도
-      if (await canLaunchUrl(primaryUri)) {
-        await launchUrl(primaryUri);
-      } else {
-        // Gmail 앱이 없으면 기본 메일 앱 시도
-        if (await canLaunchUrl(fallbackUri)) {
-          await launchUrl(fallbackUri);
-        } else {
-          // 메일 앱도 없으면 기본 공유 기능 사용
-          await Share.share(_getShareText());
-        }
-      }
-    } catch (e) {
-      // 오류 발생 시 기본 공유 기능 사용
-      await Share.share(_getShareText());
-    }
-  }
-
-  void _copyToClipboard() {
-    final text = _getShareText();
-    Clipboard.setData(ClipboardData(text: text));
-    
-    // 복사 완료 메시지 표시
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          AppLocalizations.of(context)!.shareTextCopied,
-          style: GoogleFonts.notoSans(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    );
   }
 
   @override
@@ -413,7 +309,7 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
                   Icon(Icons.arrow_outward, size: 18, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
                   const SizedBox(width: 3), // 간격을 2로 줄임
                     Text(
-                      '공유',
+                      AppLocalizations.of(context)?.shareButton ?? '공유',
                       style: GoogleFonts.roboto(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,

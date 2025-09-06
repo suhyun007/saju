@@ -13,6 +13,7 @@ class PoetryApiService {
     required String language,
     String prompt = 'daily',
     bool forceNetwork = false,
+    bool needDummy = false,
   }) async {
     final now = DateTime.now();
     final currentDate = '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
@@ -29,7 +30,12 @@ class PoetryApiService {
       'currentDate': currentDate,
       'prompt': prompt,
       'language': _normalizeLanguage(language),
+      'needDummy': needDummy,
     };
+
+    print('🔍 Guide API 요청 데이터: ${jsonEncode(body)}');
+    print('🔍 birthMinute 값: ${sajuInfo.birthMinute} (타입: ${sajuInfo.birthMinute.runtimeType})');
+
 
     if (kDebugMode && !forceNetwork) {
       return PoetryResult(
@@ -61,6 +67,7 @@ class PoetryApiService {
         content: poem,
         summary: summary,
         tomorrowHint: tomorrowHint,
+        servedDate: (data['servedDate'] as String?)?.trim(),
       );
     }
 
@@ -85,8 +92,9 @@ class PoetryResult {
   final String content;
   final String summary;
   final String tomorrowHint;
+  final String? servedDate; // YYYY-MM-DD from server
 
-  PoetryResult({ required this.title, required this.content, required this.summary, required this.tomorrowHint });
+  PoetryResult({ required this.title, required this.content, required this.summary, required this.tomorrowHint, this.servedDate });
 }
 
 

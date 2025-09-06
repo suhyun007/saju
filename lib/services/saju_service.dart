@@ -86,7 +86,7 @@ class SajuService {
   }
 
   // 출생 정보 저장
-  static Future<bool> saveSajuInfo(SajuInfo sajuInfo) async {
+  static Future<bool> saveSajuInfo(SajuInfo sajuInfo) async {  
     try {
       final prefs = await SharedPreferences.getInstance();
       
@@ -137,6 +137,21 @@ class SajuService {
     }
   }
 
+  // 콘텐츠/캐시 저장용: 현재 sajuInfo 상태를 그대로 저장 (캐시 보존 로직 우회)
+  static Future<bool> saveSajuInfoContent(SajuInfo sajuInfo) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonMap = sajuInfo.toJson();
+      jsonMap['gender'] = _normalizeGender(jsonMap['gender'] as String);
+      jsonMap['loveStatus'] = _normalizeLoveStatus(jsonMap['loveStatus'] as String?);
+      final jsonString = jsonEncode(jsonMap);
+      return await prefs.setString(_sajuKey, jsonString);
+    } catch (e) {
+      print('출생 정보/콘텐츠 저장 실패(saveSajuInfoContent): $e');
+      return false;
+    }
+  }
+
   // 출생 정보 불러오기
   static Future<SajuInfo?> loadSajuInfo() async {
     try {
@@ -158,10 +173,50 @@ class SajuService {
         }
         
         final info = SajuInfo.fromJson(json);
+
+        // Migrate legacy fingerprints to YYYYMMDD|gender|loveStatus|servedDate format
+        try {
+          final birthYmd = '${info.birthDate.year.toString().padLeft(4, '0')}'
+              '${info.birthDate.month.toString().padLeft(2, '0')}'
+              '${info.birthDate.day.toString().padLeft(2, '0')}';
+
+          // Episode
+          final epDate = (info.episode['lastEpisodeDate'] ?? '').toString();
+          if (epDate.isNotEmpty) {
+            final expectedEpFp = '$birthYmd|${info.gender}|${info.loveStatus ?? ''}|$epDate';
+            final currentEpFp = (info.episode['lastRequestFingerprint'] ?? '').toString();
+            if (currentEpFp != expectedEpFp) {
+              info.episode['lastRequestFingerprint'] = expectedEpFp;
+              needsSave = true;
+            }
+          }
+
+          // Poetry
+          final pyDate = (info.poetry['lastPoetryDate'] ?? '').toString();
+          if (pyDate.isNotEmpty) {
+            final expectedPyFp = '$birthYmd|${info.gender}|${info.loveStatus ?? ''}|$pyDate';
+            final currentPyFp = (info.poetry['lastRequestFingerprint'] ?? '').toString();
+            if (currentPyFp != expectedPyFp) {
+              info.poetry['lastRequestFingerprint'] = expectedPyFp;
+              needsSave = true;
+            }
+          }
+
+          // Guide
+          final gdDate = (info.guide['lastFortuneDate'] ?? '').toString();
+          if (gdDate.isNotEmpty) {
+            final expectedGdFp = '$birthYmd|${info.gender}|${info.loveStatus ?? ''}|$gdDate';
+            final currentGdFp = (info.guide['lastRequestFingerprint'] ?? '').toString();
+            if (currentGdFp != expectedGdFp) {
+              info.guide['lastRequestFingerprint'] = expectedGdFp;
+              needsSave = true;
+            }
+          }
+        } catch (_) {}
         
         // 정규화가 필요한 경우에만 저장
         if (needsSave) {
-          await saveSajuInfo(info);
+          await saveSajuInfoContent(info);
         }
         
         return info;

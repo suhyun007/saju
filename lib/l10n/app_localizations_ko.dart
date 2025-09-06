@@ -556,4 +556,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get shareAppPromotion => '✨ LunaVerse에서 매일 새로운 이야기를 만나보세요!';
+
+  @override
+  String get shareButton => '공유';
 }

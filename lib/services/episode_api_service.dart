@@ -23,6 +23,7 @@ class EpisodeApiService {
     String genre = 'daily',
     required String language,
     bool forceNetwork = false,
+    bool needDummy = false,
   }) async {
     final currentDate = DateTime.now();
     final String currentDateStr =
@@ -45,6 +46,7 @@ class EpisodeApiService {
       'currentDate': currentDateStr,
       'genre': resolvedGenre,
       'language': _normalizeLanguage(language),
+      'needDummy': needDummy,
     };
 
     // 배포 모드에서는 항상 실제 API 호출
@@ -80,6 +82,7 @@ class EpisodeApiService {
             : int.tryParse('${data['contentLength']}') ?? 0,
         summary: data['summary'] ?? '',
         tomorrowSummary: data['tomorrowSummary'] ?? '',
+        servedDate: (data['servedDate'] as String?)?.trim(),
       );
     }
 
@@ -109,6 +112,7 @@ class EpisodeResult {
   final int contentLength;
   final String summary;
   final String tomorrowSummary;
+  final String? servedDate; // YYYY-MM-DD from server
 
   EpisodeResult({
     required this.title,
@@ -116,6 +120,7 @@ class EpisodeResult {
     required this.contentLength,
     required this.summary,
     required this.tomorrowSummary,
+    this.servedDate,
   });
 }
 

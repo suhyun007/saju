@@ -53,7 +53,13 @@ class SajuInfo {
     final lastDate = guide['lastFortuneDate'] ?? '';
     final lastFp = guide['lastRequestFingerprint'] ?? '';
     final lastLang = guide['lastLanguage'] ?? '';
-    return lastDate != currentTodayDate || lastFp != currentRequestFingerprint || lastLang != languageCode;
+    // 조합 지문과 비교: YYYYMMDD|gender|loveStatus|servedDate
+    final todayYmd = currentTodayDate;
+    final birthYmd = '${birthDate.year.toString().padLeft(4, '0')}'
+        '${birthDate.month.toString().padLeft(2, '0')}'
+        '${birthDate.day.toString().padLeft(2, '0')}';
+    final expectedComposite = '$birthYmd|$gender|${loveStatus ?? ''}|$lastDate';
+    return lastDate != todayYmd || lastFp != expectedComposite || lastLang != languageCode;
   }
 
   // 에피소드/시 낭독 날짜 비교
@@ -68,7 +74,13 @@ class SajuInfo {
     final lastDate = episode['lastEpisodeDate'] ?? '';
     final lastFp = episode['lastRequestFingerprint'] ?? '';
     final lastLang = episode['lastLanguage'] ?? '';
-    return lastDate != currentTodayDate || lastFp != currentRequestFingerprint || lastLang != languageCode;
+    // 조합 지문과 비교: YYYYMMDD|gender|loveStatus|servedDate
+    final todayYmd = currentTodayDate;
+    final birthYmd = '${birthDate.year.toString().padLeft(4, '0')}'
+        '${birthDate.month.toString().padLeft(2, '0')}'
+        '${birthDate.day.toString().padLeft(2, '0')}';
+    final expectedComposite = '$birthYmd|$gender|${loveStatus ?? ''}|$lastDate';
+    return lastDate != todayYmd || lastFp != expectedComposite || lastLang != languageCode;
   }
 
   bool get isPoetryExpired {
@@ -82,7 +94,13 @@ class SajuInfo {
     final lastDate = poetry['lastPoetryDate'] ?? '';
     final lastFp = poetry['lastRequestFingerprint'] ?? '';
     final lastLang = poetry['lastLanguage'] ?? '';
-    return lastDate != currentTodayDate || lastFp != currentRequestFingerprint || lastLang != languageCode;
+    // 조합 지문과 비교: YYYYMMDD|gender|loveStatus|servedDate
+    final todayYmd = currentTodayDate;
+    final birthYmd = '${birthDate.year.toString().padLeft(4, '0')}'
+        '${birthDate.month.toString().padLeft(2, '0')}'
+        '${birthDate.day.toString().padLeft(2, '0')}';
+    final expectedComposite = '$birthYmd|$gender|${loveStatus ?? ''}|$lastDate';
+    return lastDate != todayYmd || lastFp != expectedComposite || lastLang != languageCode;
   }
 
   // JSON 직렬화를 위한 메서드

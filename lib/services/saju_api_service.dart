@@ -13,6 +13,7 @@ class SajuApiService {
     required SajuInfo sajuInfo,
     required String language,
     bool forceNetwork = false,
+    bool needDummy = false,
   }) async {
     final currentDate = DateTime.now();
     final String currentDateStr =
@@ -29,6 +30,7 @@ class SajuApiService {
       'loveStatus': _normalizeLoveStatus(sajuInfo.loveStatus),
       'currentDate': currentDateStr,
       'language': _normalizeLanguage(language),
+      'needDummy': needDummy,
     };
     
     print('🔍 Guide API 요청 데이터: ${jsonEncode(body)}');
@@ -64,6 +66,7 @@ class SajuApiService {
         health: data['health'] ?? '',
         study: data['study'] ?? '',
         overall: data['overall'] ?? '',
+        servedDate: (data['servedDate'] as String?)?.trim(),
       );
     }
 
@@ -93,6 +96,7 @@ class GuideResult {
   final String health;
   final String study;
   final String overall;
+  final String? servedDate; // YYYY-MM-DD from server
 
   GuideResult({
     required this.love,
@@ -100,6 +104,7 @@ class GuideResult {
     required this.health,
     required this.study,
     required this.overall,
+    this.servedDate,
   });
 }
 
