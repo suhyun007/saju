@@ -113,12 +113,12 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                                       decoration: BoxDecoration(
                     color: _selectedGender == 'female' ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: _selectedGender == 'female' ? const Color(0xFF5D7DF4) : border),
+                    border: Border.all(color: _selectedGender == 'female' ? Colors.amber : border),
                   ),
                     child: Text(
                       l10n.female,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'female' ? const Color(0xFF5D7DF4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'female' ? Colors.white : primary),
                     ),
                   ),
                 ),
@@ -134,12 +134,12 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     decoration: BoxDecoration(
                       color: _selectedGender == 'male' ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _selectedGender == 'male' ? const Color(0xFF5D7DF4) : border),
+                      border: Border.all(color: _selectedGender == 'male' ? Colors.amber : border),
                     ),
                     child: Text(
                       l10n.male,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'male' ? const Color(0xFF5D7DF4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'male' ? Colors.white : primary),
                     ),
                   ),
                 ),
@@ -155,12 +155,12 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     decoration: BoxDecoration(
                       color: _selectedGender == 'nonBinary' ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _selectedGender == 'nonBinary' ? const Color(0xFF5d7df4) : border),
+                      border: Border.all(color: _selectedGender == 'nonBinary' ? Colors.amber : border),
                     ),
                     child: Text(
                       l10n.nonBinary,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'nonBinary' ? const Color(0xFF5d7df4) : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'nonBinary' ? Colors.white : primary),
                     ),
                   ),
                 ),
@@ -281,9 +281,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.only(bottom: 5),
-              decoration: BoxDecoration(color: const Color(0xFF5d7df4).withOpacity(0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF5d7df4).withOpacity(0.3))),
+              decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.amber.withOpacity(0.3))),
               child: Row(children: [
-                const Icon(Icons.check_circle, color: Color(0xFF5d7df4), size: 20),
+                const Icon(Icons.check_circle, color: Colors.amber, size: 20),
                 const SizedBox(width: 8),
                 Expanded(child: Text(_selectedRegion!, style: GoogleFonts.notoSans(fontSize: 15, color: primary))),
               ]),
@@ -550,18 +550,28 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            // 헤더
-            _buildHeader(),
-            
-            // 메인 콘텐츠
-            Expanded(
-              child: _buildMainContent(),
-            ),
-          ],
+      backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
+      body: Container(
+        decoration: isDark ? const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/design/launch_bg.png'),
+            fit: BoxFit.cover,
+          ),
+        ) : null,
+        child: SafeArea(
+          child: Column(
+            children: [
+              // 헤더
+              _buildHeader(),
+              
+              // 메인 콘텐츠
+              Expanded(
+                child: _buildMainContent(),
+              ),
+            ],
+          ),
         ),
       ),
     );
