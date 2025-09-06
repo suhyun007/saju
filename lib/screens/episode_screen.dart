@@ -96,7 +96,6 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
         sajuInfo: sajuInfo,
         language: locale,
         forceNetwork: true,
-        needDummy: true,
       );
       // 캐시에 저장 (날짜/지문/언어)
       sajuInfo.episode['title'] = result.title;

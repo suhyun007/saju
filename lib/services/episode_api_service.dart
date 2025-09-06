@@ -23,7 +23,6 @@ class EpisodeApiService {
     String genre = 'daily',
     required String language,
     bool forceNetwork = false,
-    bool needDummy = false,
   }) async {
     final currentDate = DateTime.now();
     final String currentDateStr =
@@ -46,7 +45,6 @@ class EpisodeApiService {
       'currentDate': currentDateStr,
       'genre': resolvedGenre,
       'language': _normalizeLanguage(language),
-      'needDummy': needDummy,
     };
 
     // 배포 모드에서는 항상 실제 API 호출

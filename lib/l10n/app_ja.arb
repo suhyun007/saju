@@ -43,6 +43,7 @@
   "validationBirthMinuteRequired": "出生時刻（分）を選択してください。",
   "validationRegionRequired": "出生地を検索して選択してください。",
   "validationStatusRequired": "状態を選択してください。",
+  "statusSelectHint": "状態を選択してください",
   "successBirthInfoSaved": "出生情報が保存されました！(星座: {zodiacSign})",
   "successFriendInfoSaved": "友達情報が保存されました！(星座: {zodiacSign})",
   "errorBirthInfoSaveFailed": "出生情報の保存に失敗しました。",

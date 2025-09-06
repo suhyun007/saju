@@ -83,9 +83,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               hintStyle: GoogleFonts.notoSans(fontSize: 15, color: secondary),
               filled: true,
               fillColor: cardBg,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: border)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: border)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Colors.amber)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? border : Colors.blue)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? border : Colors.blue)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? Colors.amber : Colors.blue)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             ),
           ),
@@ -111,14 +111,14 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     margin: const EdgeInsets.only(right: 2.5),
                     padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                    color: _selectedGender == 'female' ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
+                    color: _selectedGender == 'female' ? (isDark ? const Color(0xFF5D7DF4).withOpacity(0.2) : Colors.grey.withOpacity(0.4)) : cardBg,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: _selectedGender == 'female' ? Colors.amber : border),
+                    border: Border.all(color: _selectedGender == 'female' ? (isDark ? Colors.amber : Colors.blue) : border),
                   ),
                     child: Text(
                       l10n.female,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'female' ? Colors.white : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'female' ? (isDark ? Colors.white : Colors.black) : primary),
                     ),
                   ),
                 ),
@@ -132,14 +132,14 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: _selectedGender == 'male' ? const Color(0xFF5D7DF4).withOpacity(0.2) : cardBg,
+                      color: _selectedGender == 'male' ? (isDark ? const Color(0xFF5D7DF4).withOpacity(0.2) : Colors.grey.withOpacity(0.4)) : cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _selectedGender == 'male' ? Colors.amber : border),
+                      border: Border.all(color: _selectedGender == 'male' ? (isDark ? Colors.amber : Colors.blue) : border),
                     ),
                     child: Text(
                       l10n.male,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'male' ? Colors.white : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'male' ? (isDark ? Colors.white : Colors.black) : primary),
                     ),
                   ),
                 ),
@@ -153,14 +153,14 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     margin: const EdgeInsets.only(left: 2.5),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: _selectedGender == 'nonBinary' ? const Color(0xFF5d7df4).withOpacity(0.2) : cardBg,
+                      color: _selectedGender == 'nonBinary' ? (isDark ? const Color(0xFF5d7df4).withOpacity(0.2) : Colors.grey.withOpacity(0.4)) : cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: _selectedGender == 'nonBinary' ? Colors.amber : border),
+                      border: Border.all(color: _selectedGender == 'nonBinary' ? (isDark ? Colors.amber : Colors.blue) : border),
                     ),
                     child: Text(
                       l10n.nonBinary,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'nonBinary' ? Colors.white : primary),
+                      style: GoogleFonts.notoSans(fontSize: 13, fontWeight: FontWeight.w500, color: _selectedGender == 'nonBinary' ? (isDark ? Colors.white : Colors.black) : primary),
                     ),
                   ),
                 ),
@@ -281,9 +281,13 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.only(bottom: 5),
-              decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.amber.withOpacity(0.3))),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.amber.withOpacity(0.1) : Colors.blue.withOpacity(0.1), 
+                borderRadius: BorderRadius.circular(8), 
+                border: Border.all(color: isDark ? Colors.amber.withOpacity(0.3) : Colors.blue.withOpacity(0.3))
+              ),
               child: Row(children: [
-                const Icon(Icons.check_circle, color: Colors.amber, size: 20),
+                Icon(Icons.check_circle, color: isDark ? Colors.amber : Colors.blue, size: 20),
                 const SizedBox(width: 8),
                 Expanded(child: Text(_selectedRegion!, style: GoogleFonts.notoSans(fontSize: 15, color: primary))),
               ]),
@@ -326,50 +330,36 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             Text(l10n.loveStatus, style: GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
           ]),
           const SizedBox(height: 3),
-          Container(
-            width: double.infinity,
-            height: 46,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            decoration: BoxDecoration(
-              color: cardBg,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: border),
-            ),
-            child: DropdownButton<String>(
-              value: _mapStatusToEnglishKey(_selectedLoveStatus),
-              isExpanded: true,
-              underline: Container(),
-              style: GoogleFonts.notoSans(
-                fontSize: 15,
-                color: primary,
+          InkWell(
+            onTap: _showStatusBottomSheet,
+            child: Container(
+              width: double.infinity,
+              height: 46,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: border),
               ),
-              items: statuses.asMap().entries.map((entry) {
-                final index = entry.key;
-                final status = entry.value;
-                return DropdownMenuItem<String>(
-                  value: statusKeys[index],
-                  child: SizedBox(
-                    width: double.infinity,
+              child: Row(
+                children: [
+                  Expanded(
                     child: Text(
-                      status,
+                      _selectedLoveStatus != null 
+                        ? statuses[statusKeys.indexOf(_selectedLoveStatus!)]
+                        : l10n.statusSelectHint,
+                      style: GoogleFonts.notoSans(
+                        fontSize: 15,
+                        color: _selectedLoveStatus != null ? primary : secondary,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                );
-              }).toList(),
-              onChanged: (String? value) {
-                if (value != null) {
-                  setState(() {
-                    _selectedLoveStatus = value; // 영어 키값으로 저장
-                  });
-                }
-              },
-              hint: Text(
-                '상태를 선택해주세요',
-                style: GoogleFonts.notoSans(
-                  fontSize: 15,
-                  color: secondary,
-                ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: secondary,
+                  ),
+                ],
               ),
             ),
           ),
@@ -638,14 +628,15 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
 
   Widget _buildInfoMessage() {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.onSurface;
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
       child: Column(
         children: [
-          const Icon(
+          Icon(
             Icons.info_outline,
-            color: Colors.amber,
+            color: isDark ? Colors.amber : Colors.blue,
             size: 50,
           ),
           const SizedBox(height: 5),
@@ -809,6 +800,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
 
   Widget _buildSaveButton() {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     // 모든 필수 항목이 입력되었는지 확인 (시간모름 선택 시 시간 정보는 선택사항)
     final bool isFormValid = _nameController.text.trim().isNotEmpty &&
         _selectedGender != null &&
@@ -823,7 +815,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       child: ElevatedButton(
         onPressed: isFormValid ? _saveSajuInfo : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isFormValid ? const Color(0xFF5d7df4) : Colors.grey.withOpacity(0.3),
+          backgroundColor: isFormValid ? (isDark ? const Color(0xFF5d7df4) : Colors.blue) : Colors.grey.withOpacity(0.3),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
@@ -1037,6 +1029,100 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         _showSnackBar(l10n.errorBirthInfoSaveFailed);
       }
     }
+  }
+
+  void _showStatusBottomSheet() {
+    final l10n = AppLocalizations.of(context)!;
+    final statuses = [l10n.married, l10n.inRelationship, l10n.wantRelationship, l10n.noInterest];
+    final statusKeys = ['married', 'inRelationship', 'wantRelationship', 'noInterest'];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (ctx) {
+        final onSurface = Theme.of(ctx).colorScheme.onSurface;
+        return SafeArea(
+          child: SizedBox(
+            height: 300,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
+                      ),
+                      Text(
+                        l10n.loveStatus,
+                        style: GoogleFonts.notoSans(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: onSurface,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(l10n.confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 0),
+                Expanded(
+                  child: ListView(
+                    children: statuses.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final status = entry.value;
+                      final isSelected = _selectedLoveStatus == statusKeys[index];
+                      
+                      return InkWell(
+                        onTap: () {
+                          setState(() {
+                            _selectedLoveStatus = statusKeys[index];
+                          });
+                          Navigator.pop(ctx);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.amber.withOpacity(0.1) : Colors.transparent,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  status,
+                                  style: GoogleFonts.notoSans(
+                                    fontSize: 16,
+                                    color: isSelected ? Colors.amber : onSurface,
+                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  Icons.check,
+                                  color: Colors.amber,
+                                  size: 20,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showSnackBar(String message) {

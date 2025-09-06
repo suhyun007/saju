@@ -360,6 +360,12 @@ abstract class AppLocalizations {
   /// **'Please select your status.'**
   String get validationStatusRequired;
 
+  /// No description provided for @statusSelectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your status'**
+  String get statusSelectHint;
+
   /// No description provided for @successBirthInfoSaved.
   ///
   /// In en, this message translates to:

@@ -43,6 +43,7 @@
   "validationBirthMinuteRequired": "Please select your birth minute.",
   "validationRegionRequired": "Please search and select your birth region.",
   "validationStatusRequired": "Please select your status.",
+  "statusSelectHint": "Please select your status",
   "successBirthInfoSaved": "Birth information has been saved! (Zodiac: {zodiacSign})",
   "successFriendInfoSaved": "Friend information has been saved! (Zodiac: {zodiacSign})",
   "errorBirthInfoSaveFailed": "Failed to save birth information.",

@@ -138,6 +138,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get validationStatusRequired => '상태를 선택해주세요.';
 
   @override
+  String get statusSelectHint => '상태를 선택해주세요';
+
+  @override
   String successBirthInfoSaved(Object zodiacSign) {
     return '출생 정보가 저장되었습니다! (띠: $zodiacSign)';
   }

@@ -13,7 +13,6 @@ class PoetryApiService {
     required String language,
     String prompt = 'daily',
     bool forceNetwork = false,
-    bool needDummy = false,
   }) async {
     final now = DateTime.now();
     final currentDate = '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
@@ -30,7 +29,6 @@ class PoetryApiService {
       'currentDate': currentDate,
       'prompt': prompt,
       'language': _normalizeLanguage(language),
-      'needDummy': needDummy,
     };
 
     print('🔍 Guide API 요청 데이터: ${jsonEncode(body)}');

@@ -13,7 +13,6 @@ class SajuApiService {
     required SajuInfo sajuInfo,
     required String language,
     bool forceNetwork = false,
-    bool needDummy = false,
   }) async {
     final currentDate = DateTime.now();
     final String currentDateStr =
@@ -30,7 +29,6 @@ class SajuApiService {
       'loveStatus': _normalizeLoveStatus(sajuInfo.loveStatus),
       'currentDate': currentDateStr,
       'language': _normalizeLanguage(language),
-      'needDummy': needDummy,
     };
     
     print('🔍 Guide API 요청 데이터: ${jsonEncode(body)}');

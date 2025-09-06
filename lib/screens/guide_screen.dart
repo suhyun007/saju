@@ -97,7 +97,6 @@ class _GuideScreenState extends State<GuideScreen> {
         sajuInfo: sajuInfo,
         language: locale,
         forceNetwork: true,
-        needDummy: true,
       );
       // 캐시에 저장(날짜/지문/언어)
       sajuInfo.guide['overall'] = result.overall;

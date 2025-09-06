@@ -138,6 +138,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get validationStatusRequired => '状態を選択してください。';
 
   @override
+  String get statusSelectHint => '状態を選択してください';
+
+  @override
   String successBirthInfoSaved(Object zodiacSign) {
     return '出生情報が保存されました！(星座: $zodiacSign)';
   }

@@ -141,6 +141,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validationStatusRequired => 'Please select your status.';
 
   @override
+  String get statusSelectHint => 'Please select your status';
+
+  @override
   String successBirthInfoSaved(Object zodiacSign) {
     return 'Birth information has been saved! (Zodiac: $zodiacSign)';
   }

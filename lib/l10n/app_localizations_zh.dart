@@ -138,6 +138,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get validationStatusRequired => '请选择您的状态。';
 
   @override
+  String get statusSelectHint => '请选择您的状态';
+
+  @override
   String successBirthInfoSaved(Object zodiacSign) {
     return '出生信息已保存！(星座: $zodiacSign)';
   }

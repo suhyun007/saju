@@ -43,6 +43,7 @@
   "validationBirthMinuteRequired": "출생 분을 선택해주세요.",
   "validationRegionRequired": "출생 지역을 검색하고 선택해주세요.",
   "validationStatusRequired": "상태를 선택해주세요.",
+  "statusSelectHint": "상태를 선택해주세요",
   "successBirthInfoSaved": "출생 정보가 저장되었습니다! (띠: {zodiacSign})",
   "successFriendInfoSaved": "친구 정보가 저장되었습니다! (띠: {zodiacSign})",
   "errorBirthInfoSaveFailed": "출생 정보 저장에 실패했습니다.",

@@ -180,84 +180,101 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF2C1810),
-              Color(0xFF4A2C1A),
-              Color(0xFF8B4513),
-            ],
+      resizeToAvoidBottomInset: false, // 키패드가 화면을 가리지 않도록
+      body: GestureDetector(
+        onTap: () {
+          // 화면 터치 시 키패드 숨김
+          FocusScope.of(context).unfocus();
+        },
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF2C1810),
+                Color(0xFF4A2C1A),
+                Color(0xFF8B4513),
+              ],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildSearchInput(),
-
-              // 선택된 지역 표시
-              if (_selectedAddress.isNotEmpty) _buildSelectedLocation(),
-
-              // 🔍 검색 결과 리스트 (선택된 지역이 없을 때만 표시)
-              if (_selectedAddress.isEmpty)
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: _searchResults.isNotEmpty
-                        ? ListView.builder(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            itemCount: _searchResults.length,
-                            itemBuilder: (context, index) {
-                              final place = _searchResults[index];
-                              return Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: ListTile(
-                                  leading: const Icon(Icons.location_on, color: Colors.amber),
-                                  title: Text(
-                                    place['description'],
-                                    style: GoogleFonts.notoSans(color: Colors.white),
-                                  ),
-                                  onTap: () {
-                                    print('🎯 지역 클릭됨: ${place['description']}');
-                                    print('🎯 place_id: ${place['place_id']}');
-                                    _selectPlace(place['place_id'], place['description']);
-                                  },
-                                ),
-                              );
-                            },
-                          )
-                        : Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.search,
-                                  size: 64,
-                                  color: Colors.white.withOpacity(0.3),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  AppLocalizations.of(context)?.locationSearchEmptyMessage ?? '지역명을 입력하여 검색하세요',
-                                  style: GoogleFonts.notoSans(
-                                    fontSize: 16,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                  ),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
                 ),
+                child: Column(
+                  children: [
+                    _buildHeader(),
+                    _buildSearchInput(),
 
-              _buildButtons(),
-            ],
+                    // 선택된 지역 표시
+                    if (_selectedAddress.isNotEmpty) _buildSelectedLocation(),
+
+                    // 🔍 검색 결과 리스트 (선택된 지역이 없을 때만 표시)
+                    if (_selectedAddress.isEmpty)
+                      Container(
+                        height: 300, // 고정 높이로 설정
+                        margin: const EdgeInsets.only(top: 10),
+                        child: _searchResults.isNotEmpty
+                            ? ListView.builder(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                itemCount: _searchResults.length,
+                                itemBuilder: (context, index) {
+                                  final place = _searchResults[index];
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: ListTile(
+                                      leading: const Icon(Icons.location_on, color: Colors.amber),
+                                      title: Text(
+                                        place['description'],
+                                        style: GoogleFonts.notoSans(color: Colors.white),
+                                      ),
+                                      onTap: () {
+                                        print('🎯 지역 클릭됨: ${place['description']}');
+                                        print('🎯 place_id: ${place['place_id']}');
+                                        _selectPlace(place['place_id'], place['description']);
+                                      },
+                                    ),
+                                  );
+                                },
+                              )
+                            : Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.search,
+                                      size: 64,
+                                      color: Colors.white.withOpacity(0.3),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      AppLocalizations.of(context)?.locationSearchEmptyMessage ?? '지역명을 입력하여 검색하세요',
+                                      style: GoogleFonts.notoSans(
+                                        fontSize: 16,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                      ),
+
+                    // 버튼들
+                    _buildButtons(),
+                    
+                    // 키패드 공간 확보
+                    SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),

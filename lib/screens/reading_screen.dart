@@ -94,7 +94,6 @@ class _PoetryScreenState extends State<PoetryScreen> {
         sajuInfo: sajuInfo,
         language: lang,
         forceNetwork: true,
-        needDummy: true,
       );
       // 저장
       sajuInfo.poetry['title'] = res.title;
