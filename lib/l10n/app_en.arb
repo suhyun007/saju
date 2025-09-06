@@ -188,7 +188,8 @@
   "shareTitle": "Share",
   "shareTextCopy": "Copy Text",
   "shareTextCopied": "Text has been copied to clipboard",
-  "shareSummaryPrefix": "💡 Summary:",
-  "shareTomorrowPrefix": "🔮 Tomorrow's Episode Preview:",
+  "shareSummaryPrefix": "💡Summary:",
+  "shareTomorrowPrefix": "🔮Tomorrow's Episode Preview:",
+  "shareTomorrowPoetryPrefix": "🔮Tomorrow's Poetry Preview:",
   "shareAppPromotion": "✨ Discover new stories every day with LunaVerse!"
 }

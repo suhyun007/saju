@@ -180,7 +180,8 @@
   "shareTitle": "分享",
   "shareTextCopy": "复制文本",
   "shareTextCopied": "文本已复制到剪贴板",
-  "shareSummaryPrefix": "💡 摘要：",
-  "shareTomorrowPrefix": "🔮 明日剧集预览：",
+  "shareSummaryPrefix": "💡摘要：",
+  "shareTomorrowPrefix": "🔮明日剧集预览：",
+  "shareTomorrowPoetryPrefix": "🔮明日诗歌预览：",
   "shareAppPromotion": "✨ 在LunaVerse中每天发现新故事！"
 }

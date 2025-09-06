@@ -552,5 +552,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shareTomorrowPrefix => '🔮 내일의 에피소드 미리보기:';
 
   @override
+  String get shareTomorrowPoetryPrefix => '🔮 내일의 시 미리보기:';
+
+  @override
   String get shareAppPromotion => '✨ LunaVerse에서 매일 새로운 이야기를 만나보세요!';
 }

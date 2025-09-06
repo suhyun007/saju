@@ -188,7 +188,118 @@
   "shareTitle": "공유하기",
   "shareTextCopy": "텍스트 복사",
   "shareTextCopied": "텍스트가 클립보드에 복사되었습니다",
-  "shareSummaryPrefix": "💡 요약:",
-  "shareTomorrowPrefix": "🔮 내일의 에피소드 미리보기:",
-  "shareAppPromotion": "✨ LunaVerse에서 매일 새로운 이야기를 만나보세요!"
+  "shareSummaryPrefix": "💡요약:",
+  "shareTomorrowPrefix": "🔮내일의 에피소드 미리보기:",
+  "shareTomorrowPoetryPrefix": "🔮 내일의 시 미리보기:",
+  "shareAppPromotion": "✨ LunaVerse에서 매일 새로운 이야기를 만나보세요!",
+  
+  "episodeShareSubject": "오늘의 에피소드 - {title}",
+  "@episodeShareSubject": {
+    "description": "에피소드 공유 제목",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeShareContent": "📖 {title}\n\n{content}\n\n{summary}\n\n{tomorrowHint}\n\n{appPromotion}",
+  "@episodeShareContent": {
+    "description": "에피소드 공유 내용",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "content": {
+        "type": "String"
+      },
+      "summary": {
+        "type": "String"
+      },
+      "tomorrowHint": {
+        "type": "String"
+      },
+      "appPromotion": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "poetryShareSubject": "오늘의 시 - {title}",
+  "@poetryShareSubject": {
+    "description": "시 낭독 공유 제목",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "poetryShareContent": "📖 {title}\n\n{content}\n\n{summary}\n\n{tomorrowHint}\n\n{appPromotion}",
+  "@poetryShareContent": {
+    "description": "시 낭독 공유 내용",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "content": {
+        "type": "String"
+      },
+      "summary": {
+        "type": "String"
+      },
+      "tomorrowHint": {
+        "type": "String"
+      },
+      "appPromotion": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "guideShareSubject": "오늘의 가이드",
+  "guideShareContent": "📖 {title}\n\n💕 {relationshipLabel}: {love}\n\n💰 {abundanceLabel}: {wealth}\n\n🧘 {bodyAndMindLabel}: {health}\n\n📚 {growthLabel}: {study}\n\n✨ {lightAndHopeLabel}: {overall}\n\n{appPromotion}",
+  "@guideShareContent": {
+    "description": "가이드 공유 내용",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "relationshipLabel": {
+        "type": "String"
+      },
+      "love": {
+        "type": "String"
+      },
+      "abundanceLabel": {
+        "type": "String"
+      },
+      "wealth": {
+        "type": "String"
+      },
+      "bodyAndMindLabel": {
+        "type": "String"
+      },
+      "health": {
+        "type": "String"
+      },
+      "growthLabel": {
+        "type": "String"
+      },
+      "study": {
+        "type": "String"
+      },
+      "lightAndHopeLabel": {
+        "type": "String"
+      },
+      "overall": {
+        "type": "String"
+      },
+      "appPromotion": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "shareButton": "공유",
+  "shareDefault": "기본 공유하기",
+  "shareShare": "Share.share"
 }

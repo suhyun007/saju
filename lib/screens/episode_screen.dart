@@ -106,86 +106,11 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
       setState(() { _error = '$e'; _loading = false; });
     }
   }
-
+//_shareToDefault
   void _showShareOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-            Text(
-              AppLocalizations.of(context)!.shareTitle,
-              style: GoogleFonts.notoSans(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-              const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // 한국어 사용자일 경우 카카오톡을 맨 앞에
-                    if (Localizations.localeOf(context).languageCode == 'ko')
-                      _buildShareOption(
-                        icon: Icons.chat_bubble,
-                        label: 'KakaoTalk',
-                        onTap: () => _shareToKakaoTalk(),
-                      ),
-                    _buildShareOption(
-                      icon: Icons.email,
-                      label: 'Gmail',
-                      onTap: () => _shareToGmail(),
-                    ),
-                    _buildShareOption(
-                      icon: Icons.facebook,
-                      label: 'Facebook',
-                      onTap: () => _shareToFacebook(),
-                    ),
-                    _buildShareOption(
-                      icon: Icons.message,
-                      label: 'Facebook\nMessage',
-                      onTap: () => _shareToFacebookMessage(),
-                    ),
-                    _buildShareOption(
-                      icon: Icons.message,
-                      label: 'Message',
-                      onTap: () => _shareToIMessage(),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              // 텍스트 복사 버튼
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: _copyToClipboard,
-                  icon: const Icon(Icons.copy, size: 18),
-                  label: Text(
-                    AppLocalizations.of(context)!.shareTextCopy,
-                    style: GoogleFonts.notoSans(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-                    alignment: Alignment.centerLeft,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        );
-      },
-    );
+    final text = _getShareText();
+    final subject = '오늘의 에피소드 - ${_episode?.title ?? ''}';
+    Share.share('Subject: $subject\n\n$text', subject: subject);
   }
 
   Widget _buildShareOption({
@@ -250,93 +175,12 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
     ''';
   }
 
-  void _shareToGmail() {
-    dev.log('=== _shareToGmail 메서드 호출됨 ===', name: 'EpisodeScreen');
-    
+  void _shareToDefault() {
     final text = _getShareText();
     final subject = '오늘의 에피소드 - ${_episode?.title ?? ''}';
     
-    // 디버깅을 위한 로그 추가
-    dev.log('Gmail 공유 시도: $subject', name: 'EpisodeScreen');
-    
-    // 여러 방법을 순차적으로 시도
-    _tryGmailMethods(subject, text);
-  }
-
-  Future<void> _tryGmailMethods(String subject, String text) async {
-    // 시뮬레이터에서는 기본 공유 시트 사용
-    if (kDebugMode) {
-      dev.log('시뮬레이터 환경: 기본 공유 시트 사용', name: 'EpisodeScreen');
-      await Share.share('Subject: $subject\n\n$text', subject: subject);
-      return;
-    }
-    
-    // 방법 1: Gmail 앱 직접 호출 (canLaunchUrl 우회)
-    final gmailUri = Uri.parse('googlegmail://co?to=&subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(text)}');
-    dev.log('Gmail URI 시도: $gmailUri', name: 'EpisodeScreen');
-    
-    try {
-      dev.log('Gmail 앱 직접 실행 시도', name: 'EpisodeScreen');
-      await launchUrl(gmailUri, mode: LaunchMode.externalApplication);
-      dev.log('Gmail 앱 실행 성공', name: 'EpisodeScreen');
-      return;
-    } catch (e) {
-      dev.log('Gmail 실행 실패: $e', name: 'EpisodeScreen');
-    }
-    
-    // 방법 2: 기본 mailto (canLaunchUrl 우회)
-    final mailtoUri = Uri.parse('mailto:?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(text)}');
-    dev.log('Mailto URI 시도: $mailtoUri', name: 'EpisodeScreen');
-    
-    try {
-      dev.log('Mailto 직접 실행 시도', name: 'EpisodeScreen');
-      await launchUrl(mailtoUri, mode: LaunchMode.externalApplication);
-      dev.log('Mailto 실행 성공', name: 'EpisodeScreen');
-      return;
-    } catch (e) {
-      dev.log('Mailto 실행 실패: $e', name: 'EpisodeScreen');
-    }
-    
-    // 방법 3: 기본 공유 기능
-    dev.log('모든 방법 실패, 기본 공유 사용', name: 'EpisodeScreen');
-    await Share.share('Subject: $subject\n\n$text', subject: subject);
-  }
-
-  void _shareToFacebook() {
-    final text = _getShareText();
-    final uri = Uri.parse('https://www.facebook.com/sharer/sharer.php?u=${Uri.encodeComponent('https://lunaverse.app')}&quote=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToFacebookMessage() {
-    final text = _getShareText();
-    final uri = Uri.parse('fb-messenger://share?link=${Uri.encodeComponent('https://lunaverse.app')}&app_id=YOUR_APP_ID');
-    _launchUrl(uri);
-  }
-
-  void _shareToWhatsApp() {
-    final text = _getShareText();
-    final uri = Uri.parse('https://wa.me/?text=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToIMessage() {
-    final text = _getShareText();
-    final uri = Uri.parse('sms:?body=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToTelegram() {
-    final text = _getShareText();
-    final uri = Uri.parse('https://t.me/share/url?url=&text=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
-  }
-
-  void _shareToKakaoTalk() {
-    final text = _getShareText();
-    // 카카오톡 앱 공유 URL
-    final uri = Uri.parse('kakaotalk://sendurl?url=&text=${Uri.encodeComponent(text)}');
-    _launchUrl(uri);
+    // 기본 공유 시트 사용
+    Share.share('Subject: $subject\n\n$text', subject: subject);
   }
 
   Future<void> _launchUrl(Uri uri) async {
@@ -376,29 +220,6 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
           // 메일 앱도 없으면 기본 공유 기능 사용
           await Share.share(_getShareText());
         }
-      }
-    } catch (e) {
-      // 오류 발생 시 기본 공유 기능 사용
-      await Share.share(_getShareText());
-    }
-  }
-
-  Future<void> _launchGmailWithMultipleFallbacks(List<Uri> gmailUris, Uri mailtoUri) async {
-    try {
-      // 여러 Gmail URL scheme 시도
-      for (Uri gmailUri in gmailUris) {
-        if (await canLaunchUrl(gmailUri)) {
-          await launchUrl(gmailUri);
-          return; // 성공하면 종료
-        }
-      }
-      
-      // Gmail 앱이 없으면 기본 메일 앱 시도
-      if (await canLaunchUrl(mailtoUri)) {
-        await launchUrl(mailtoUri);
-      } else {
-        // 메일 앱도 없으면 기본 공유 기능 사용
-        await Share.share(_getShareText());
       }
     } catch (e) {
       // 오류 발생 시 기본 공유 기능 사용
@@ -565,7 +386,7 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
           const SizedBox(height: 8),
           if (_episode!.tomorrowSummary.isNotEmpty)
             SelectableText(
-              '내일의 에피소드 미리보기 : ${_episode!.tomorrowSummary}',
+              '${AppLocalizations.of(context)!.shareTomorrowPrefix} ${_episode!.tomorrowSummary}',
               style: GoogleFonts.notoSans(
                 fontSize: 16,
                 color: onText.withOpacity(0.85),

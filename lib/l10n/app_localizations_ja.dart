@@ -551,5 +551,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shareTomorrowPrefix => '🔮 明日のエピソードプレビュー：';
 
   @override
+  String get shareTomorrowPoetryPrefix => '🔮 明日の詩プレビュー：';
+
+  @override
   String get shareAppPromotion => '✨ LunaVerseで毎日新しい物語を発見しましょう！';
 }

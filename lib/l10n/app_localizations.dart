@@ -1128,6 +1128,12 @@ abstract class AppLocalizations {
   /// **'🔮 Tomorrow\'s Episode Preview:'**
   String get shareTomorrowPrefix;
 
+  /// No description provided for @shareTomorrowPoetryPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'🔮 Tomorrow\'s Poetry Preview:'**
+  String get shareTomorrowPoetryPrefix;
+
   /// No description provided for @shareAppPromotion.
   ///
   /// In en, this message translates to:

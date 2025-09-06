@@ -487,84 +487,9 @@ class _GuideScreenState extends State<GuideScreen> {
   }
 
   void _showShareOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                AppLocalizations.of(context)!.shareTitle,
-                style: GoogleFonts.notoSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // 한국어 사용자일 경우 카카오톡을 맨 앞에
-                    if (Localizations.localeOf(context).languageCode == 'ko')
-                      _buildShareOption(
-                        icon: Icons.chat_bubble,
-                        label: 'KakaoTalk',
-                        onTap: () => _shareToKakaoTalk(),
-                      ),
-                    _buildShareOption(
-                      icon: Icons.email,
-                      label: 'Gmail',
-                      onTap: () => _shareToGmail(),
-                    ),
-                    _buildShareOption(
-                      icon: Icons.facebook,
-                      label: 'Facebook',
-                      onTap: () => _shareToFacebook(),
-                    ),
-                    _buildShareOption(
-                      icon: Icons.message,
-                      label: 'Facebook\nMessage',
-                      onTap: () => _shareToFacebookMessage(),
-                    ),
-                    _buildShareOption(
-                      icon: Icons.message,
-                      label: 'Message',
-                      onTap: () => _shareToIMessage(),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              // 텍스트 복사 버튼
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: _copyToClipboard,
-                  icon: const Icon(Icons.copy, size: 18),
-                  label: Text(
-                    AppLocalizations.of(context)!.shareTextCopy,
-                    style: GoogleFonts.notoSans(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-                    alignment: Alignment.centerLeft,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        );
-      },
-    );
+    final text = _getShareText();
+    final subject = '오늘의 가이드';
+    Share.share('Subject: $subject\n\n$text', subject: subject);
   }
 
   Widget _buildShareOption({

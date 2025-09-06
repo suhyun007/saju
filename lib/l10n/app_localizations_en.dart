@@ -566,6 +566,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareTomorrowPrefix => '🔮 Tomorrow\'s Episode Preview:';
 
   @override
+  String get shareTomorrowPoetryPrefix => '🔮 Tomorrow\'s Poetry Preview:';
+
+  @override
   String get shareAppPromotion =>
       '✨ Discover new stories every day with LunaVerse!';
 }

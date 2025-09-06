@@ -547,5 +547,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shareTomorrowPrefix => '🔮 明日剧集预览：';
 
   @override
+  String get shareTomorrowPoetryPrefix => '🔮 明日诗歌预览：';
+
+  @override
   String get shareAppPromotion => '✨ 在LunaVerse中每天发现新故事！';
 }
