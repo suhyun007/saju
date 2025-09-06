@@ -123,27 +123,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get validationGenderRequired => '성별을 선택해주세요.';
 
   @override
-  String get validationBirthDateRequired => '생년월일을 선택해주세요.';
+  String get validationBirthDateRequired => '출생일자를 선택해주세요.';
 
   @override
-  String get validationBirthHourRequired => '출생 시를 선택해주세요.';
+  String get validationBirthHourRequired => '출생시간(시)을 선택해주세요.';
 
   @override
-  String get validationBirthMinuteRequired => '출생 분을 선택해주세요.';
+  String get validationBirthMinuteRequired => '출생시간(분)을 선택해주세요.';
 
   @override
-  String get validationRegionRequired => '출생 지역을 검색하고 선택해주세요.';
+  String get validationRegionRequired => '태어난 지역을 검색하여 선택해주세요.';
 
   @override
-  String get validationStatusRequired => '상태를 선택해주세요.';
+  String get validationStatusRequired => '나의 상태를 선택해주세요.';
 
   @override
   String get statusSelectHint => '상태를 선택해주세요';
 
   @override
-  String successBirthInfoSaved(Object zodiacSign) {
-    return '출생 정보가 저장되었습니다! (띠: $zodiacSign)';
-  }
+  String get successBirthInfoSaved => '정보가 저장되었습니다!';
 
   @override
   String successFriendInfoSaved(Object zodiacSign) {
@@ -155,6 +153,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorFriendInfoSaveFailed => '친구 정보 저장에 실패했습니다.';
+
+  @override
+  String themeChangedMessage(Object theme) {
+    return '테마가 \"$theme\"(으)로 변경되었습니다.';
+  }
 
   @override
   String get splashAppName => 'LunaVerse';

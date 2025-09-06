@@ -141,9 +141,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get statusSelectHint => '状態を選択してください';
 
   @override
-  String successBirthInfoSaved(Object zodiacSign) {
-    return '出生情報が保存されました！(星座: $zodiacSign)';
-  }
+  String get successBirthInfoSaved => '情報が保存されました！';
 
   @override
   String successFriendInfoSaved(Object zodiacSign) {
@@ -155,6 +153,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorFriendInfoSaveFailed => '友達情報の保存に失敗しました。';
+
+  @override
+  String themeChangedMessage(Object theme) {
+    return 'テーマが「$theme」に変更されました。';
+  }
 
   @override
   String get splashAppName => 'LunaVerse';

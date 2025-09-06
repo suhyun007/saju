@@ -141,9 +141,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statusSelectHint => '请选择您的状态';
 
   @override
-  String successBirthInfoSaved(Object zodiacSign) {
-    return '出生信息已保存！(星座: $zodiacSign)';
-  }
+  String get successBirthInfoSaved => '信息已保存！';
 
   @override
   String successFriendInfoSaved(Object zodiacSign) {
@@ -155,6 +153,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get errorFriendInfoSaveFailed => '保存朋友信息失败。';
+
+  @override
+  String themeChangedMessage(Object theme) {
+    return '主题已更改为「$theme」。';
+  }
 
   @override
   String get splashAppName => 'LunaVerse';

@@ -632,8 +632,9 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
         if (!mounted) return;
         setState(() {});
         Navigator.pop(context);
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('테마가 "$label"(으)로 변경되었습니다.')),
+          SnackBar(content: Text(l10n?.themeChangedMessage(label) ?? '테마가 "$label"(으)로 변경되었습니다.')),
         );
       },
       title: Text(

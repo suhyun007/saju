@@ -41,6 +41,17 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   void initState() {
     super.initState();
     _loadSavedSajuInfo();
+    // 이름 입력 필드 변경 감지
+    _nameController.addListener(() {
+      setState(() {});
+    });
+  }
+  
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _regionController.dispose();
+    super.dispose();
   }
   
   Widget _buildUnifiedFormCard() {
@@ -83,9 +94,30 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               hintStyle: GoogleFonts.notoSans(fontSize: 15, color: secondary),
               filled: true,
               fillColor: cardBg,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? border : Colors.blue)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? border : Colors.blue)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? Colors.amber : Colors.blue)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10), 
+                borderSide: BorderSide(
+                  color: _nameController.text.trim().isEmpty 
+                    ? (isDark ? Colors.amber : Colors.blue) 
+                    : border
+                )
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10), 
+                borderSide: BorderSide(
+                  color: _nameController.text.trim().isEmpty 
+                    ? (isDark ? Colors.amber : Colors.blue) 
+                    : border
+                )
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10), 
+                borderSide: BorderSide(
+                  color: _nameController.text.trim().isEmpty 
+                    ? (isDark ? Colors.amber : Colors.blue) 
+                    : border
+                )
+              ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             ),
           ),
@@ -582,7 +614,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             // 통합 입력 카드
             _buildUnifiedFormCard(),
             
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             
             // 저장 버튼
             _buildSaveButton(),
@@ -815,10 +847,18 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       child: ElevatedButton(
         onPressed: isFormValid ? _saveSajuInfo : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isFormValid ? (isDark ? const Color(0xFF5d7df4) : Colors.blue) : Colors.grey.withOpacity(0.3),
+          backgroundColor: isFormValid ? (isDark ? const Color(0xFF5d7df4) : Colors.blue) : Colors.grey.withOpacity(0.2),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
+            side: !isFormValid 
+              ? BorderSide(
+                  color: isDark 
+                    ? const Color(0x809E9E9E)  // 다크모드: 50% 투명도
+                    : const Color(0x4D9E9E9E), // 라이트모드: 30% 투명도
+                  width: 1.5
+                )
+              : BorderSide.none,
           ),
           elevation: 0,
         ),
@@ -898,6 +938,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                             if (tempDay > maxDay) tempDay = maxDay;
                           }, onSurface),
                           _buildDayPicker(tempDay, (day) => tempDay = day, onSurface),
+
                           _buildYearPicker(tempYear, (year) {
                             tempYear = year;
                             int maxDay = DateTime(tempYear, tempMonth + 1, 0).day;
@@ -936,41 +977,43 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
   void _saveSajuInfo() async {
+    final l10n = AppLocalizations.of(context)!;
+    
     if (_nameController.text.trim().isEmpty) {
-      _showSnackBar('이름을 입력해주세요.');
+      _showSnackBar(l10n.validationNameRequired);
       return;
     }
     
     if (_selectedGender == null) {
-      _showSnackBar('성별을 선택해주세요.');
+      _showSnackBar(l10n.validationGenderRequired);
       return;
     }
     
     if (_selectedDate == null) {
-      _showSnackBar('출생일자을 선택해주세요.');
+      _showSnackBar(l10n.validationBirthDateRequired);
       return;
     }
     
     // 시간모름이 아닌 경우에만 시간 정보 검증
     if (!_isTimeUnknown) {
       if (_selectedHour == null) {
-        _showSnackBar('출생시간(시)을 선택해주세요.');
+        _showSnackBar(l10n.validationBirthHourRequired);
         return;
       }
       
       if (_selectedMinute == null) {
-        _showSnackBar('출생시간(분)을 선택해주세요.');
+        _showSnackBar(l10n.validationBirthMinuteRequired);
         return;
       }
     }
     
     if (_selectedRegion == null) {
-      _showSnackBar('태어난 지역을 검색하여 선택해주세요.');
+      _showSnackBar(l10n.validationRegionRequired);
       return;
     }
 
     if (_selectedLoveStatus == null) {
-      _showSnackBar('나의 상태를 선택해주세요.');
+      _showSnackBar(l10n.validationStatusRequired);
       return;
     }
 
@@ -1018,7 +1061,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       
       if (success) {
         final l10n = AppLocalizations.of(context)!;
-        _showSnackBar(l10n.successBirthInfoSaved(zodiacSign));
+        _showSnackBar(l10n.successBirthInfoSaved);
         // 홈 화면으로 이동
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreen()),

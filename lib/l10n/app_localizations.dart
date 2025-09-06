@@ -369,8 +369,8 @@ abstract class AppLocalizations {
   /// No description provided for @successBirthInfoSaved.
   ///
   /// In en, this message translates to:
-  /// **'Birth information has been saved! (Zodiac: {zodiacSign})'**
-  String successBirthInfoSaved(Object zodiacSign);
+  /// **'Information has been saved!'**
+  String get successBirthInfoSaved;
 
   /// No description provided for @successFriendInfoSaved.
   ///
@@ -389,6 +389,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to save friend information.'**
   String get errorFriendInfoSaveFailed;
+
+  /// No description provided for @themeChangedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme has been changed to \"{theme}\".'**
+  String themeChangedMessage(Object theme);
 
   /// No description provided for @splashAppName.
   ///
