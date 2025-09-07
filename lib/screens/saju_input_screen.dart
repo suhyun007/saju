@@ -1087,7 +1087,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         final onSurface = Theme.of(ctx).colorScheme.onSurface;
         return SafeArea(
           child: SizedBox(
-            height: 300,
+            height: 280,
             child: Column(
               children: [
                 Padding(
@@ -1114,7 +1114,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     ],
                   ),
                 ),
-                const Divider(height: 0),
+                const Divider(height: 15),
                 Expanded(
                   child: ListView(
                     children: statuses.asMap().entries.map((entry) {
@@ -1131,9 +1131,13 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                         },
                         child: Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.amber.withOpacity(0.1) : Colors.transparent,
+                            color: isSelected 
+                              ? (Theme.of(context).brightness == Brightness.dark 
+                                  ? Colors.amber.withOpacity(0.1) 
+                                  : Colors.blue.withOpacity(0.1))
+                              : Colors.transparent,
                           ),
                           child: Row(
                             children: [
@@ -1142,7 +1146,11 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                                   status,
                                   style: GoogleFonts.notoSans(
                                     fontSize: 16,
-                                    color: isSelected ? Colors.amber : onSurface,
+                                    color: isSelected 
+                                      ? (Theme.of(context).brightness == Brightness.dark 
+                                          ? Colors.white 
+                                          : Colors.black)
+                                      : onSurface,
                                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                                   ),
                                 ),
@@ -1150,7 +1158,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                               if (isSelected)
                                 Icon(
                                   Icons.check,
-                                  color: Colors.amber,
+                                  color: Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.white 
+                                    : Colors.black,
                                   size: 20,
                                 ),
                             ],
