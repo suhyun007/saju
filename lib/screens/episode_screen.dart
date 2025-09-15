@@ -6,6 +6,9 @@ import '../l10n/app_localizations.dart';
 import '../services/episode_api_service.dart';
 import '../services/saju_service.dart';
 import '../models/saju_info.dart';
+import '../services/analytics_service.dart';
+import '../services/favorite_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class EpisodeScreen extends StatefulWidget {
   final ValueNotifier<int>? activeTab;
@@ -21,20 +24,64 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
   bool _loading = false;
   String? _error;
   VoidCallback? _tabListener;
+  bool _episodeClickLogged = false; // 초기 진입 시 에피소드 클릭 로그 중복 방지
+  final ScrollController _scrollController = ScrollController();
+  bool _showScrollbar = false;
+  bool _isFavorite = false; // 즐겨찾기 상태
+  final FavoriteService _favoriteService = FavoriteService();
+  String? _guestId;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
+    _initializeGuestId();
     _tabListener = () {
       if (widget.activeTab?.value == widget.tabIndex) {
         _loadIfNeeded();
       }
     };
     widget.activeTab?.addListener(_tabListener!);
+    // 즐겨찾기 변경 이벤트 수신하여 하트 상태 동기화
+    FavoriteService().changes.listen((event) async {
+      if (!mounted) return;
+      try {
+        final sajuInfo = await SajuService.loadSajuInfo();
+        final ymd = sajuInfo?.currentTodayDate ?? DateTime.now().toIso8601String().substring(0,10).replaceAll('-', '');
+        if (_episode == null || _guestId == null) return;
+        if (event.guestId == _guestId && event.saveDtYmd == ymd && event.title == _episode!.title && event.menuType == 'episode') {
+          setState(() {
+            _isFavorite = event.action == FavoriteAction.added || (event.action == FavoriteAction.updated && _isFavorite);
+            if (event.action == FavoriteAction.deleted) _isFavorite = false;
+          });
+        }
+      } catch (_) {}
+    });
     // 최초 선택된 탭과 일치하면 지연 호출
     if (widget.activeTab?.value == widget.tabIndex) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _loadIfNeeded());
     }
+  }
+
+  void _initializeGuestId() async {
+    // SajuService에서 일관된 게스트 ID 가져오기
+    _guestId = await SajuService.getGuestId();
+  }
+
+  void _onScroll() {
+    if (!_showScrollbar) {
+      setState(() {
+        _showScrollbar = true;
+      });
+    }
+    // 3초 후 스크롤바 숨기기
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _showScrollbar = false;
+        });
+      }
+    });
   }
 
   @override
@@ -42,12 +89,18 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
     if (_tabListener != null && widget.activeTab != null) {
       widget.activeTab!.removeListener(_tabListener!);
     }
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     super.dispose();
   }
 
   void _loadIfNeeded() {
     if (_loading) return;
-    if (_episode != null) return;
+    // 에피소드 객체가 있으나 제목/내용이 비어있으면 다시 로드
+    if (_episode != null) {
+      final hasMeaningfulData = (_episode!.title.trim().isNotEmpty) && (_episode!.content.trim().isNotEmpty);
+      if (hasMeaningfulData) return;
+    }
     // 다른 탭이 활성화되어 있으면 로드하지 않음
     if (widget.activeTab?.value != widget.tabIndex) return;
     _load();
@@ -55,7 +108,30 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
 
   Future<void> _load() async {
     setState(() { _error = null; });
+    // 초기 로딩 시 에피소드 탭 진입을 클릭 이벤트로 기록 (중복 방지)
+    if (!_episodeClickLogged) {
+      AnalyticsService.logMenuClick('episode');
+      _episodeClickLogged = true;
+    }
     try {
+      // 체험 모드: 더미 데이터 주입
+      if (await SajuService.isExperienceMode()) {
+        final locale = Localizations.localeOf(context).languageCode;
+        final bool isKorean = locale == 'ko';
+        final dummy = EpisodeResult(
+          title: isKorean ? '운명의 만남' : 'A Fateful Encounter',
+          content: isKorean 
+            ? '어느 화창한 아침, 작은 마을의 한 카페에서 한 여인이 커피를 마시며 창밖을 바라보고 있었다. 그 순간, 그녀의 시선이 한 남자와 마주쳤다. 남자는 책을 읽고 있었고, 그의 눈빛은 깊은 이야기를 담고 있었다. 여인은 그와의 대화가 운명처럼 느껴졌다. 서로의 취향에 대해 이야기하며, 두 사람은 마음의 벽을 허물기 시작했다. 오늘은 새로운 인연을 만날 수 있는 특별한 날임을 느끼며, 여인은 웃음을 지었다.'
+            : 'On a bright morning in a small village café, a woman sipped her coffee while gazing out the window. At that moment, her eyes met those of a man. He was reading a book, and his gaze seemed to hold a world of untold stories. The woman felt as though their conversation was meant to be. As they spoke about their tastes and interests, the walls around their hearts began to fade. Realizing that today was a special day to meet someone new, the woman smiled warmly.',
+          contentLength: isKorean ? 416 : 416,
+          summary: isKorean ? '운명적인 만남을 통해 새로운 인연을 발견하는 이야기입니다.' : 'A story about discovering a new connection through a fateful meeting.',
+          tomorrowSummary: isKorean ? '어제의 만남이 새로운 모험으로 이어지는 이야기를 들려드립니다.' : 'Tomorrow reveals how yesterday’s encounter blossoms into a new adventure.',
+        );
+        setState(() { _episode = dummy; _loading = false; });
+        // 즐겨찾기 상태 확인 (체험 모드에서도 DB 반영 시 표시 유지)
+        _checkFavoriteStatus();
+        return;
+      }
       final SajuInfo? sajuInfo = await SajuService.loadSajuInfo();
       if (sajuInfo == null) {
         dev.log('Episode load aborted: no saju info', name: 'EpisodeScreen');
@@ -71,10 +147,7 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
       final lastFp = (sajuInfo.episode['lastRequestFingerprint'] ?? '').toString();
       final lastLang = (sajuInfo.episode['lastLanguage'] ?? '').toString();
       final todayYmd = sajuInfo.currentTodayDate;
-      final birthYmdDebug = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
-          '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
-          '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
-      final expectedComposite = '$birthYmdDebug|${sajuInfo.gender}|${sajuInfo.loveStatus ?? ''}|$lastDate';
+      final expectedComposite = '${sajuInfo.gender}|${sajuInfo.loveStatus ?? ''}|${sajuInfo.world ?? ''}|${sajuInfo.ageGroup ?? ''}|$todayYmd';
       dev.log('[Episode cache check] today=$todayYmd lastDate=$lastDate lastFp=$lastFp expected=$expectedComposite lang=$locale lastLang=$lastLang expired=$expired', name: 'EpisodeScreen');
       dev.log('[Episode] expired=$expired cachedLen=${cachedContent.length} today=$todayYmd lastDate=$lastDate fpOk=${lastFp==expectedComposite} langOk=${lastLang==locale}', name: 'EpisodeScreen');
       if (!expired && cachedContent.isNotEmpty) {
@@ -87,6 +160,8 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
           tomorrowSummary: (sajuInfo.episode['tomorrowSummary'] ?? '').toString(),
         );
         setState(() { _episode = cached; _loading = false; });
+        // 캐시된 에피소드 로드 후 즐겨찾기 상태 확인
+        _checkFavoriteStatus();
         return;
       }
       // 만료 시에만 서버 호출 - 이때만 로딩 표시
@@ -95,7 +170,6 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
       final result = await EpisodeApiService.fetchEpisode(
         sajuInfo: sajuInfo,
         language: locale,
-        forceNetwork: true,
       );
       // 캐시에 저장 (날짜/지문/언어)
       sajuInfo.episode['title'] = result.title;
@@ -106,16 +180,15 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
       // 서버 제공 servedDate 우선 사용, 없으면 디바이스 날짜 사용
       final servedDate = (result.servedDate ?? '').replaceAll('-', '');
       sajuInfo.episode['lastEpisodeDate'] = servedDate.isNotEmpty ? servedDate : sajuInfo.currentTodayDate;
-      // 조합 지문: YYYYMMDD|gender|loveStatus|servedDate(YYYYMMDD)
-      final birthYmd = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
-          '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
-          '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
+      // 조합 지문: gender|loveStatus|world|ageGroup|servedDate(YYYYMMDD)
       final loveStatus = sajuInfo.loveStatus ?? '';
-      final compositeFingerprint = '$birthYmd|${sajuInfo.gender}|$loveStatus|${sajuInfo.episode['lastEpisodeDate'] ?? ''}';
+      final compositeFingerprint = '${sajuInfo.gender}|$loveStatus|${sajuInfo.world ?? ''}|${sajuInfo.ageGroup ?? ''}|${sajuInfo.episode['lastEpisodeDate'] ?? ''}';
       sajuInfo.episode['lastRequestFingerprint'] = compositeFingerprint;
       sajuInfo.episode['lastLanguage'] = locale;
       await SajuService.saveSajuInfoContent(sajuInfo);
       setState(() { _episode = result; _loading = false; });
+      // 에피소드 로드 후 즐겨찾기 상태 확인
+      _checkFavoriteStatus();
     } catch (e) {
       dev.log('Episode load failed', name: 'EpisodeScreen', error: e);
       setState(() { _error = '$e'; _loading = false; });
@@ -146,11 +219,101 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
     ''';
   }
 
+  // 즐겨찾기 상태 확인 (날짜 포함)
+  Future<void> _checkFavoriteStatus() async {
+    if (_episode == null || _guestId == null) return;
+    
+    try {
+      final sajuInfo = await SajuService.loadSajuInfo();
+      final ymd = sajuInfo?.currentTodayDate ?? DateTime.now().toIso8601String().substring(0,10).replaceAll('-', '');
+      final isFavorite = await _favoriteService.isFavoriteByDate(_guestId!, ymd, _episode!.title, 'episode');
+      if (mounted) {
+        setState(() {
+          _isFavorite = isFavorite;
+        });
+      }
+    } catch (e) {
+      dev.log('즐겨찾기 상태 확인 오류: $e', name: 'EpisodeScreen');
+    }
+  }
+
+  void _showStarAnimation() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      builder: (context) => const HeartAnimationWidget(),
+    );
+    
+    // 1초 후 자동으로 닫기
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  // 즐겨찾기 토글 (guest_id + save_dt(YYYYMMDD) + menu_type + title)
+  Future<void> _toggleFavorite() async {
+    dev.log('즐겨찾기 토글', name: 'EpisodeScreen');
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('웹에서는 즐겨찾기를 지원하지 않습니다.')),
+      );
+      return;
+    }
+    if (_episode == null || _guestId == null) return;
+
+    try {
+      final sajuInfo = await SajuService.loadSajuInfo();
+      final ymd = sajuInfo?.currentTodayDate ?? DateTime.now().toIso8601String().substring(0,10).replaceAll('-', '');
+      if (_isFavorite) {
+        // 즐겨찾기에서 제거
+        await _favoriteService.deleteByComposite(
+          guestId: _guestId!,
+          saveDtYmd: ymd,
+          menuType: 'episode',
+          title: _episode!.title,
+        );
+        if (mounted) {
+          setState(() {
+            _isFavorite = false;
+          });
+        }
+      } else {
+        // 즐겨찾기에 추가
+        await _favoriteService.addIfNotExists(
+          guestId: _guestId!,
+          saveDtYmd: ymd,
+          menuType: 'episode',
+          title: _episode!.title,
+          content: _episode!.content,
+          isExperience: await SajuService.isExperienceMode(),
+        );
+        if (mounted) {
+          setState(() {
+            _isFavorite = true;
+          });
+        }
+        _showStarAnimation();
+      }
+    } catch (e) {
+      dev.log('즐겨찾기 토글 오류: $e', name: 'EpisodeScreen');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('오류가 발생했습니다: $e'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    // 공유 버튼 투명도 (0.0 ~ 1.0)
     return Scaffold(
-      backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Colors.transparent,
       body: Container(
         padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
         child: Column(
@@ -162,12 +325,36 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
               padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 20),
               child: Column(
                 children: [
-                  const Icon(
-                    Icons.auto_stories,
-                    color: Color(0xFFB3B3FF),
-                    size: 40,
+                  if (isDark) ...[
+                    const Icon(
+                      Icons.auto_stories,
+                      color: Color(0xFFB3B3FF),
+                      size: 40,
+                    ),
+                    const SizedBox(height: 3),
+                  ],
+                  FutureBuilder<bool>(
+                    future: SajuService.isExperienceMode(),
+                    builder: (context, snap) {
+                      if (snap.data == true) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withOpacity(0.95),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Text(
+                              AppLocalizations.of(context)!.experienceMode,
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12),
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
                   ),
-                  const SizedBox(height: 3),
                   Text(
                     AppLocalizations.of(context)?.episodeTitle ?? '오늘의 에피소드',
                     style: GoogleFonts.notoSans(
@@ -200,11 +387,65 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).brightness == Brightness.dark 
                       ? Colors.white.withOpacity(0.1) 
-                      : Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                      : Theme.of(context).colorScheme.surface.withOpacity(0.7),
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
                 ),
                 child: _buildBody(context),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // 즐겨찾기와 공유 버튼
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 즐겨찾기 별 아이콘
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: _toggleFavorite,
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      child: Icon(
+                        _isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: _isFavorite 
+                          ? const Color(0xFFFF4F87) 
+                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        size: 30,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 3),
+                  // 공유 버튼
+                  ElevatedButton(
+                    onPressed: _showShareOptions,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3D4B91),
+                      foregroundColor: const Color(0xFFFFD400),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.arrow_outward, size: 18, color: Color(0xFFFFFFFF)),
+                        const SizedBox(width: 3),
+                        Text(
+                          AppLocalizations.of(context)?.shareButton ?? '공유',
+                          style: GoogleFonts.roboto(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.3,
+                            color: const Color(0xFFFFFFFF),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -232,11 +473,21 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Error', style: GoogleFonts.notoSans(fontSize: 18, color: onText, fontWeight: FontWeight.bold)),
+            Text(
+              AppLocalizations.of(context)?.offlineTitle ?? 'Connection Error', 
+              style: GoogleFonts.notoSans(fontSize: 18, color: onText, fontWeight: FontWeight.bold)
+            ),
             const SizedBox(height: 8),
-            Text(_error!, style: GoogleFonts.notoSans(fontSize: 14, color: onText.withOpacity(0.8))),
+            Text(
+              AppLocalizations.of(context)?.offlineMessage ?? 'Internet connection is required. Please connect and try again.', 
+              style: GoogleFonts.notoSans(fontSize: 14, color: onText.withOpacity(0.8)),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 12),
-            TextButton(onPressed: _load, child: const Text('Retry')),
+            TextButton(
+              onPressed: _load, 
+              child: Text(AppLocalizations.of(context)?.offlineRetry ?? 'Retry')
+            ),
           ],
         ),
       );
@@ -244,30 +495,43 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
     if (_episode == null) {
       return const SizedBox();
     }
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: SelectableText(
-              '<${_episode!.title}>',
-              style: GoogleFonts.notoSans(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: onText,
+    return RawScrollbar(
+      controller: _scrollController,
+      thumbVisibility: _showScrollbar,
+      trackVisibility: _showScrollbar,
+      thickness: 5,
+      radius: const Radius.circular(8),
+      thumbColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.white70
+          : const Color(0xFFE6C767),
+      padding: const EdgeInsets.only(right: -10),
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+          if (_episode!.title.trim().isNotEmpty)
+            Center(
+              child: SelectableText(
+                '<${_episode!.title}>',
+                style: GoogleFonts.notoSans(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: onText,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
           const SizedBox(height: 10),
-          SelectableText(
-            _episode!.content,
-            style: GoogleFonts.notoSans(
-              fontSize: 18,
-              color: onText,
-              height: 1.6,
+          if (_episode!.content.trim().isNotEmpty)
+            SelectableText(
+              _episode!.content,
+              style: GoogleFonts.notoSans(
+                fontSize: 18,
+                color: onText,
+                height: 1.6,
+              ),
             ),
-          ),
           const SizedBox(height: 16),
           if (_episode!.summary.isNotEmpty)
             SelectableText(
@@ -289,38 +553,78 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
                 fontStyle: FontStyle.italic,
               ),
             ),
-          const SizedBox(height: 20),
-          // 공유 버튼
-          Center(
-            child: ElevatedButton(
-              onPressed: _showShareOptions,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF3A3A4A) : const Color(0xFFE8E8F5),
-                foregroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.arrow_outward, size: 18, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
-                  const SizedBox(width: 3), // 간격을 2로 줄임
-                    Text(
-                      AppLocalizations.of(context)?.shareButton ?? '공유',
-                      style: GoogleFonts.roboto(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.3,
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                      ),
-                    ),
-                ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class HeartAnimationWidget extends StatefulWidget {
+  const HeartAnimationWidget({super.key});
+
+  @override
+  State<HeartAnimationWidget> createState() => _HeartAnimationWidgetState();
+}
+
+class _HeartAnimationWidgetState extends State<HeartAnimationWidget>
+    with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.5,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.3, curve: Curves.easeOut),
+    ));
+
+    _opacityAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.7, 1.0, curve: Curves.easeOut),
+    ));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: Opacity(
+              opacity: _opacityAnimation.value,
+              child: const Icon(
+                Icons.favorite,
+                color: Color(0xFFFF4F87),
+                size: 40,
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

@@ -9,22 +9,22 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Saju App';
+  String get appTitle => 'LunaVerse App';
 
   @override
-  String get birthInfoInput => 'Birth Information Input';
+  String get birthInfoInput => 'Character Setup';
 
   @override
   String get friendInfoInput => 'Friend Information Input';
 
   @override
-  String get name => 'Name';
+  String get name => 'Character Name';
 
   @override
-  String get nameHint => 'Please enter your name';
+  String get nameHint => 'Enter your character’s name';
 
   @override
-  String get gender => 'Gender';
+  String get gender => 'Character Gender';
 
   @override
   String get female => 'Female';
@@ -36,10 +36,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nonBinary => 'N-binary';
 
   @override
-  String get birthDate => 'Birth Date';
+  String get birthDate => 'Character Age';
 
   @override
-  String get birthDateHint => 'Please select your birth date';
+  String get birthDateHint => 'Please select character birth date';
 
   @override
   String get birthTime => 'Birth Time';
@@ -51,7 +51,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeUnknown => 'Time Unknown';
 
   @override
-  String get birthRegion => 'Birth Region';
+  String get birthRegion => 'Character’s World';
 
   @override
   String get searchRegion => 'Search Region';
@@ -60,10 +60,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchRegionAgain => 'Search Region Again';
 
   @override
-  String get loveStatus => 'My Love Status';
+  String get loveStatus => 'Character’s Tone';
 
   @override
-  String get loveStatusHint => 'Please select your status';
+  String get loveStatusHint => 'Choose a character tone (optional)';
+
+  @override
+  String get toneWarm => 'Warm';
+
+  @override
+  String get toneCalm => 'Calm';
+
+  @override
+  String get toneLovely => 'Lovely';
+
+  @override
+  String get toneUrban => 'Urban';
+
+  @override
+  String get tonePositive => 'Positive';
+
+  @override
+  String get toneFunny => 'Funny';
+
+  @override
+  String get toneEmotional => 'Emotional';
+
+  @override
+  String get toneHopeful => 'Hopeful';
+
+  @override
+  String get tonePassionate => 'Passionate';
+
+  @override
+  String get toneFutureOriented => 'Future-oriented';
 
   @override
   String get married => 'Married';
@@ -81,14 +111,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
-  String get saveBirthInfo => 'Save Birth Information';
+  String get saveBirthInfo => 'Save Character';
 
   @override
   String get saveFriendInfo => 'Save Friend Information';
 
   @override
-  String get infoMessage =>
-      'AI needs your birth information to tell your unique story.';
+  String get infoMessage => 'Meet your character\nand begin your story.';
 
   @override
   String get cancel => 'Cancel';
@@ -138,10 +167,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please search and select your birth region.';
 
   @override
-  String get validationStatusRequired => 'Please select your status.';
+  String get validationStatusRequired => 'Choose a character tone (optional)';
 
   @override
-  String get statusSelectHint => 'Please select your status';
+  String get statusSelectHint => 'Choose a character tone (optional)';
 
   @override
   String get successBirthInfoSaved => 'Information has been saved!';
@@ -171,7 +200,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splashSubtitle2 =>
-      'LunaVerse creates fun literary content\ndaily based on your information.';
+      'Begin your journey today—\ndiscover a new episode and poem each day, save your favorites, and gently build your own library.';
 
   @override
   String get splashSubtitle3 => 'AI tells your unique fortune story.';
@@ -181,12 +210,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Gain new insights through Saju and zodiac signs.';
 
   @override
-  String get splashButtonText => 'AI Contents';
+  String get splashButtonText => 'Read Today’s Story';
 
   @override
   String myPageWelcome(String userName) {
     return 'Welcome, $userName!';
   }
+
+  @override
+  String get existPlashSubtitle =>
+      'Good to see you again.\nYour story continues.';
 
   @override
   String get myPageLogoutSuccess => 'You have been logged out.';
@@ -472,7 +505,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pm => 'PM';
 
   @override
-  String get locationSearchTitle => 'Birth Region Search';
+  String get locationSearchTitle => 'Region Search';
 
   @override
   String get locationSearchHint => 'Enter region/district/neighborhood';
@@ -511,7 +544,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get growth => 'Growth';
 
   @override
-  String get tabTodayGuide => 'Guide';
+  String get tabFavorites => 'Favorites';
 
   @override
   String get tabEpisode => 'Episode';
@@ -529,7 +562,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get abundance => 'Abundance';
 
   @override
-  String get bodyAndMind => 'Body & Mind';
+  String get bodyAndMind => 'Balance & Harmony';
 
   @override
   String get growthAndFocus => 'Growth & Focus';
@@ -580,4 +613,134 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareButton => 'Share';
+
+  @override
+  String get offlineTitle => 'Offline';
+
+  @override
+  String get offlineMessage =>
+      'Internet connection is required. Please connect and try again.';
+
+  @override
+  String get offlineClose => 'Close';
+
+  @override
+  String get offlineRetry => 'Retry';
+
+  @override
+  String get sampleStory => 'Try a Sample Story';
+
+  @override
+  String get sampleStoryHeader => 'Sample Story 🌙\n“The Morning Window”';
+
+  @override
+  String get sampleStoryP1 =>
+      'When you opened your window this morning, the world felt strangely quiet, as if waiting for you. The sky carried a pale shade of blue, and in that stillness, you sensed something tender unfolding.';
+
+  @override
+  String get sampleStoryP2 =>
+      'Walking down the street, you noticed small details—sunlight caught in the branches, a stranger smiling for no reason...';
+
+  @override
+  String get makeMyStoryButton => 'Set Up Character';
+
+  @override
+  String get aboutLunaVerseTitle => 'About LunaVerse';
+
+  @override
+  String get aboutLunaVerseContent =>
+      'LunaVerse takes inspiration from your moments to create new stories and poems every day. Check out what story will unfold today.';
+
+  @override
+  String get confirmButton => 'Confirm';
+
+  @override
+  String get favoritesEmptyTitle => 'No Favorites Yet';
+
+  @override
+  String get favoritesEmptyMessage =>
+      'Collect your favorite episodes and poetry to create your personal library.';
+
+  @override
+  String get characterEra => 'Character’s Era';
+
+  @override
+  String get eraHint => 'Choose an era (optional)';
+
+  @override
+  String get eraAncientTimes => 'Ancient Times';
+
+  @override
+  String get eraMedievalAge => 'Medieval Age';
+
+  @override
+  String get eraVictorianEra => 'Victorian Era';
+
+  @override
+  String get eraModernDay => 'Modern Day';
+
+  @override
+  String get eraNearFuture => 'Near Future';
+
+  @override
+  String get eraDistantFuture => 'Distant Future';
+
+  @override
+  String get eraMythicalAge => 'Mythical Age';
+
+  @override
+  String get eraTimelessRealm => 'Timeless Realm';
+
+  @override
+  String get characterValidationTitle =>
+      'No character information has been entered.';
+
+  @override
+  String get characterValidationBody =>
+      'Your input is empty, so there\'s no character information to save.';
+
+  @override
+  String get memo => 'Memo';
+
+  @override
+  String get memoEdit => 'Edit Memo';
+
+  @override
+  String get memoInputHint => 'Enter memo (max 1000 characters)';
+
+  @override
+  String get memoAddHint => 'Add a memo';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get favoritesDeleteConfirmMessage => 'Delete this favorite?';
+
+  @override
+  String get favoritesDeleted => 'Deleted.';
+
+  @override
+  String get memoSaved => 'Memo saved.';
+
+  @override
+  String get memoDeleted => 'Memo deleted.';
+
+  @override
+  String get experienceTry => 'Try Demo';
+
+  @override
+  String get experienceMode => 'Demo Mode';
+
+  @override
+  String get experienceEntering => 'Entering demo mode.';
+
+  @override
+  String get guest => 'Guest';
+
+  @override
+  String get sajuInfo => 'Character Info';
+
+  @override
+  String get sajuInfoInputPrompt => 'Please enter your character info.';
 }

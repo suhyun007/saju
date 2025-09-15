@@ -1,18 +1,50 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/saju_info.dart';
 
 class SajuApiService {
   // 서버 베이스 URL (디버그는 로컬, 릴리즈는 Vercel)
+  static String get _devBaseUrl {
+    // Android 에뮬레이터에서는 호스트의 localhost가 10.0.2.2로 매핑됩니다.
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:3000/api';
+    }
+    // iOS 시뮬레이터/데스크탑은 localhost 사용
+    return 'http://localhost:3000/api';
+  }
+  // 서버 베이스 URL (디버그는 로컬, 릴리즈는 Vercel)
   static String get _baseUrl => kDebugMode
-      ? 'http://localhost:3000/api'
+      ? _devBaseUrl
       : 'https://saju-server-j9ti.vercel.app/api';
+
+  // Fire-and-forget: record a visit on splash entry. Nation is resolved on server via geo headers.
+  static Future<void> logVisit({required String language}) async {
+    try {
+      final uri = Uri.parse('$_baseUrl/visit');
+      await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'SajuApp/1.0 ${Platform.isAndroid ? 'Android' : Platform.isIOS ? 'iOS' : 'Unknown'}',
+          'x-client-os': Platform.isAndroid ? 'android' : Platform.isIOS ? 'ios' : 'unknown',
+        },
+        // 서버가 geo 헤더로 nation을 계산하므로 최소 정보만 전달
+        body: jsonEncode({
+          'language': _normalizeLanguage(language),
+          'event': 'splash_visit',
+          'ts': DateTime.now().toIso8601String(),
+        }),
+      );
+    } catch (_) {
+      // no-op: logging failure should not block app
+    }
+  }
 
   static Future<GuideResult> fetchGuide({
     required SajuInfo sajuInfo,
     required String language,
-    bool forceNetwork = false,
   }) async {
     final currentDate = DateTime.now();
     final String currentDateStr =
@@ -22,35 +54,22 @@ class SajuApiService {
       'birthYear': sajuInfo.birthDate.year,
       'birthMonth': sajuInfo.birthDate.month,
       'birthDay': sajuInfo.birthDate.day,
-      'birthHour': sajuInfo.birthHour,
-      'birthMinute': sajuInfo.birthMinute,
       'gender': _normalizeGender(sajuInfo.gender),
-      'location': sajuInfo.region,
-      'loveStatus': _normalizeLoveStatus(sajuInfo.loveStatus),
+      'location': sajuInfo.region ?? '',
+      'loveStatus': _normalizeLoveStatus(sajuInfo.loveStatus) ?? '',
       'currentDate': currentDateStr,
       'language': _normalizeLanguage(language),
     };
     
     print('🔍 Guide API 요청 데이터: ${jsonEncode(body)}');
-    print('🔍 birthMinute 값: ${sajuInfo.birthMinute} (타입: ${sajuInfo.birthMinute.runtimeType})');
-
-    if (kDebugMode && !forceNetwork) {
-      // 간단한 더미 응답 (개발 중 서버 미연결 대비)
-      return GuideResult(
-        love: 'Dummy Love',
-        wealth: 'Dummy Wealth',
-        health: 'Dummy Health',
-        study: 'Dummy Study',
-        overall: 'Dummy Overall',
-      );
-    }
 
     final uri = Uri.parse('$_baseUrl/saju');
     final response = await http.post(
       uri,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'SajuApp/1.0',
+        'User-Agent': 'SajuApp/1.0 ${Platform.isAndroid ? 'Android' : Platform.isIOS ? 'iOS' : 'Unknown'}',
+        'x-client-os': Platform.isAndroid ? 'android' : Platform.isIOS ? 'ios' : 'unknown',
       },
       body: jsonEncode(body),
     );

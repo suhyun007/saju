@@ -588,7 +588,7 @@ class NotificationService {
       '${_pickDailyBody()}\n별빛이 이야기해주는 당신의 이야기를 들어보세요',
       scheduled,
       details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );

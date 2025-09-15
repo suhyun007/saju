@@ -1,23 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:developer' as dev;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 // import '../widgets/feature_button.dart';
-import '../screens/guide_screen.dart';
+import '../screens/favorite_screen.dart';
 import '../screens/episode_screen.dart';
 import '../screens/reading_screen.dart';
-// import '../screens/month_screen.dart'; // 주석처리
-// import '../screens/year_screen.dart'; // 주석처리
-// import '../widgets/kma_weather_chip.dart'; // 날씨 정보 주석처리
-
 import '../services/saju_service.dart';
 import '../services/auth_service.dart';
+import '../services/analytics_service.dart';
 import '../models/saju_info.dart';
-// import '../models/saju_api_response.dart';
 import '../models/user_model.dart';
 import '../screens/myPage.dart';
 import '../l10n/app_localizations.dart';
+
+class SpeechBubblePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    
+    // 말풍선 본체 (둥근 사각형)
+    final rect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height - 20),
+      const Radius.circular(20),
+    );
+    path.addRRect(rect);
+    
+    // 말풍선 꼬리 (아래쪽 중앙)
+    final tailPath = Path();
+    tailPath.moveTo(size.width * 0.5 - 10, size.height - 20);
+    tailPath.lineTo(size.width * 0.5, size.height);
+    tailPath.lineTo(size.width * 0.5 + 10, size.height - 20);
+    tailPath.close();
+    
+    path.addPath(tailPath, Offset.zero);
+    
+    canvas.drawPath(path, paint);
+    
+    // 그림자 효과
+    final shadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.1)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
+    
+    final shadowPath = Path();
+    shadowPath.addRRect(RRect.fromRectAndRadius(
+      Rect.fromLTWH(2, 2, size.width, size.height - 18),
+      const Radius.circular(20),
+    ));
+    
+    canvas.drawPath(shadowPath, shadowPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,7 +66,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   SajuInfo? _sajuInfo;
   // bool _isLoading = true; // 미사용
@@ -34,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   bool _showWebView = false;
   // UserModel? _currentUser; // 미사용
   late TabController _tabController;
+  // subtitle animations removed
   int _currentTabIndex = 0;
   final ValueNotifier<int> _activeTab = ValueNotifier<int>(0);
 
@@ -49,11 +90,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     _loadUserInfo();
     _loadSajuInfoAndAutoLoadFortune();
     AuthService.addAuthStateListener(_onAuthStateChanged);
+    // subtitle animation removed
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    // subtitle controller removed
     AuthService.removeAuthStateListener(_onAuthStateChanged);
     super.dispose();
   }
@@ -68,6 +111,27 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       case 'zh': return name;  // 중국어: 호칭 없음
       case 'ja': return '$nameさん'; // 일본어: さん
       default: return '$name님';
+    }
+  }
+
+  String _formatNameWithLengthLimit(String name) {
+    if (name.length > 16) {
+      return '${name.substring(0, 16)}...';
+    }
+    return _formatNameWithHonorific(name);
+  }
+
+  String _guestLabel() {
+    final code = Localizations.localeOf(context).languageCode;
+    switch (code) {
+      case 'ko':
+        return '손님';
+      case 'ja':
+        return 'ゲスト';
+      case 'zh':
+        return '访客';
+      default:
+        return 'Guest';
     }
   }
 
@@ -96,17 +160,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Scaffold(
       backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
       body: Container(
-        decoration: isDark ? const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/design/launch_bg.png'),
+            image: AssetImage(
+              isDark
+                  ? 'assets/design/launch_bg.png' // 다크 모드
+                  : 'assets/design/bg4.png',      // 라이트 모드
+            ),
             fit: BoxFit.cover,
           ),
-        ) : null,
+        ),
         child: SafeArea(
         child: Column(
           children: [
             // 헤더
             _buildHeader(),
+            // subtitle removed
             
             // 탭바
             _buildTabBar(),
@@ -136,6 +205,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),*/
     );
   }
+
+  // welcome subtitle removed
 
   Widget _buildWebView() {
     return WebViewWidget(controller: _webController);
@@ -199,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             margin: const EdgeInsets.only(top: 13),  // 선택되지 않은 탭 라인바 위치 조정
                             height: 1,
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
+                              color: isDark ? const Color(0xFF666666) : const Color(0xFFA09D91),
                               borderRadius: BorderRadius.circular(999),
                             ),
                           )
@@ -254,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             margin: const EdgeInsets.only(top: 13),  // 선택되지 않은 탭 라인바 위치 조정
                             height: 1,
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
+                              color: isDark ? const Color(0xFF666666) : const Color(0xFFA09D91),
                               borderRadius: BorderRadius.circular(999),
                             ),
                           )
@@ -275,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     child: Column(
                       children: [
                         Text(
-                          AppLocalizations.of(context)?.tabTodayGuide ?? '오늘의 가이드',
+                          AppLocalizations.of(context)?.tabFavorites ?? '즐겨찾기',
                           style: GoogleFonts.notoSans(
                             fontSize: _currentTabIndex == 2 ? 18 : 17,
                             fontWeight: _currentTabIndex == 2 ? FontWeight.w600 : FontWeight.w500,
@@ -310,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             margin: const EdgeInsets.only(top: 13),  // 선택되지 않은 탭 라인바 위치 조정
                             height: 1,
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF666666) : const Color(0xFFCCCCCC),
+                              color: isDark ? const Color(0xFF666666) : const Color(0xFFA09D91),
                               borderRadius: BorderRadius.circular(999),
                             ),
                           )
@@ -334,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       children: [
         EpisodeScreen(activeTab: _activeTab, tabIndex: 0),
         PoetryScreen(activeTab: _activeTab, tabIndex: 1),
-        GuideScreen(activeTab: _activeTab, tabIndex: 2),
+        FavoriteScreen(),
         // MonthScreen(),
         // YearScreen(),
       ],
@@ -347,8 +418,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20,20),
-      child: Row(
-        children: [
+      child: Container(
+        child: Row(
+          children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,30 +428,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.4,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // 로고 이미지
-                      Image.asset(
-                        Theme.of(context).brightness == Brightness.dark 
-                            ? 'assets/design/32b.png'
-                            : 'assets/design/32.png',
-                        width: 32,
-                        height: 32,
-                      ),
-                      const SizedBox(width: 8),
                       Transform.translate(
                         offset: const Offset(0, 2),
                         child: Text(
                           'LunaVerse',
                           style: GoogleFonts.josefinSans(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w800,
                             //fontStyle: FontStyle.italic,
                             //height: 1,
                             color: Theme.of(context).brightness == Brightness.dark 
                                 ? const Color(0xFFCCCCFF)
-                                : const Color(0xFF3D4B91), //0xFF1A3A8A
+                                : const Color(0xFF2A3A80), // 더 딥 네이비
                             letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.7 : -0.8,
                           ),
                         ),
@@ -390,13 +453,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ],
             ),
           ),
-          // 출생 정보 이름 표시 (저장된 정보가 있으면 이름, 없으면 손님)
+          // 출생 정보 이름 표시 (저장된 정보가 있으면 이름, 없으면 로컬라이즈된 손님)
           Container(
             margin: const EdgeInsets.only(right: 0),
             child: Text(
               _sajuInfo != null && _sajuInfo!.name.isNotEmpty 
-                ? _formatNameWithHonorific(_sajuInfo!.name)
-                : '손님',
+                ? _formatNameWithLengthLimit(_sajuInfo!.name)
+                : _guestLabel(),
               style: GoogleFonts.notoSans(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
@@ -406,34 +469,158 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           IconButton(
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const MyPage(),
-                ),
-              );
+              _showAboutBottomSheet();
             },
             icon: Container(
               width: 35,
               height: 35,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
-                border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3), width: 1),
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                  border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3), width: 1),
               ),
               child: Icon(
-                Icons.settings,
+                Icons.info_outline,
                 color: Theme.of(context).colorScheme.onSurface,
                 size: 22,
               ),
             ),
-            tooltip: '환경설정',
+            tooltip: 'About LunaVerse',
+          ),
+          Transform.translate(
+            offset: const Offset(-10, 0),
+            child: IconButton(
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const MyPage(),
+                  ),
+                );
+                // 마이페이지에서 돌아올 때 사용자 정보 새로고침
+                _loadSajuInfoAndAutoLoadFortune();
+              },
+              icon: Container(
+                width: 35,
+                height: 35,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                  border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3), width: 1),
+                ),
+                child: Icon(
+                  Icons.settings,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  size: 22,
+                ),
+              ),
+              tooltip: '환경설정',
+            ),
           ),
         ],
+        ),
       ),
     );
   }
 
+  void _showAboutBottomSheet() {
+    final l10n = AppLocalizations.of(context)!;
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: '',
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            margin: const EdgeInsets.only(top: 100),
+            width: MediaQuery.of(context).size.width * 0.9,
+            child: CustomPaint(
+              painter: SpeechBubblePainter(),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? const Color(0xFF1a2139) // 더 진한 네이비
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    l10n.aboutLunaVerseTitle,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.aboutLunaVerseContent,
+                    style: TextStyle(
+                      fontSize: 17,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                      fontWeight: FontWeight.w500,
+                      height: 1.5,
+                      decoration: TextDecoration.none,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  const SizedBox(height: 7),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).brightness == Brightness.dark 
+                            ? const Color(0xFF06123C) // 다크모드: 진한 네이비
+                            : Theme.of(context).colorScheme.primary, // 라이트모드: 기존 색상
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)?.confirmButton ?? 'Confirm',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _handleTabTap(int index) async {
+    // 탭 클릭 로그 기록
+    String menuType = '';
+    switch (index) {
+      case 0:
+        menuType = 'episode'; // 에피소드
+        break;
+      case 1:
+        menuType = 'poetry'; // 시 낭독
+        break;
+      case 2:
+        menuType = 'favorites'; // 즐겨찾기
+        break;
+    }
+    AnalyticsService.logMenuClick(menuType);
+    
     // 탭 컨트롤러 업데이트
     _tabController.animateTo(index);
     

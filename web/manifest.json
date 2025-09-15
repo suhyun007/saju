@@ -1,6 +1,6 @@
 {
-    "name": "saju_app",
-    "short_name": "saju_app",
+    "name": "LunaVerse",
+    "short_name": "LunaVerse",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

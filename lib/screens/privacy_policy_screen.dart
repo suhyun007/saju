@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
+import '../services/analytics_service.dart';
 
-class PrivacyPolicyScreen extends StatelessWidget {
+class PrivacyPolicyScreen extends StatefulWidget {
   const PrivacyPolicyScreen({super.key});
+
+  @override
+  State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
+}
+
+class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // 개인정보보호방침 화면 진입 로그
+    AnalyticsService.logMenuClick('privacy');
+  }
 
   @override
   Widget build(BuildContext context) {

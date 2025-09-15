@@ -9,22 +9,22 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get appTitle => '四柱推命アプリ';
+  String get appTitle => 'LunaVerse App';
 
   @override
-  String get birthInfoInput => '出生情報入力';
+  String get birthInfoInput => 'キャラクター設定';
 
   @override
   String get friendInfoInput => '友達情報入力';
 
   @override
-  String get name => '名前';
+  String get name => 'キャラクター名';
 
   @override
-  String get nameHint => '名前を入力してください';
+  String get nameHint => 'キャラクター名を入力してください。';
 
   @override
-  String get gender => '性別';
+  String get gender => 'キャラクターの性別';
 
   @override
   String get female => '女性';
@@ -36,7 +36,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get nonBinary => 'ノンバイナリー';
 
   @override
-  String get birthDate => '出生日';
+  String get birthDate => 'キャラクターの年齢';
 
   @override
   String get birthDateHint => '生年月日を選択してください';
@@ -51,7 +51,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get timeUnknown => '時刻不明';
 
   @override
-  String get birthRegion => '出生地';
+  String get birthRegion => 'キャラクターの世界';
 
   @override
   String get searchRegion => '地域を検索';
@@ -60,10 +60,40 @@ class AppLocalizationsJa extends AppLocalizations {
   String get searchRegionAgain => '地域を再検索';
 
   @override
-  String get loveStatus => '恋愛に関する私の状態';
+  String get loveStatus => 'キャラクターのトーン';
 
   @override
-  String get loveStatusHint => '状態を選択してください';
+  String get loveStatusHint => 'キャラクターのトーンを選んでください (可选)';
+
+  @override
+  String get toneWarm => '暖かい';
+
+  @override
+  String get toneCalm => '落ち着いた';
+
+  @override
+  String get toneLovely => '愛らしい';
+
+  @override
+  String get toneUrban => '都会的';
+
+  @override
+  String get tonePositive => 'ポジティブ';
+
+  @override
+  String get toneFunny => '面白い';
+
+  @override
+  String get toneEmotional => '感性的';
+
+  @override
+  String get toneHopeful => '希望に満ちた';
+
+  @override
+  String get tonePassionate => '情熱的';
+
+  @override
+  String get toneFutureOriented => '未来志向';
 
   @override
   String get married => '既婚';
@@ -81,13 +111,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get save => '保存';
 
   @override
-  String get saveBirthInfo => '出生情報を保存';
+  String get saveBirthInfo => 'キャラクターを保存';
 
   @override
   String get saveFriendInfo => '友達情報を保存';
 
   @override
-  String get infoMessage => 'AIがあなただけの物語を\n語るには出生情報が必要です。';
+  String get infoMessage => 'キャラクターに出会い、物語を始めましょう。';
 
   @override
   String get cancel => 'キャンセル';
@@ -135,10 +165,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get validationRegionRequired => '出生地を検索して選択してください。';
 
   @override
-  String get validationStatusRequired => '状態を選択してください。';
+  String get validationStatusRequired => 'キャラクターのトーンを選んでください (可选)';
 
   @override
-  String get statusSelectHint => '状態を選択してください';
+  String get statusSelectHint => 'キャラクターのトーンを選んでください (可选)';
 
   @override
   String get successBirthInfoSaved => '情報が保存されました！';
@@ -166,7 +196,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get splashSubtitle1 => 'LunaVerseがあなたの基本情報を基に短い物語を作成します。';
 
   @override
-  String get splashSubtitle2 => 'LunaVerseがあなたの情報を基に毎日楽しい文学コンテンツを作成します。';
+  String get splashSubtitle2 =>
+      '今日から物語の旅を始めましょう。毎日新しいエピソードや詩に出会い、お気に入りを集めて、自分だけの図書館を作っていきましょう。';
 
   @override
   String get splashSubtitle3 => 'AIがあなただけの運勢物語を語ります。';
@@ -175,12 +206,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get splashSubtitle4 => '四柱と星座を通じて新しい洞察を得ましょう。';
 
   @override
-  String get splashButtonText => 'AIコンテンツ開始';
+  String get splashButtonText => '今日の物語を読む';
 
   @override
   String myPageWelcome(String userName) {
     return 'ようこそ、$userNameさん！';
   }
+
+  @override
+  String get existPlashSubtitle => 'お帰りなさい。\nあなたの物語は続きます。';
 
   @override
   String get myPageLogoutSuccess => 'ログアウトしました。';
@@ -457,7 +491,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pm => '午後';
 
   @override
-  String get locationSearchTitle => '出生地域検索';
+  String get locationSearchTitle => '地域検索';
 
   @override
   String get locationSearchHint => '地域/区/町を入力してください';
@@ -496,7 +530,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get growth => '成長';
 
   @override
-  String get tabTodayGuide => '今日のガイド';
+  String get tabFavorites => 'お気に入り';
 
   @override
   String get tabEpisode => 'エピソード';
@@ -514,7 +548,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get abundance => '豊かさ';
 
   @override
-  String get bodyAndMind => '心身';
+  String get bodyAndMind => 'バランスと調和';
 
   @override
   String get growthAndFocus => '成長と集中';
@@ -564,4 +598,130 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shareButton => '共有';
+
+  @override
+  String get offlineTitle => 'オフライン';
+
+  @override
+  String get offlineMessage => 'インターネット接続が必要です。接続してから再試行してください。';
+
+  @override
+  String get offlineClose => '閉じる';
+
+  @override
+  String get offlineRetry => '再試行';
+
+  @override
+  String get sampleStory => 'サンプルストーリーを試す';
+
+  @override
+  String get sampleStoryHeader => 'サンプルストーリー 🌙\n「朝の窓辺」';
+
+  @override
+  String get sampleStoryP1 =>
+      '今朝窓を開けたとき、世界は不思議に静かでした。まるであなたを待っているかのように。薄い青い色を帯びた空の下、その静寂の中で、何か優しいものが開花しているのを感じました。';
+
+  @override
+  String get sampleStoryP2 =>
+      '街を歩きながら、小さなことに気づきました—枝に引っかかった日光、理由もなく微笑む見知らぬ人、あなただけに聞こえる秘密のリズムのように響く足音...';
+
+  @override
+  String get makeMyStoryButton => 'キャラクターを設定';
+
+  @override
+  String get aboutLunaVerseTitle => 'LunaVerseについて';
+
+  @override
+  String get aboutLunaVerseContent =>
+      'LunaVerseはあなたの瞬間からインスピレーションを受け、毎日新しい物語と詩を作り出します。今日はどんな物語が展開されるか確認してみてください。';
+
+  @override
+  String get confirmButton => '確認';
+
+  @override
+  String get favoritesEmptyTitle => 'お気に入りはまだありません';
+
+  @override
+  String get favoritesEmptyMessage => 'お気に入りのエピソードと詩を集めて、あなただけの書斎を作ってみてください。';
+
+  @override
+  String get characterEra => '時代';
+
+  @override
+  String get eraHint => '時代を選択（任意）';
+
+  @override
+  String get eraAncientTimes => '古代';
+
+  @override
+  String get eraMedievalAge => '中世';
+
+  @override
+  String get eraVictorianEra => 'ヴィクトリア時代';
+
+  @override
+  String get eraModernDay => '現代';
+
+  @override
+  String get eraNearFuture => '近未来';
+
+  @override
+  String get eraDistantFuture => '遠未来';
+
+  @override
+  String get eraMythicalAge => '神話の時代';
+
+  @override
+  String get eraTimelessRealm => '時を超えた世界';
+
+  @override
+  String get characterValidationTitle => '入力されたキャラクター情報がありません。';
+
+  @override
+  String get characterValidationBody => '入力内容が空のため、保存できるキャラクター情報がありません。';
+
+  @override
+  String get memo => 'メモ';
+
+  @override
+  String get memoEdit => 'メモ編集';
+
+  @override
+  String get memoInputHint => 'メモを入力してください（最大1000文字）';
+
+  @override
+  String get memoAddHint => 'メモを追加してみてください';
+
+  @override
+  String get close => '閉じる';
+
+  @override
+  String get favoritesDeleteConfirmMessage => 'このお気に入りを削除しますか？';
+
+  @override
+  String get favoritesDeleted => '削除しました。';
+
+  @override
+  String get memoSaved => 'メモを保存しました。';
+
+  @override
+  String get memoDeleted => 'メモを削除しました。';
+
+  @override
+  String get experienceTry => 'お試し';
+
+  @override
+  String get experienceMode => 'お試しモード';
+
+  @override
+  String get experienceEntering => 'お試しモードに入ります。';
+
+  @override
+  String get guest => 'ゲスト';
+
+  @override
+  String get sajuInfo => '四柱情報';
+
+  @override
+  String get sajuInfoInputPrompt => '四柱情報を入力してください。';
 }

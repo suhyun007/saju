@@ -1,18 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'screens/splash_screen.dart';
+import 'dart:io' show Platform;
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'screens/myPage.dart';
 import 'services/theme_service.dart';
 import 'services/notification_service.dart';
 import 'services/language_service.dart';
+import 'services/supabase_service.dart';
 import 'package:provider/provider.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Initialize sqflite for desktop platforms
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
   await ThemeService.init();
   await NotificationService.init();
+  
+  print('main.dart - Supabase 초기화 시작');
+  await SupabaseService.initialize(); // Supabase 초기화
+  print('main.dart - Supabase 초기화 완료');
+  
+  // 방문 로그는 splash_screen에서 기록됨
   
   final languageService = LanguageService();
   
@@ -90,7 +103,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
       brightness: Brightness.light,
       primarySwatch: Colors.brown,
       primaryColor: const Color(0xFF3366FF),
-      fontFamily: GoogleFonts.notoSansKr().fontFamily,
+      fontFamily: 'NotoSansKR',
       scaffoldBackgroundColor: Colors.white,
     );
 
@@ -98,7 +111,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
       brightness: Brightness.dark,
       primarySwatch: Colors.brown,
       primaryColor: const Color(0xFF3366FF),
-      fontFamily: GoogleFonts.notoSansKr().fontFamily,
+      fontFamily: 'NotoSansKR',
       scaffoldBackgroundColor: Colors.transparent,
     );
 

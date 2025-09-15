@@ -25,13 +25,9 @@ class FriendInfo {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'birthDate': birthDate.toIso8601String(),
-      'birthHour': birthHour,
-      'birthMinute': birthMinute,
-      'gender': gender,
-      'region': region,
       'loveStatus': loveStatus,
-      'zodiacSign': zodiacSign,
+      'gender': gender,
+      // region removed from persisted payload
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -40,14 +36,14 @@ class FriendInfo {
   factory FriendInfo.fromJson(Map<String, dynamic> json) {
     return FriendInfo(
       name: json['name'] ?? '',
-      birthDate: DateTime.parse(json['birthDate']),
-      birthHour: json['birthHour'],
-      birthMinute: json['birthMinute'],
-      gender: json['gender'],
-      region: json['region'] ?? '',
+      birthDate: json['birthDate'] != null ? DateTime.parse(json['birthDate']) : DateTime(1970,1,1),
+      birthHour: json['birthHour'] ?? 12,
+      birthMinute: json['birthMinute'] ?? 0,
+      gender: json['gender'] ?? '',
+      region: '',
       loveStatus: json['loveStatus'] ?? json['status'],
       zodiacSign: json['zodiacSign'],
-      createdAt: DateTime.parse(json['createdAt']),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
     );
   }
 

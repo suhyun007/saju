@@ -1,6 +1,6 @@
 name: saju_app
 description: A Flutter app for fortune telling using traditional Korean Saju (Four Pillars)
-version: 1.0.0+1
+version: 1.0.0+6
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -16,6 +16,7 @@ dependencies:
   shared_preferences: ^2.2.2
   provider: ^6.1.1
   http: ^1.1.0
+  connectivity_plus: ^6.0.3
   dio: ^5.0.0
   permission_handler: ^11.0.1
   # audioplayers: ^5.2.1  # 크래시 원인으로 제거
@@ -28,6 +29,11 @@ dependencies:
   flutter_svg: ^2.0.9
   fl_chart: ^0.66.2
   share_plus: ^10.0.0
+  supabase_flutter: ^2.10.0
+  package_info_plus: ^8.3.1
+  uuid: ^4.5.1
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.3
   # google_maps_flutter: ^2.5.3  # Google Maps SDK 주석
   # geolocator: ^10.1.0  # 위치 권한 주석
   # geocoding: ^2.1.1  # 주소 변환 주석
@@ -39,19 +45,23 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.4.0
 
-flutter_launcher_icons:
+flutter_icons:
   android: true
   ios: true
-  macos: true
-  image_path: "assets/icons/zodiac_wheel_icon_256.png"
+  image_path: "assets/icons/app_icon.png"               # 기본 아이콘
+  adaptive_icon_foreground: "assets/icons/transparent.png" # 투명 PNG
+  adaptive_icon_background: "#000000"         # 원하는 배경색 (또는 이미지)
 
-flutter_native_splash:
-  color: "#1a1a2e"
-  image: assets/icons/zodiac_wheel_icon_256.png
-  android_12:
-    image: assets/icons/zodiac_wheel_icon_256.png
-    color: "#1a1a2e"
-  web: false
+# flutter_native_splash:
+#   color: "#1a1a2e"
+#   image: assets/design/lunaverse_text_w.png
+#   ios_content_mode: scaleAspectFit
+#   android_gravity: center
+#   android_12:
+#     image: assets/design/lunaverse_text_w.png
+#     color: "#1a1a2e"
+#     android_gravity: center
+#   web: false
 
 flutter:
   uses-material-design: true

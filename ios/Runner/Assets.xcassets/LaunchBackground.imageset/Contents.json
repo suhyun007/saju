@@ -1,17 +1,15 @@
 {
   "images" : [
     {
-      "filename" : "KakaoTalk_Photo_2025-09-01-12-53-12.png",
+      "filename" : "background.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "KakaoTalk_Photo_2025-09-01-12-53-12 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "KakaoTalk_Photo_2025-09-01-12-53-12 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -4,9 +4,16 @@ import '../models/saju_info.dart';
 
 class SajuService {
   static const String _sajuKey = 'saju_info';
+  static const String _guestIdKey = 'guest_id';
+  static const String _experienceKey = 'experience_mode';
 
   static const Set<String> _allowedGenders = {'female','male','nonBinary'};
-  static const Set<String> _allowedLove = {'married','inRelationship','wantRelationship','noInterest'};
+  // Character Tone keys (new)
+  static const Set<String> _allowedLove = {
+    'warm','calm','lovely','urban','positive','funny','emotional','hopeful','passionate','futureOriented',
+    // legacy values kept for compatibility
+    'married','inRelationship','wantRelationship','noInterest'
+  };
 
   static String _normalizeGender(String gender) {
     switch (gender) {
@@ -27,13 +34,26 @@ class SajuService {
       case '非二元':
         return 'nonBinary';
       default:
-        return 'female';
+        // 비어있거나 매칭되지 않으면 그대로 둔다 (기본값 강제 없음)
+        return gender;
     }
   }
 
   static String? _normalizeLoveStatus(String? status) {
     if (status == null) return null;
     switch (status) {
+      // new keys
+      case 'warm':
+      case 'calm':
+      case 'lovely':
+      case 'urban':
+      case 'positive':
+      case 'funny':
+      case 'emotional':
+      case 'hopeful':
+      case 'passionate':
+      case 'futureOriented':
+      // legacy
       case 'married':
       case 'inRelationship':
       case 'wantRelationship':
@@ -48,7 +68,28 @@ class SajuService {
         return 'wantRelationship';
       case 'No Interest':
         return 'noInterest';
-      // Korean
+      // Korean (new)
+      case '따뜻한':
+        return 'warm';
+      case '차분한':
+        return 'calm';
+      case '사랑스러운':
+        return 'lovely';
+      case '도시적인':
+        return 'urban';
+      case '긍정적인':
+        return 'positive';
+      case '재미있는':
+        return 'funny';
+      case '감성적인':
+        return 'emotional';
+      case '희망적인':
+        return 'hopeful';
+      case '열정적인':
+        return 'passionate';
+      case '미래지향적':
+        return 'futureOriented';
+      // Korean (legacy)
       case '결혼':
         return 'married';
       case '연애중':
@@ -58,7 +99,28 @@ class SajuService {
         return 'wantRelationship';
       case '관심없음':
         return 'noInterest';
-      // Japanese
+      // Japanese (new)
+      case '暖かい':
+        return 'warm';
+      case '落ち着いた':
+        return 'calm';
+      case '愛らしい':
+        return 'lovely';
+      case '都会的':
+        return 'urban';
+      case 'ポジティブ':
+        return 'positive';
+      case '面白い':
+        return 'funny';
+      case '感性的':
+        return 'emotional';
+      case '希望に満ちた':
+        return 'hopeful';
+      case '情熱的':
+        return 'passionate';
+      case '未来志向':
+        return 'futureOriented';
+      // Japanese (legacy)
       case '既婚':
         return 'married';
       case '恋愛中':
@@ -67,7 +129,26 @@ class SajuService {
         return 'wantRelationship';
       case '興味なし':
         return 'noInterest';
-      // Chinese
+      // Chinese (new)
+      case '温暖的':
+        return 'warm';
+      case '冷静的':
+        return 'calm';
+      case '可爱的':
+        return 'lovely';
+      case '都市感的':
+        return 'urban';
+      case '积极的':
+        return 'positive';
+      case '有趣的':
+        return 'funny';
+      case '充满希望的':
+        return 'hopeful';
+      case '热情的':
+        return 'passionate';
+      case '面向未来':
+        return 'futureOriented';
+      // Chinese (legacy)
       case '已婚':
         return 'married';
       case '恋爱中':
@@ -89,6 +170,8 @@ class SajuService {
   static Future<bool> saveSajuInfo(SajuInfo sajuInfo) async {  
     try {
       final prefs = await SharedPreferences.getInstance();
+      // 체험 모드 해제: 실제 정보 저장 시
+      await prefs.remove(_experienceKey);
       
       // 기존 정보와 비교하여 시간 정보만 변경된 경우 캐시 유지
       final existingJsonString = prefs.getString(_sajuKey);
@@ -97,12 +180,11 @@ class SajuService {
         final existingSajuInfo = SajuInfo.fromJson(existingJson);
         
         // 완전히 동일한 경우 저장하지 않음
-        if (existingSajuInfo.birthDate == sajuInfo.birthDate &&
-            existingSajuInfo.birthHour == sajuInfo.birthHour &&
-            existingSajuInfo.birthMinute == sajuInfo.birthMinute &&
+        if (existingSajuInfo.name == sajuInfo.name &&
             existingSajuInfo.gender == sajuInfo.gender &&
-            existingSajuInfo.region == sajuInfo.region &&
-            existingSajuInfo.loveStatus == sajuInfo.loveStatus) {
+            existingSajuInfo.loveStatus == sajuInfo.loveStatus &&
+            (existingSajuInfo.world ?? '') == (sajuInfo.world ?? '') &&
+            (existingSajuInfo.ageGroup ?? '') == (sajuInfo.ageGroup ?? '')) {
           print('출생정보 변경 없음 - 저장하지 않음');
           return true; // 성공으로 처리
         }
@@ -115,10 +197,19 @@ class SajuService {
           jsonMap['gender'] = _normalizeGender(jsonMap['gender'] as String);
           jsonMap['loveStatus'] = _normalizeLoveStatus(jsonMap['loveStatus'] as String?);
           
-          // 기존 캐시 데이터 복사
-          jsonMap['episode'] = existingJson['episode'] ?? {};
-          jsonMap['poetry'] = existingJson['poetry'] ?? {};
-          jsonMap['guide'] = existingJson['guide'] ?? {};
+          // 기존 캐시 데이터 복사 (fingerprint는 새로운 것으로 업데이트)
+          final episodeCache = Map<String, dynamic>.from(existingJson['episode'] ?? {});
+          final poetryCache = Map<String, dynamic>.from(existingJson['poetry'] ?? {});
+          final guideCache = Map<String, dynamic>.from(existingJson['guide'] ?? {});
+          
+          // 새로운 fingerprint로 업데이트
+          episodeCache['lastRequestFingerprint'] = sajuInfo.currentRequestFingerprint;
+          poetryCache['lastRequestFingerprint'] = sajuInfo.currentRequestFingerprint;
+          guideCache['lastRequestFingerprint'] = sajuInfo.currentRequestFingerprint;
+          
+          jsonMap['episode'] = episodeCache;
+          jsonMap['poetry'] = poetryCache;
+          jsonMap['guide'] = guideCache;
           
           final jsonString = jsonEncode(jsonMap);
           return await prefs.setString(_sajuKey, jsonString);
@@ -174,16 +265,12 @@ class SajuService {
         
         final info = SajuInfo.fromJson(json);
 
-        // Migrate legacy fingerprints to YYYYMMDD|gender|loveStatus|servedDate format
+        // Migrate legacy fingerprints to gender|loveStatus|world|ageGroup format
         try {
-          final birthYmd = '${info.birthDate.year.toString().padLeft(4, '0')}'
-              '${info.birthDate.month.toString().padLeft(2, '0')}'
-              '${info.birthDate.day.toString().padLeft(2, '0')}';
-
           // Episode
           final epDate = (info.episode['lastEpisodeDate'] ?? '').toString();
           if (epDate.isNotEmpty) {
-            final expectedEpFp = '$birthYmd|${info.gender}|${info.loveStatus ?? ''}|$epDate';
+            final expectedEpFp = '${info.gender}|${info.loveStatus ?? ''}|${info.world ?? ''}|${info.ageGroup ?? ''}|$epDate';
             final currentEpFp = (info.episode['lastRequestFingerprint'] ?? '').toString();
             if (currentEpFp != expectedEpFp) {
               info.episode['lastRequestFingerprint'] = expectedEpFp;
@@ -194,7 +281,7 @@ class SajuService {
           // Poetry
           final pyDate = (info.poetry['lastPoetryDate'] ?? '').toString();
           if (pyDate.isNotEmpty) {
-            final expectedPyFp = '$birthYmd|${info.gender}|${info.loveStatus ?? ''}|$pyDate';
+            final expectedPyFp = '${info.gender}|${info.loveStatus ?? ''}|${info.world ?? ''}|${info.ageGroup ?? ''}|$pyDate';
             final currentPyFp = (info.poetry['lastRequestFingerprint'] ?? '').toString();
             if (currentPyFp != expectedPyFp) {
               info.poetry['lastRequestFingerprint'] = expectedPyFp;
@@ -205,7 +292,7 @@ class SajuService {
           // Guide
           final gdDate = (info.guide['lastFortuneDate'] ?? '').toString();
           if (gdDate.isNotEmpty) {
-            final expectedGdFp = '$birthYmd|${info.gender}|${info.loveStatus ?? ''}|$gdDate';
+            final expectedGdFp = '${info.gender}|${info.loveStatus ?? ''}|${info.world ?? ''}|${info.ageGroup ?? ''}|$gdDate';
             final currentGdFp = (info.guide['lastRequestFingerprint'] ?? '').toString();
             if (currentGdFp != expectedGdFp) {
               info.guide['lastRequestFingerprint'] = expectedGdFp;
@@ -259,5 +346,47 @@ class SajuService {
       print('오늘의 운세 업데이트 실패: $e');
       return false;
     }
+  }
+
+  // Guest ID 관리
+  static Future<String> getGuestId() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? guestId = prefs.getString(_guestIdKey);
+      if (guestId == null) {
+        // 새로운 guest ID 생성
+        guestId = DateTime.now().millisecondsSinceEpoch.toString();
+        await prefs.setString(_guestIdKey, guestId);
+      }
+      return guestId;
+    } catch (e) {
+      print('Guest ID 조회 실패: $e');
+      return DateTime.now().millisecondsSinceEpoch.toString();
+    }
+  }
+
+  static Future<void> clearGuestId() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_guestIdKey);
+    } catch (e) {
+      print('Guest ID 삭제 실패: $e');
+    }
+  }
+
+  // ===== 체험 모드 관리 =====
+  static Future<void> enableExperienceMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_experienceKey, true);
+  }
+
+  static Future<void> disableExperienceMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_experienceKey);
+  }
+
+  static Future<bool> isExperienceMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_experienceKey) == true;
   }
 }

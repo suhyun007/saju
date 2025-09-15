@@ -9,22 +9,22 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get appTitle => '사주앱';
+  String get appTitle => 'LunaVerse App';
 
   @override
-  String get birthInfoInput => '출생 정보 입력';
+  String get birthInfoInput => '캐릭터 설정';
 
   @override
   String get friendInfoInput => '친구 정보 입력';
 
   @override
-  String get name => '이름';
+  String get name => '캐릭터 이름';
 
   @override
-  String get nameHint => '이름을 입력해주세요';
+  String get nameHint => '캐릭터 이름을 입력해주세요.';
 
   @override
-  String get gender => '성별';
+  String get gender => '캐릭터 성별';
 
   @override
   String get female => '여성';
@@ -36,7 +36,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nonBinary => '논바이너리';
 
   @override
-  String get birthDate => '출생일자';
+  String get birthDate => '캐릭터 나이';
 
   @override
   String get birthDateHint => '생년월일을 선택해주세요';
@@ -51,7 +51,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get timeUnknown => '시간모름';
 
   @override
-  String get birthRegion => '태어난 지역';
+  String get birthRegion => '캐릭터의 세계';
 
   @override
   String get searchRegion => '지역 검색하기';
@@ -60,10 +60,40 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchRegionAgain => '지역 다시 검색';
 
   @override
-  String get loveStatus => '사랑에 대한 나의 상태';
+  String get loveStatus => '캐릭터 분위기';
 
   @override
-  String get loveStatusHint => '상태를 선택해주세요';
+  String get loveStatusHint => '캐릭터의 분위기를 선택하세요 (선택)';
+
+  @override
+  String get toneWarm => '따뜻한';
+
+  @override
+  String get toneCalm => '차분한';
+
+  @override
+  String get toneLovely => '사랑스러운';
+
+  @override
+  String get toneUrban => '도시적인';
+
+  @override
+  String get tonePositive => '긍정적인';
+
+  @override
+  String get toneFunny => '재미있는';
+
+  @override
+  String get toneEmotional => '감성적인';
+
+  @override
+  String get toneHopeful => '희망적인';
+
+  @override
+  String get tonePassionate => '열정적인';
+
+  @override
+  String get toneFutureOriented => '미래지향적';
 
   @override
   String get married => '결혼';
@@ -81,13 +111,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get save => '저장';
 
   @override
-  String get saveBirthInfo => '출생 정보 저장';
+  String get saveBirthInfo => '캐릭터 저장';
 
   @override
   String get saveFriendInfo => '친구 정보 저장';
 
   @override
-  String get infoMessage => 'AI가 당신만의 이야기를\n풀어내려면 출생정보가 필요해요.';
+  String get infoMessage => '당신의 캐릭터를 만나고\n이야기를 시작하세요.';
 
   @override
   String get cancel => '취소';
@@ -123,22 +153,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get validationGenderRequired => '성별을 선택해주세요.';
 
   @override
-  String get validationBirthDateRequired => '출생일자를 선택해주세요.';
+  String get validationBirthDateRequired => '생년월일을 선택해주세요.';
 
   @override
-  String get validationBirthHourRequired => '출생시간(시)을 선택해주세요.';
+  String get validationBirthHourRequired => '출생 시를 선택해주세요.';
 
   @override
-  String get validationBirthMinuteRequired => '출생시간(분)을 선택해주세요.';
+  String get validationBirthMinuteRequired => '출생 분을 선택해주세요.';
 
   @override
-  String get validationRegionRequired => '태어난 지역을 검색하여 선택해주세요.';
+  String get validationRegionRequired => '출생 지역을 검색하고 선택해주세요.';
 
   @override
-  String get validationStatusRequired => '나의 상태를 선택해주세요.';
+  String get validationStatusRequired => '캐릭터의 분위기를 선택하세요 (선택)';
 
   @override
-  String get statusSelectHint => '상태를 선택해주세요';
+  String get statusSelectHint => '캐릭터의 분위기를 선택하세요 (선택)';
 
   @override
   String get successBirthInfoSaved => '정보가 저장되었습니다!';
@@ -167,7 +197,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get splashSubtitle2 =>
-      'LunaVerse가 당신의 정보를 바탕으로 매일 재미있는 문학 콘텐츠를 만들어드립니다.';
+      '오늘부터 당신의 여정을 시작하세요.\n매일 새로운 이야기와 시를 만나고\n마음에 드는 작품을 저장하여\n나만의 서재를 채워보세요.';
 
   @override
   String get splashSubtitle3 => '당신만의 운세 이야기를 AI가 들려드립니다.';
@@ -176,12 +206,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get splashSubtitle4 => '사주와 별자리를 통해 새로운 인사이트를 얻어보세요.';
 
   @override
-  String get splashButtonText => 'AI 콘텐츠 시작';
+  String get splashButtonText => '오늘의 이야기 읽기';
 
   @override
   String myPageWelcome(String userName) {
     return '$userName님 환영합니다!';
   }
+
+  @override
+  String get existPlashSubtitle => '환영해요.\n오늘도 당신의 이야기가 계속됩니다.';
 
   @override
   String get myPageLogoutSuccess => '로그아웃 되었습니다.';
@@ -458,7 +491,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pm => '오후';
 
   @override
-  String get locationSearchTitle => '태어난 지역 검색';
+  String get locationSearchTitle => '지역 검색';
 
   @override
   String get locationSearchHint => '지역/구/동을 입력하세요';
@@ -497,7 +530,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get growth => '성장';
 
   @override
-  String get tabTodayGuide => '가이드';
+  String get tabFavorites => '즐겨찾기';
 
   @override
   String get tabEpisode => '에피소드';
@@ -515,7 +548,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get abundance => '풍요로움';
 
   @override
-  String get bodyAndMind => '몸과 마음';
+  String get bodyAndMind => '균형과 조회';
 
   @override
   String get growthAndFocus => '성장과 집중';
@@ -558,11 +591,137 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shareTomorrowPrefix => '🔮내일의 에피소드 미리보기:';
 
   @override
-  String get shareTomorrowPoetryPrefix => '🔮 내일의 시 미리보기:';
+  String get shareTomorrowPoetryPrefix => '🔮내일의 시 미리보기:';
 
   @override
   String get shareAppPromotion => '✨ LunaVerse에서 매일 새로운 이야기를 만나보세요!';
 
   @override
   String get shareButton => '공유';
+
+  @override
+  String get offlineTitle => '오프라인';
+
+  @override
+  String get offlineMessage => '인터넷 연결이 필요합니다. 연결 후 다시 시도하세요.';
+
+  @override
+  String get offlineClose => '닫기';
+
+  @override
+  String get offlineRetry => '재시도';
+
+  @override
+  String get sampleStory => '샘플 스토리';
+
+  @override
+  String get sampleStoryHeader => '샘플 스토리 🌙\n“아침 창가”';
+
+  @override
+  String get sampleStoryP1 =>
+      '오늘 아침 창을 열었을 때, 세상은 유난히 고요했어요. 마치 당신을 기다리는 듯이요. 옅은 푸른빛을 머금은 하늘 아래, 그 고요 속에서 다정한 무언가가 피어나는 것을 느꼈죠.';
+
+  @override
+  String get sampleStoryP2 =>
+      '거리를 걸으며 작은 것들이 눈에 들어왔어요—가지 사이에 걸린 햇빛, 이유 없이 미소 짓는 사람, 누군가에게만 들리는 비밀스런 리듬처럼 울리는 발자국 소리...';
+
+  @override
+  String get makeMyStoryButton => '캐릭터 설정하기';
+
+  @override
+  String get aboutLunaVerseTitle => 'About LunaVerse';
+
+  @override
+  String get aboutLunaVerseContent =>
+      'LunaVerse는 당신의 순간에서 영감을 받아 매일 새로운 이야기와 시를 만들어 줍니다. 오늘은 어떤 이야기가 펼쳐질지 확인해보세요.';
+
+  @override
+  String get confirmButton => '확인';
+
+  @override
+  String get favoritesEmptyTitle => '아직 즐겨찾기가 없어요';
+
+  @override
+  String get favoritesEmptyMessage => '좋아하는 에피소드와 시를 모아\n나만의 서재를 꾸며보세요.';
+
+  @override
+  String get characterEra => '캐릭터 배경';
+
+  @override
+  String get eraHint => '배경을 선택하세요 (선택)';
+
+  @override
+  String get eraAncientTimes => '고대시대';
+
+  @override
+  String get eraMedievalAge => '중세시대';
+
+  @override
+  String get eraVictorianEra => '빅토리아 시대';
+
+  @override
+  String get eraModernDay => '현대시대';
+
+  @override
+  String get eraNearFuture => '가까운 미래';
+
+  @override
+  String get eraDistantFuture => '먼 미래';
+
+  @override
+  String get eraMythicalAge => '신화시대';
+
+  @override
+  String get eraTimelessRealm => '시간을 초월한 시대';
+
+  @override
+  String get characterValidationTitle => '입력된 캐릭터 정보가 없습니다.';
+
+  @override
+  String get characterValidationBody => '입력한 내용이 비어 있어 저장할 캐릭터 정보가 없습니다.';
+
+  @override
+  String get memo => '메모';
+
+  @override
+  String get memoEdit => '메모 편집';
+
+  @override
+  String get memoInputHint => '메모를 입력하세요 (최대 1000자)';
+
+  @override
+  String get memoAddHint => '메모를 추가해보세요';
+
+  @override
+  String get close => '닫기';
+
+  @override
+  String get favoritesDeleteConfirmMessage => '이 즐겨찾기를 삭제할까요?';
+
+  @override
+  String get favoritesDeleted => '삭제되었습니다.';
+
+  @override
+  String get memoSaved => '메모가 저장되었습니다.';
+
+  @override
+  String get memoDeleted => '메모가 삭제되었습니다.';
+
+  @override
+  String get experienceTry => '체험하기';
+
+  @override
+  String get experienceMode => '체험 모드';
+
+  @override
+  String get experienceEntering => '체험 모드로 진입합니다.';
+
+  @override
+  String get guest => '손님';
+
+  @override
+  String get sajuInfo => '캐릭터 정보';
+
+  @override
+  String get sajuInfoInputPrompt => '캐릭터 정보를 입력해 주세요.';
 }

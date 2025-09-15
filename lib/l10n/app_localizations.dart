@@ -105,13 +105,13 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Saju App'**
+  /// **'LunaVerse App'**
   String get appTitle;
 
   /// No description provided for @birthInfoInput.
   ///
   /// In en, this message translates to:
-  /// **'Birth Information Input'**
+  /// **'Character Setup'**
   String get birthInfoInput;
 
   /// No description provided for @friendInfoInput.
@@ -123,19 +123,19 @@ abstract class AppLocalizations {
   /// No description provided for @name.
   ///
   /// In en, this message translates to:
-  /// **'Name'**
+  /// **'Character Name'**
   String get name;
 
   /// No description provided for @nameHint.
   ///
   /// In en, this message translates to:
-  /// **'Please enter your name'**
+  /// **'Enter your character’s name'**
   String get nameHint;
 
   /// No description provided for @gender.
   ///
   /// In en, this message translates to:
-  /// **'Gender'**
+  /// **'Character Gender'**
   String get gender;
 
   /// No description provided for @female.
@@ -159,13 +159,13 @@ abstract class AppLocalizations {
   /// No description provided for @birthDate.
   ///
   /// In en, this message translates to:
-  /// **'Birth Date'**
+  /// **'Character Age'**
   String get birthDate;
 
   /// No description provided for @birthDateHint.
   ///
   /// In en, this message translates to:
-  /// **'Please select your birth date'**
+  /// **'Please select character birth date'**
   String get birthDateHint;
 
   /// No description provided for @birthTime.
@@ -189,7 +189,7 @@ abstract class AppLocalizations {
   /// No description provided for @birthRegion.
   ///
   /// In en, this message translates to:
-  /// **'Birth Region'**
+  /// **'Character’s World'**
   String get birthRegion;
 
   /// No description provided for @searchRegion.
@@ -207,14 +207,74 @@ abstract class AppLocalizations {
   /// No description provided for @loveStatus.
   ///
   /// In en, this message translates to:
-  /// **'My Love Status'**
+  /// **'Character’s Tone'**
   String get loveStatus;
 
   /// No description provided for @loveStatusHint.
   ///
   /// In en, this message translates to:
-  /// **'Please select your status'**
+  /// **'Choose a character tone (optional)'**
   String get loveStatusHint;
+
+  /// No description provided for @toneWarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm'**
+  String get toneWarm;
+
+  /// No description provided for @toneCalm.
+  ///
+  /// In en, this message translates to:
+  /// **'Calm'**
+  String get toneCalm;
+
+  /// No description provided for @toneLovely.
+  ///
+  /// In en, this message translates to:
+  /// **'Lovely'**
+  String get toneLovely;
+
+  /// No description provided for @toneUrban.
+  ///
+  /// In en, this message translates to:
+  /// **'Urban'**
+  String get toneUrban;
+
+  /// No description provided for @tonePositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Positive'**
+  String get tonePositive;
+
+  /// No description provided for @toneFunny.
+  ///
+  /// In en, this message translates to:
+  /// **'Funny'**
+  String get toneFunny;
+
+  /// No description provided for @toneEmotional.
+  ///
+  /// In en, this message translates to:
+  /// **'Emotional'**
+  String get toneEmotional;
+
+  /// No description provided for @toneHopeful.
+  ///
+  /// In en, this message translates to:
+  /// **'Hopeful'**
+  String get toneHopeful;
+
+  /// No description provided for @tonePassionate.
+  ///
+  /// In en, this message translates to:
+  /// **'Passionate'**
+  String get tonePassionate;
+
+  /// No description provided for @toneFutureOriented.
+  ///
+  /// In en, this message translates to:
+  /// **'Future-oriented'**
+  String get toneFutureOriented;
 
   /// No description provided for @married.
   ///
@@ -249,7 +309,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveBirthInfo.
   ///
   /// In en, this message translates to:
-  /// **'Save Birth Information'**
+  /// **'Save Character'**
   String get saveBirthInfo;
 
   /// No description provided for @saveFriendInfo.
@@ -261,7 +321,7 @@ abstract class AppLocalizations {
   /// No description provided for @infoMessage.
   ///
   /// In en, this message translates to:
-  /// **'AI needs your birth information to tell your unique story.'**
+  /// **'Meet your character\nand begin your story.'**
   String get infoMessage;
 
   /// No description provided for @cancel.
@@ -357,13 +417,13 @@ abstract class AppLocalizations {
   /// No description provided for @validationStatusRequired.
   ///
   /// In en, this message translates to:
-  /// **'Please select your status.'**
+  /// **'Choose a character tone (optional)'**
   String get validationStatusRequired;
 
   /// No description provided for @statusSelectHint.
   ///
   /// In en, this message translates to:
-  /// **'Please select your status'**
+  /// **'Choose a character tone (optional)'**
   String get statusSelectHint;
 
   /// No description provided for @successBirthInfoSaved.
@@ -411,7 +471,7 @@ abstract class AppLocalizations {
   /// No description provided for @splashSubtitle2.
   ///
   /// In en, this message translates to:
-  /// **'LunaVerse creates fun literary content\ndaily based on your information.'**
+  /// **'Begin your journey today—\ndiscover a new episode and poem each day, save your favorites, and gently build your own library.'**
   String get splashSubtitle2;
 
   /// No description provided for @splashSubtitle3.
@@ -429,7 +489,7 @@ abstract class AppLocalizations {
   /// No description provided for @splashButtonText.
   ///
   /// In en, this message translates to:
-  /// **'AI Contents'**
+  /// **'Read Today’s Story'**
   String get splashButtonText;
 
   /// User welcome message
@@ -437,6 +497,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome, {userName}!'**
   String myPageWelcome(String userName);
+
+  /// No description provided for @existPlashSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Good to see you again.\nYour story continues.'**
+  String get existPlashSubtitle;
 
   /// No description provided for @myPageLogoutSuccess.
   ///
@@ -945,7 +1011,7 @@ abstract class AppLocalizations {
   /// No description provided for @locationSearchTitle.
   ///
   /// In en, this message translates to:
-  /// **'Birth Region Search'**
+  /// **'Region Search'**
   String get locationSearchTitle;
 
   /// No description provided for @locationSearchHint.
@@ -1020,11 +1086,11 @@ abstract class AppLocalizations {
   /// **'Growth'**
   String get growth;
 
-  /// No description provided for @tabTodayGuide.
+  /// No description provided for @tabFavorites.
   ///
   /// In en, this message translates to:
-  /// **'Guide'**
-  String get tabTodayGuide;
+  /// **'Favorites'**
+  String get tabFavorites;
 
   /// No description provided for @tabEpisode.
   ///
@@ -1059,7 +1125,7 @@ abstract class AppLocalizations {
   /// No description provided for @bodyAndMind.
   ///
   /// In en, this message translates to:
-  /// **'Body & Mind'**
+  /// **'Balance & Harmony'**
   String get bodyAndMind;
 
   /// No description provided for @growthAndFocus.
@@ -1157,6 +1223,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share'**
   String get shareButton;
+
+  /// No description provided for @offlineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offlineTitle;
+
+  /// No description provided for @offlineMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Internet connection is required. Please connect and try again.'**
+  String get offlineMessage;
+
+  /// No description provided for @offlineClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get offlineClose;
+
+  /// No description provided for @offlineRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get offlineRetry;
+
+  /// No description provided for @sampleStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a Sample Story'**
+  String get sampleStory;
+
+  /// No description provided for @sampleStoryHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample Story 🌙\n“The Morning Window”'**
+  String get sampleStoryHeader;
+
+  /// No description provided for @sampleStoryP1.
+  ///
+  /// In en, this message translates to:
+  /// **'When you opened your window this morning, the world felt strangely quiet, as if waiting for you. The sky carried a pale shade of blue, and in that stillness, you sensed something tender unfolding.'**
+  String get sampleStoryP1;
+
+  /// No description provided for @sampleStoryP2.
+  ///
+  /// In en, this message translates to:
+  /// **'Walking down the street, you noticed small details—sunlight caught in the branches, a stranger smiling for no reason...'**
+  String get sampleStoryP2;
+
+  /// No description provided for @makeMyStoryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Up Character'**
+  String get makeMyStoryButton;
+
+  /// No description provided for @aboutLunaVerseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About LunaVerse'**
+  String get aboutLunaVerseTitle;
+
+  /// No description provided for @aboutLunaVerseContent.
+  ///
+  /// In en, this message translates to:
+  /// **'LunaVerse takes inspiration from your moments to create new stories and poems every day. Check out what story will unfold today.'**
+  String get aboutLunaVerseContent;
+
+  /// No description provided for @confirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmButton;
+
+  /// No description provided for @favoritesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Favorites Yet'**
+  String get favoritesEmptyTitle;
+
+  /// No description provided for @favoritesEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect your favorite episodes and poetry to create your personal library.'**
+  String get favoritesEmptyMessage;
+
+  /// No description provided for @characterEra.
+  ///
+  /// In en, this message translates to:
+  /// **'Character’s Era'**
+  String get characterEra;
+
+  /// No description provided for @eraHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an era (optional)'**
+  String get eraHint;
+
+  /// No description provided for @eraAncientTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Ancient Times'**
+  String get eraAncientTimes;
+
+  /// No description provided for @eraMedievalAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Medieval Age'**
+  String get eraMedievalAge;
+
+  /// No description provided for @eraVictorianEra.
+  ///
+  /// In en, this message translates to:
+  /// **'Victorian Era'**
+  String get eraVictorianEra;
+
+  /// No description provided for @eraModernDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern Day'**
+  String get eraModernDay;
+
+  /// No description provided for @eraNearFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Near Future'**
+  String get eraNearFuture;
+
+  /// No description provided for @eraDistantFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Distant Future'**
+  String get eraDistantFuture;
+
+  /// No description provided for @eraMythicalAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Mythical Age'**
+  String get eraMythicalAge;
+
+  /// No description provided for @eraTimelessRealm.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeless Realm'**
+  String get eraTimelessRealm;
+
+  /// No description provided for @characterValidationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No character information has been entered.'**
+  String get characterValidationTitle;
+
+  /// No description provided for @characterValidationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your input is empty, so there\'s no character information to save.'**
+  String get characterValidationBody;
+
+  /// No description provided for @memo.
+  ///
+  /// In en, this message translates to:
+  /// **'Memo'**
+  String get memo;
+
+  /// No description provided for @memoEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Memo'**
+  String get memoEdit;
+
+  /// No description provided for @memoInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter memo (max 1000 characters)'**
+  String get memoInputHint;
+
+  /// No description provided for @memoAddHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a memo'**
+  String get memoAddHint;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @favoritesDeleteConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this favorite?'**
+  String get favoritesDeleteConfirmMessage;
+
+  /// No description provided for @favoritesDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted.'**
+  String get favoritesDeleted;
+
+  /// No description provided for @memoSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Memo saved.'**
+  String get memoSaved;
+
+  /// No description provided for @memoDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Memo deleted.'**
+  String get memoDeleted;
+
+  /// No description provided for @experienceTry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Demo'**
+  String get experienceTry;
+
+  /// No description provided for @experienceMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo Mode'**
+  String get experienceMode;
+
+  /// No description provided for @experienceEntering.
+  ///
+  /// In en, this message translates to:
+  /// **'Entering demo mode.'**
+  String get experienceEntering;
+
+  /// No description provided for @guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get guest;
+
+  /// No description provided for @sajuInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Character Info'**
+  String get sajuInfo;
+
+  /// No description provided for @sajuInfoInputPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your character info.'**
+  String get sajuInfoInputPrompt;
 }
 
 class _AppLocalizationsDelegate

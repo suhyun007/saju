@@ -1,4 +1,4 @@
-package com.example.saju_app
+package com.subak.sajuApp
 
 import android.os.Bundle
 import android.webkit.WebView

@@ -9,22 +9,22 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appTitle => '四柱算命应用';
+  String get appTitle => 'LunaVerse App';
 
   @override
-  String get birthInfoInput => '出生信息输入';
+  String get birthInfoInput => '角色设定';
 
   @override
   String get friendInfoInput => '朋友信息输入';
 
   @override
-  String get name => '姓名';
+  String get name => '角色名称';
 
   @override
-  String get nameHint => '请输入您的姓名';
+  String get nameHint => '请输入角色名称。';
 
   @override
-  String get gender => '性别';
+  String get gender => '角色性别';
 
   @override
   String get female => '女性';
@@ -36,7 +36,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nonBinary => '非二元性别';
 
   @override
-  String get birthDate => '出生日期';
+  String get birthDate => '角色年龄';
 
   @override
   String get birthDateHint => '请选择您的出生日期';
@@ -51,7 +51,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get timeUnknown => '时间未知';
 
   @override
-  String get birthRegion => '出生地区';
+  String get birthRegion => '角色的世界';
 
   @override
   String get searchRegion => '搜索地区';
@@ -60,10 +60,40 @@ class AppLocalizationsZh extends AppLocalizations {
   String get searchRegionAgain => '重新搜索地区';
 
   @override
-  String get loveStatus => '我的爱情状态';
+  String get loveStatus => '角色基调';
 
   @override
-  String get loveStatusHint => '请选择您的状态';
+  String get loveStatusHint => '选择角色风格 (可选)';
+
+  @override
+  String get toneWarm => '温暖的';
+
+  @override
+  String get toneCalm => '冷静的';
+
+  @override
+  String get toneLovely => '可爱的';
+
+  @override
+  String get toneUrban => '都市感的';
+
+  @override
+  String get tonePositive => '积极的';
+
+  @override
+  String get toneFunny => '有趣的';
+
+  @override
+  String get toneEmotional => '感性的';
+
+  @override
+  String get toneHopeful => '充满希望的';
+
+  @override
+  String get tonePassionate => '热情的';
+
+  @override
+  String get toneFutureOriented => '面向未来';
 
   @override
   String get married => '已婚';
@@ -81,13 +111,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get save => '保存';
 
   @override
-  String get saveBirthInfo => '保存出生信息';
+  String get saveBirthInfo => '保存角色';
 
   @override
   String get saveFriendInfo => '保存朋友信息';
 
   @override
-  String get infoMessage => 'AI需要您的出生信息来讲述您独特的故事。';
+  String get infoMessage => '遇见你的角色，开启你的故事。';
 
   @override
   String get cancel => '取消';
@@ -135,10 +165,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get validationRegionRequired => '请搜索并选择您的出生地区。';
 
   @override
-  String get validationStatusRequired => '请选择您的状态。';
+  String get validationStatusRequired => '选择角色风格';
 
   @override
-  String get statusSelectHint => '请选择您的状态';
+  String get statusSelectHint => '选择角色风格';
 
   @override
   String get successBirthInfoSaved => '信息已保存！';
@@ -166,7 +196,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get splashSubtitle1 => 'LunaVerse基于您的基本信息创作短篇故事。';
 
   @override
-  String get splashSubtitle2 => 'LunaVerse基于您的信息每天创作有趣的文学内容。';
+  String get splashSubtitle2 => '从今天开始踏上旅程吧。每天都有新的故事和诗篇，收藏你喜欢的作品，慢慢打造属于自己的小书馆。';
 
   @override
   String get splashSubtitle3 => 'AI讲述您独特的运势故事。';
@@ -175,12 +205,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get splashSubtitle4 => '通过四柱和星座获得新的见解。';
 
   @override
-  String get splashButtonText => '开始AI内容';
+  String get splashButtonText => '阅读今日故事';
 
   @override
   String myPageWelcome(String userName) {
     return '欢迎，$userName！';
   }
+
+  @override
+  String get existPlashSubtitle => '很高兴再次见到你。\n你的故事仍在继续。';
 
   @override
   String get myPageLogoutSuccess => '您已成功登出。';
@@ -454,7 +487,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pm => '下午';
 
   @override
-  String get locationSearchTitle => '出生地区搜索';
+  String get locationSearchTitle => '地区搜索';
 
   @override
   String get locationSearchHint => '输入地区/区/街道';
@@ -493,7 +526,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get growth => '成长';
 
   @override
-  String get tabTodayGuide => '今日指南';
+  String get tabFavorites => '收藏';
 
   @override
   String get tabEpisode => '剧集';
@@ -511,7 +544,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get abundance => '丰盛';
 
   @override
-  String get bodyAndMind => '身心';
+  String get bodyAndMind => '平衡与和谐';
 
   @override
   String get growthAndFocus => '成长与专注';
@@ -560,4 +593,130 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get shareButton => '分享';
+
+  @override
+  String get offlineTitle => '离线';
+
+  @override
+  String get offlineMessage => '需要互联网连接。请连接后重试。';
+
+  @override
+  String get offlineClose => '关闭';
+
+  @override
+  String get offlineRetry => '重试';
+
+  @override
+  String get sampleStory => '示例故事';
+
+  @override
+  String get sampleStoryHeader => '示例故事 🌙\n《晨窗》';
+
+  @override
+  String get sampleStoryP1 =>
+      '当你今早打开窗户时，世界显得异常安静，仿佛在等待着你。天空带着淡淡的蓝色，在那宁静中，你感受到某种温柔的东西正在展开。';
+
+  @override
+  String get sampleStoryP2 =>
+      '走在街上，你注意到了小细节——阳光洒在树枝间，陌生人无缘无故地微笑，脚步声像只为你而响的秘密节拍...';
+
+  @override
+  String get makeMyStoryButton => '设置角色';
+
+  @override
+  String get aboutLunaVerseTitle => '关于LunaVerse';
+
+  @override
+  String get aboutLunaVerseContent =>
+      'LunaVerse从您的时刻中汲取灵感，每天创作新的故事和诗歌。看看今天会展开什么样的故事。';
+
+  @override
+  String get confirmButton => '确认';
+
+  @override
+  String get favoritesEmptyTitle => '还没有收藏';
+
+  @override
+  String get favoritesEmptyMessage => '收集您喜欢的剧集和诗歌来打造您的个人书房吧。';
+
+  @override
+  String get characterEra => '时代';
+
+  @override
+  String get eraHint => '选择时代（可选）';
+
+  @override
+  String get eraAncientTimes => '古代';
+
+  @override
+  String get eraMedievalAge => '中世纪';
+
+  @override
+  String get eraVictorianEra => '维多利亚时代';
+
+  @override
+  String get eraModernDay => '现代';
+
+  @override
+  String get eraNearFuture => '近未来';
+
+  @override
+  String get eraDistantFuture => '远未来';
+
+  @override
+  String get eraMythicalAge => '神话时代';
+
+  @override
+  String get eraTimelessRealm => '超越时间的领域';
+
+  @override
+  String get characterValidationTitle => '未输入角色信息。';
+
+  @override
+  String get characterValidationBody => '由于输入为空，没有可保存的角色信息。';
+
+  @override
+  String get memo => '备忘录';
+
+  @override
+  String get memoEdit => '编辑备忘录';
+
+  @override
+  String get memoInputHint => '请输入备忘录（最多1000字符）';
+
+  @override
+  String get memoAddHint => '添加备忘录';
+
+  @override
+  String get close => '关闭';
+
+  @override
+  String get favoritesDeleteConfirmMessage => '要删除此收藏吗？';
+
+  @override
+  String get favoritesDeleted => '已删除。';
+
+  @override
+  String get memoSaved => '备忘录已保存。';
+
+  @override
+  String get memoDeleted => '备忘录已删除。';
+
+  @override
+  String get experienceTry => '体验';
+
+  @override
+  String get experienceMode => '体验模式';
+
+  @override
+  String get experienceEntering => '进入体验模式。';
+
+  @override
+  String get guest => '访客';
+
+  @override
+  String get sajuInfo => '四柱信息';
+
+  @override
+  String get sajuInfoInputPrompt => '请输入四柱信息。';
 }

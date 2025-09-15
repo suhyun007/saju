@@ -96,7 +96,6 @@ class _GuideScreenState extends State<GuideScreen> {
       final result = await SajuApiService.fetchGuide(
         sajuInfo: sajuInfo,
         language: locale,
-        forceNetwork: true,
       );
       // 캐시에 저장(날짜/지문/언어)
       sajuInfo.guide['overall'] = result.overall;
@@ -162,25 +161,53 @@ class _GuideScreenState extends State<GuideScreen> {
         if (_loading) {
           return const Center(child: CircularProgressIndicator());
         }
+        if (_error == 'no_saju') {
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)?.infoMessage ?? '출생 정보를 먼저 저장해주세요.',
+              style: GoogleFonts.notoSans(fontSize: 16, color: textColor),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+        if (_error != null) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  AppLocalizations.of(context)?.offlineTitle ?? 'Connection Error', 
+                  style: GoogleFonts.notoSans(fontSize: 18, color: textColor, fontWeight: FontWeight.bold)
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  AppLocalizations.of(context)?.offlineMessage ?? 'Internet connection is required. Please connect and try again.', 
+                  style: GoogleFonts.notoSans(fontSize: 14, color: textColor.withOpacity(0.8)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: _load, 
+                  child: Text(AppLocalizations.of(context)?.offlineRetry ?? 'Retry')
+                ),
+              ],
+            ),
+          );
+        }
         if (_guide == null) {
           // 데이터 로드 시도 - API 호출 방지를 위해 주석 처리
           dev.log('[GuideScreen] _guide is null, showing message');
           // WidgetsBinding.instance.addPostFrameCallback((_) => _loadIfNeeded());
-          return const Center(child: Text('가이드 데이터가 없습니다.'));
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)?.infoMessage ?? '가이드 데이터가 없습니다.',
+              style: GoogleFonts.notoSans(fontSize: 16, color: textColor),
+              textAlign: TextAlign.center,
+            ),
+          );
         }
 
         return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).scaffoldBackgroundColor,
-                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
-              ],
-            ),
-          ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
             child: Column(
@@ -190,12 +217,14 @@ class _GuideScreenState extends State<GuideScreen> {
                 Center(
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.tips_and_updates,
-                        size: 40,
-                        color: const Color(0xFFB3B3FF),
-                      ),
-                      const SizedBox(height: 3),
+                      if (isDark) ...[
+                        const Icon(
+                          Icons.tips_and_updates,
+                          size: 40,
+                          color: Color(0xFFB3B3FF),
+                        ),
+                        const SizedBox(height: 3),
+                      ],
                       Text(
                         AppLocalizations.of(context)!.todayDetailTitle,
                         style: GoogleFonts.notoSans(
@@ -227,7 +256,7 @@ class _GuideScreenState extends State<GuideScreen> {
                   padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
                   margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    color: isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
                       color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
@@ -275,7 +304,7 @@ class _GuideScreenState extends State<GuideScreen> {
                   padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
                   margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    color: isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
                       color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
@@ -323,7 +352,7 @@ class _GuideScreenState extends State<GuideScreen> {
                   padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
                   margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    color: isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
                       color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
@@ -371,7 +400,7 @@ class _GuideScreenState extends State<GuideScreen> {
                   padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
                   margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    color: isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
                       color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
@@ -419,7 +448,7 @@ class _GuideScreenState extends State<GuideScreen> {
                   padding: const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 10),
                   margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+                    color: isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
                       color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
@@ -462,13 +491,13 @@ class _GuideScreenState extends State<GuideScreen> {
                 ),
                 
                 const SizedBox(height: 10),
-                // 공유 버튼
+                // 공유 버튼 (에피소드와 동일 스타일)
                 Center(
                   child: ElevatedButton(
                     onPressed: _showShareOptions,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF3A3A4A) : const Color(0xFFE8E8F5),
-                      foregroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                      backgroundColor: const Color(0xFF3D4B91),
+                      foregroundColor: const Color(0xFFFFD400),
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
@@ -477,17 +506,17 @@ class _GuideScreenState extends State<GuideScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.arrow_outward, size: 18, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
-                        const SizedBox(width: 3), // 간격을 2로 줄임
-                          Text(
-                            AppLocalizations.of(context)?.shareButton ?? '공유',
-                            style: GoogleFonts.roboto(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.3,
-                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                            ),
+                        const Icon(Icons.arrow_outward, size: 18, color: Color(0xFFFFFFFF)),
+                        const SizedBox(width: 3),
+                        Text(
+                          AppLocalizations.of(context)?.shareButton ?? '공유',
+                          style: GoogleFonts.roboto(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.3,
+                            color: const Color(0xFFFFFFFF),
                           ),
+                        ),
                       ],
                     ),
                   ),

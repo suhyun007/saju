@@ -8,6 +8,9 @@ class SajuInfo {
   final String? loveStatus;
   final String? zodiacSign;
   final DateTime createdAt;
+  final String? world;     // Character's World (country)
+  final String? era;       // Character's Era (not persisted)
+  final String? ageGroup;  // Character Age group
 
   SajuInfo({
     required this.name,
@@ -18,6 +21,9 @@ class SajuInfo {
     required this.region,
     this.loveStatus,
     this.zodiacSign,
+    this.world,
+    this.era,
+    this.ageGroup,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -35,10 +41,10 @@ class SajuInfo {
   // 서버 요청에 사용되는 사용자 출생정보의 지문값
   // 시간(birthHour/minute)은 비교에서 제외하여 시간만 바뀌면 서버 재호출하지 않음
   String get currentRequestFingerprint => [
-    birthDate.toIso8601String(),
     gender,
-    region,
-    loveStatus ?? ''
+    loveStatus ?? '',
+    world ?? '',
+    ageGroup ?? '',
   ].join('|');
 
   // 날짜 비교 메서드들
@@ -53,12 +59,9 @@ class SajuInfo {
     final lastDate = guide['lastFortuneDate'] ?? '';
     final lastFp = guide['lastRequestFingerprint'] ?? '';
     final lastLang = guide['lastLanguage'] ?? '';
-    // 조합 지문과 비교: YYYYMMDD|gender|loveStatus|servedDate
+    // 조합 지문과 비교: gender|loveStatus|world|ageGroup|servedDate
     final todayYmd = currentTodayDate;
-    final birthYmd = '${birthDate.year.toString().padLeft(4, '0')}'
-        '${birthDate.month.toString().padLeft(2, '0')}'
-        '${birthDate.day.toString().padLeft(2, '0')}';
-    final expectedComposite = '$birthYmd|$gender|${loveStatus ?? ''}|$lastDate';
+    final expectedComposite = '$gender|${loveStatus ?? ''}|${world ?? ''}|${ageGroup ?? ''}|$lastDate';
     return lastDate != todayYmd || lastFp != expectedComposite || lastLang != languageCode;
   }
 
@@ -74,12 +77,9 @@ class SajuInfo {
     final lastDate = episode['lastEpisodeDate'] ?? '';
     final lastFp = episode['lastRequestFingerprint'] ?? '';
     final lastLang = episode['lastLanguage'] ?? '';
-    // 조합 지문과 비교: YYYYMMDD|gender|loveStatus|servedDate
+    // 조합 지문과 비교: gender|loveStatus|world|ageGroup|servedDate
     final todayYmd = currentTodayDate;
-    final birthYmd = '${birthDate.year.toString().padLeft(4, '0')}'
-        '${birthDate.month.toString().padLeft(2, '0')}'
-        '${birthDate.day.toString().padLeft(2, '0')}';
-    final expectedComposite = '$birthYmd|$gender|${loveStatus ?? ''}|$lastDate';
+    final expectedComposite = '$gender|${loveStatus ?? ''}|${world ?? ''}|${ageGroup ?? ''}|$todayYmd';
     return lastDate != todayYmd || lastFp != expectedComposite || lastLang != languageCode;
   }
 
@@ -94,12 +94,9 @@ class SajuInfo {
     final lastDate = poetry['lastPoetryDate'] ?? '';
     final lastFp = poetry['lastRequestFingerprint'] ?? '';
     final lastLang = poetry['lastLanguage'] ?? '';
-    // 조합 지문과 비교: YYYYMMDD|gender|loveStatus|servedDate
+    // 조합 지문과 비교: gender|loveStatus|world|ageGroup|servedDate
     final todayYmd = currentTodayDate;
-    final birthYmd = '${birthDate.year.toString().padLeft(4, '0')}'
-        '${birthDate.month.toString().padLeft(2, '0')}'
-        '${birthDate.day.toString().padLeft(2, '0')}';
-    final expectedComposite = '$birthYmd|$gender|${loveStatus ?? ''}|$lastDate';
+    final expectedComposite = '$gender|${loveStatus ?? ''}|${world ?? ''}|${ageGroup ?? ''}|$todayYmd';
     return lastDate != todayYmd || lastFp != expectedComposite || lastLang != languageCode;
   }
 
@@ -107,13 +104,12 @@ class SajuInfo {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'birthDate': birthDate.toIso8601String(),
-      'birthHour': birthHour,
-      'birthMinute': birthMinute,
       'gender': gender,
-      'region': region,
+      // region removed from persisted payload
       'loveStatus': loveStatus,
-      'zodiacSign': zodiacSign,
+      'world': world,
+      // 'era': era, // no longer persisted
+      'ageGroup': ageGroup,
       'createdAt': createdAt.toIso8601String(),
       'guide': guide,
       'episode': episode,
@@ -125,14 +121,17 @@ class SajuInfo {
   factory SajuInfo.fromJson(Map<String, dynamic> json) {
     final sajuInfo = SajuInfo(
       name: json['name'] ?? '',
-      birthDate: DateTime.parse(json['birthDate']),
-      birthHour: json['birthHour'],
-      birthMinute: json['birthMinute'],
-      gender: json['gender'],
-      region: json['region'] ?? '',
+      birthDate: json['birthDate'] != null ? DateTime.parse(json['birthDate']) : DateTime(1970,1,1),
+      birthHour: json['birthHour'] ?? 12,
+      birthMinute: json['birthMinute'] ?? 0,
+      gender: json['gender'] ?? '',
+      region: '',
       loveStatus: json['loveStatus'] ?? json['status'],
       zodiacSign: json['zodiacSign'],
-      createdAt: DateTime.parse(json['createdAt']),
+      world: json['world'],
+      era: json['era'],
+      ageGroup: json['ageGroup'],
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
     );
     
     // 가이드 데이터 로드

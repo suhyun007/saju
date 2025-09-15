@@ -9,6 +9,7 @@ import '../services/theme_service.dart';
 import '../services/notification_service.dart';
 import '../services/saju_service.dart';
 import '../services/friend_service.dart';
+import '../services/analytics_service.dart';
 import '../models/saju_info.dart';
 import '../models/friend_info.dart';
 import '../utils/zodiac_utils.dart';
@@ -36,6 +37,9 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    // 마이페이지 진입 로그
+    AnalyticsService.logMenuClick('myPage');
+    
     WidgetsBinding.instance.addObserver(this);
     _user = AuthService.currentUser;
     _loadUser();
@@ -228,6 +232,103 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
         return '$nameさん'; // 일본어: さん
       default:
         return '$name님'; // 기본값: 한국어와 동일
+    }
+  }
+
+  String _toneLabel(String? toneKey) {
+    final l10n = AppLocalizations.of(context);
+    switch (toneKey) {
+      case 'warm':
+        return l10n?.toneWarm ?? '따뜻한';
+      case 'calm':
+        return l10n?.toneCalm ?? '차분한';
+      case 'lovely':
+        return l10n?.toneLovely ?? '사랑스러운';
+      case 'urban':
+        return l10n?.toneUrban ?? '도시적인';
+      case 'positive':
+        return l10n?.tonePositive ?? '긍정적인';
+      case 'funny':
+        return l10n?.toneFunny ?? '재미있는';
+      case 'emotional':
+        return l10n?.toneEmotional ?? '감성적인';
+      case 'hopeful':
+        return l10n?.toneHopeful ?? '희망적인';
+      case 'passionate':
+        return l10n?.tonePassionate ?? '열정적인';
+      case 'futureOriented':
+        return l10n?.toneFutureOriented ?? '미래지향적';
+      default:
+        return toneKey ?? '';
+    }
+  }
+
+  String _formatCharacterSummary(SajuInfo sajuInfo) {
+    final world = _englishWorldToLocalized(sajuInfo.world);
+    final tone = _toneLabel(sajuInfo.loveStatus);
+    final parts = <String>[];
+    if (world.isNotEmpty) parts.add(world);
+    if (tone.isNotEmpty) parts.add(tone);
+    if (parts.isEmpty) {
+      // 아무 것도 없으면 안내 문구로 대체
+      return _sajuInfoPromptLocalized();
+    }
+    return parts.join(' • ');
+  }
+
+  String _englishWorldToLocalized(String? english) {
+    if (english == null || english.isEmpty) return '';
+    final List<String> namesKO = [
+      '대한민국','미국','일본','중국','영국','캐나다','독일','프랑스','인도','호주','스페인','이탈리아','러시아','브라질','멕시코','터키','인도네시아','필리핀','베트남','태국','싱가포르','말레이시아','대만','홍콩','아랍에미리트','사우디아라비아','이집트','남아프리카공화국','아르헨티나','칠레','네덜란드','스웨덴','노르웨이','덴마크','핀란드','폴란드','포르투갈','이스라엘','스위스','두바이 (아랍에미리트)','뉴질랜드','파키스탄','방글라데시'
+    ];
+    final List<String> namesJA = [
+      '韓国','アメリカ','日本','中国','イギリス','カナダ','ドイツ','フランス','インド','オーストラリア','スペイン','イタリア','ロシア','ブラジル','メキシコ','トルコ','インドネシア','フィリピン','ベトナム','タイ','シンガポール','マレーシア','台湾','香港','アラブ首長国連邦','サウジアラビア','エジプト','南アフリカ','アルゼンチン','チリ','オランダ','スウェーデン','ノルウェー','デンマーク','フィンランド','ポーランド','ポルトガル','イスラエル','スイス','ドバイ (UAE)','ニュージーランド','パキスタン','バングラデシュ'
+    ];
+    final List<String> namesZH = [
+      '韩国','美国','日本','中国','英国','加拿大','德国','法国','印度','澳大利亚','西班牙','意大利','俄罗斯','巴西','墨西哥','土耳其','印度尼西亚','菲律宾','越南','泰国','新加坡','马来西亚','台湾','香港','阿联酋','沙特阿拉伯','埃及','南非','阿根廷','智利','荷兰','瑞典','挪威','丹麦','芬兰','波兰','葡萄牙','以色列','瑞士','迪拜（阿联酋）','新西兰','巴基斯坦','孟加拉国'
+    ];
+    final List<String> namesEN = [
+      'South Korea','United States','Japan','China','United Kingdom','Canada','Germany','France','India','Australia','Spain','Italy','Russia','Brazil','Mexico','Turkey','Indonesia','Philippines','Vietnam','Thailand','Singapore','Malaysia','Taiwan','Hong Kong','United Arab Emirates','Saudi Arabia','Egypt','South Africa','Argentina','Chile','Netherlands','Sweden','Norway','Denmark','Finland','Poland','Portugal','Israel','Switzerland','Dubai (UAE)','New Zealand','Pakistan','Bangladesh'
+    ];
+    final idx = namesEN.indexOf(english);
+    if (idx < 0) return english;
+    switch (Localizations.localeOf(context).languageCode) {
+      case 'ko':
+        return namesKO[idx];
+      case 'ja':
+        return namesJA[idx];
+      case 'zh':
+        return namesZH[idx];
+      default:
+        return namesEN[idx];
+    }
+  }
+
+  String _sajuInfoTitleLocalized() {
+    final code = Localizations.localeOf(context).languageCode;
+    switch (code) {
+      case 'ko':
+        return '캐릭터 정보';
+      case 'ja':
+        return '四柱情報';
+      case 'zh':
+        return '四柱信息';
+      default:
+        return 'Character Info';
+    }
+  }
+
+  String _sajuInfoPromptLocalized() {
+    final code = Localizations.localeOf(context).languageCode;
+    switch (code) {
+      case 'ko':
+        return '캐릭터정보를 입력해 주세요.';
+      case 'ja':
+        return '四柱情報を入力してください。';
+      case 'zh':
+        return '请输入四柱信息。';
+      default:
+        return 'Please enter your character info.';
     }
   }
 
@@ -778,17 +879,15 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = isDark ? Colors.white : Colors.black;
     final secondary = isDark ? Colors.white70 : Colors.black54;
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Colors.grey.withOpacity(0.1);
-    final border = isDark ? Colors.white.withOpacity(0.2) : Colors.grey.withOpacity(0.3);
     return Scaffold(
-      backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: isDark ? Colors.transparent : Colors.transparent,
       body: Container(
-        decoration: isDark ? const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/design/launch_bg.png'),
+            image: AssetImage(isDark ? 'assets/design/launch_bg.png' : 'assets/design/bg4.png'),
             fit: BoxFit.cover,
           ),
-        ) : null,
+        ),
         child: SafeArea(
           child: Column(
           children: [
@@ -830,14 +929,14 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                   children: [
                   const SizedBox(height: 0),
                   _Section(
-                    title: l10n?.myPageManagement ?? '관리',
+                    title: l10n?.myPageManagement ?? 'Management',
                     children: [
                       _Tile(
                         icon: Icons.calendar_today,
-                        title: _sajuInfo != null ? _formatNameWithHonorific(_sajuInfo!.name) : '사주정보',
+                        title: _sajuInfo != null ? _formatNameWithHonorific(_sajuInfo!.name) : _sajuInfoTitleLocalized(),
                         subtitle: _sajuInfo != null
-                            ? _formatBirthInfo(_sajuInfo!)
-                            : '사주정보를 입력해 주세요',
+                            ? _formatCharacterSummary(_sajuInfo!)
+                            : _sajuInfoPromptLocalized(),
                         zodiacSign: _sajuInfo?.zodiacSign,
                         onTap: () {
                           Navigator.push(
@@ -874,10 +973,10 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                           },
                         ),
                        */ 
-                      _SubSectionTitle(l10n?.myPageGeneral ?? '일반'),
+                      _SubSectionTitle(l10n?.myPageGeneral ?? 'General'),
                       _Tile(
                         icon: Icons.color_lens,
-                        title: l10n?.myPageTheme ?? '테마',
+                        title: l10n?.myPageTheme ?? 'Theme',
                         subtitle: _themeSubtitle(),
                         onTap: _showThemePicker,
                       ),
@@ -886,17 +985,17 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                         builder: (context, enabled, _) {
                           return _Tile(
                             icon: Icons.notifications,
-                            title: l10n?.myPageNotificationTitle ?? '알림',
+                            title: l10n?.myPageNotificationTitle ?? 'Notifications',
                             subtitle: enabled ? 'ON' : 'OFF',
                             onTap: _showNotificationSheet,
                           );
                         },
                       ),
-                      _SubSectionTitle(l10n?.myPageOther ?? '기타'),
+                      _SubSectionTitle(l10n?.myPageOther ?? 'Other'),
                       _Tile(
                         icon: Icons.info_outline,
-                        title: l10n?.myPageAppInfo ?? '앱 정보',
-                        subtitle: l10n?.myPagePrivacyPolicy ?? '개인정보보호방침',
+                        title: l10n?.myPageAppInfo ?? 'App Info',
+                        subtitle: l10n?.myPagePrivacyPolicy ?? 'Privacy Policy',
                         onTap: () {
                           Navigator.push(
                             context,
@@ -1034,7 +1133,6 @@ class _Tile extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: iconBackgroundColor ?? iconBg,
-                border: Border.all(color: iconBorder),
               ),
               child: zodiacSign != null
                   ? Builder(
