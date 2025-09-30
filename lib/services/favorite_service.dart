@@ -120,12 +120,12 @@ class FavoriteService {
   }) async {
     try {
       final db = await _dbHelper.database;
-      // 존재 여부 확인 (날짜 포함)
+      // 존재 여부 확인 (UNIQUE 제약조건과 동일하게)
       final exists = await db.query(
         'favorite_list',
         columns: const ['id'],
-        where: 'guest_id = ? AND save_dt = ? AND menu_type = ? AND title = ?',
-        whereArgs: [guestId, saveDtYmd, menuType, title],
+        where: 'guest_id = ? AND menu_type = ? AND title = ?',
+        whereArgs: [guestId, menuType, title],
         limit: 1,
       );
       if (exists.isNotEmpty) {
