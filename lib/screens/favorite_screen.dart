@@ -115,7 +115,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       child: Container(
         height: 120,
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: isDark 
               ? Colors.white.withOpacity(0.1)
@@ -140,9 +140,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 ),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+            Positioned(
+              top: 8,
+              left: 8,
+              right: 40, // 삭제 버튼 공간 확보
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
           // 메뉴 타입과 저장 날짜
           Row(
             children: [
@@ -184,8 +189,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           const SizedBox(height: 8),
           // 내용 미리보기 (한 줄만)
           Text(
-            favorite.content.length > 50 
-                ? '${favorite.content.substring(0, 50)}...'
+            favorite.content.length > 45 
+                ? '${favorite.content.substring(0, 45)}...'
                 : favorite.content,
             style: TextStyle(
               fontSize: 14,
@@ -196,7 +201,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             overflow: TextOverflow.ellipsis,
           ),
         ],
-      ),
+              ),
+            ),
     ],
   ),
 ),

@@ -7,8 +7,8 @@ import 'screens/myPage.dart';
 import 'services/theme_service.dart';
 import 'services/notification_service.dart';
 import 'services/language_service.dart';
-import 'services/supabase_service.dart';
 import 'package:provider/provider.dart';
+import 'services/supabase_service.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
@@ -22,7 +22,7 @@ void main() async {
   await NotificationService.init();
   
   print('main.dart - Supabase 초기화 시작');
-  await SupabaseService.initialize(); // Supabase 초기화
+  await SupabaseService.initialize();
   print('main.dart - Supabase 초기화 완료');
   
   // 방문 로그는 splash_screen에서 기록됨
@@ -46,6 +46,7 @@ class SajuApp extends StatefulWidget {
 
 class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
   late LanguageService _languageService;
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   
   @override
   void initState() {
@@ -57,6 +58,9 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _languageService = Provider.of<LanguageService>(context, listen: false);
       print('=== LanguageService 인스턴스 가져옴: ${_languageService.currentLocale.languageCode} ===');
+      
+      // NotificationService에 GlobalKey 설정
+      NotificationService.setNavigatorKey(_navigatorKey);
     });
     
     print('=== WidgetsBindingObserver 등록 완료 ===');
@@ -130,6 +134,7 @@ class _SajuAppState extends State<SajuApp> with WidgetsBindingObserver {
         return MaterialApp(
           title: 'LunaVerse 앱',
           debugShowCheckedModeBanner: false,
+          navigatorKey: _navigatorKey,
           locale: languageService.currentLocale,
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: const [

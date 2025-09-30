@@ -1,6 +1,7 @@
 {
   "@@locale": "en",
   "appTitle": "LunaVerse App",
+  "notificationTitle": "Moonlight Chat",
   "birthInfoInput": "Character Setup",
   "friendInfoInput": "Friend Information Input",
   "name": "Character Name",
@@ -56,6 +57,7 @@
   "statusSelectHint": "Choose a character tone (optional)",
   "successBirthInfoSaved": "Information has been saved!",
   "successFriendInfoSaved": "Friend information has been saved! (Zodiac: {zodiacSign})",
+  "favoriteAlreadySaved": "Already saved to favorites.",
   "errorBirthInfoSaveFailed": "Failed to save birth information.",
   "errorFriendInfoSaveFailed": "Failed to save friend information.",
   "themeChangedMessage": "Theme has been changed to \"{theme}\".",
@@ -250,5 +252,6 @@
   ,
   "guest": "Guest",
   "sajuInfo": "Character Info",
-  "sajuInfoInputPrompt": "Please enter your character info."
+  "sajuInfoInputPrompt": "Please enter your character info.",
+  "pushPixMessage" : "Right now, a special story is waiting for you."
 }

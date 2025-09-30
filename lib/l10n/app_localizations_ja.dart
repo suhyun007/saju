@@ -12,6 +12,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get appTitle => 'LunaVerse App';
 
   @override
+  String get notificationTitle => '月光チャット';
+
+  @override
   String get birthInfoInput => 'キャラクター設定';
 
   @override
@@ -177,6 +180,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String successFriendInfoSaved(Object zodiacSign) {
     return '友達情報が保存されました！(星座: $zodiacSign)';
   }
+
+  @override
+  String get favoriteAlreadySaved => '既にお気に入りに保存されています。';
 
   @override
   String get errorBirthInfoSaveFailed => '出生情報の保存に失敗しました。';
@@ -724,4 +730,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get sajuInfoInputPrompt => '四柱情報を入力してください。';
+
+  @override
+  String get pushPixMessage => '今、特別な物語があなたを待っています。';
 }

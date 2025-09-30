@@ -1,6 +1,7 @@
 {
   "@@locale": "zh",
   "appTitle": "LunaVerse App",
+  "notificationTitle": "月光交流",
   "birthInfoInput": "角色设定",
   "friendInfoInput": "朋友信息输入",
   "name": "角色名称",
@@ -56,6 +57,7 @@
   "statusSelectHint": "选择角色风格",
   "successBirthInfoSaved": "信息已保存！",
   "successFriendInfoSaved": "朋友信息已保存！(星座: {zodiacSign})",
+  "favoriteAlreadySaved": "已保存到收藏夹。",
   "errorBirthInfoSaveFailed": "保存出生信息失败。",
   "errorFriendInfoSaveFailed": "保存朋友信息失败。",
   "themeChangedMessage": "主题已更改为「{theme}」。",
@@ -240,5 +242,6 @@
   "experienceEntering": "进入体验模式。",
   "guest": "访客",
   "sajuInfo": "四柱信息",
-  "sajuInfoInputPrompt": "请输入四柱信息。"
+  "sajuInfoInputPrompt": "请输入四柱信息。",
+  "pushPixMessage" : "此刻，一段特别的故事正等着你。"
 }

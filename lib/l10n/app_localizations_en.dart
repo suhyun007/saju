@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'LunaVerse App';
 
   @override
+  String get notificationTitle => 'Moonlight Chat';
+
+  @override
   String get birthInfoInput => 'Character Setup';
 
   @override
@@ -179,6 +182,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String successFriendInfoSaved(Object zodiacSign) {
     return 'Friend information has been saved! (Zodiac: $zodiacSign)';
   }
+
+  @override
+  String get favoriteAlreadySaved => 'Already saved to favorites.';
 
   @override
   String get errorBirthInfoSaveFailed => 'Failed to save birth information.';
@@ -743,4 +749,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sajuInfoInputPrompt => 'Please enter your character info.';
+
+  @override
+  String get pushPixMessage => 'Right now, a special story is waiting for you.';
 }

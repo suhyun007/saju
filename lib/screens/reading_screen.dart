@@ -250,7 +250,7 @@ class _PoetryScreenState extends State<PoetryScreen> {
         }
       } else {
         // 즐겨찾기 추가
-        await _favoriteService.addIfNotExists(
+        final result = await _favoriteService.addIfNotExists(
           guestId: _guestId!,
           saveDtYmd: ymd,
           menuType: 'poetry',
@@ -258,12 +258,32 @@ class _PoetryScreenState extends State<PoetryScreen> {
           content: _poem!.content,
           isExperience: await SajuService.isExperienceMode(),
         );
-        if (mounted) {
-          setState(() {
-            _isFavorite = true;
-          });
+        
+        if (result > 0) {
+          // 새로 추가됨
+          if (mounted) {
+            setState(() {
+              _isFavorite = true;
+            });
+          }
+          _showStarAnimation();
+        } else {
+          // 이미 존재함 (중복)
+          if (mounted) {
+            final l10n = AppLocalizations.of(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n?.favoriteAlreadySaved ?? '이미 즐겨찾기에 저장되었습니다.'),
+                backgroundColor: Colors.orange,
+                duration: Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            );
+          }
         }
-        _showStarAnimation();
       }
     } catch (e) {
       dev.log('즐겨찾기 토글 오류: $e', name: 'PoetryScreen');

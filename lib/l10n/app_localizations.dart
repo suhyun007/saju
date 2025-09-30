@@ -108,6 +108,12 @@ abstract class AppLocalizations {
   /// **'LunaVerse App'**
   String get appTitle;
 
+  /// No description provided for @notificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Moonlight Chat'**
+  String get notificationTitle;
+
   /// No description provided for @birthInfoInput.
   ///
   /// In en, this message translates to:
@@ -437,6 +443,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Friend information has been saved! (Zodiac: {zodiacSign})'**
   String successFriendInfoSaved(Object zodiacSign);
+
+  /// No description provided for @favoriteAlreadySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Already saved to favorites.'**
+  String get favoriteAlreadySaved;
 
   /// No description provided for @errorBirthInfoSaveFailed.
   ///
@@ -1469,6 +1481,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter your character info.'**
   String get sajuInfoInputPrompt;
+
+  /// No description provided for @pushPixMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Right now, a special story is waiting for you.'**
+  String get pushPixMessage;
 }
 
 class _AppLocalizationsDelegate

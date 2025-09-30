@@ -1,6 +1,7 @@
 {
   "@@locale": "ko",
   "appTitle": "LunaVerse App",
+  "notificationTitle": "달빛 소통",
   "birthInfoInput": "캐릭터 설정",
   "friendInfoInput": "친구 정보 입력",
   "name": "캐릭터 이름",
@@ -56,6 +57,7 @@
   "statusSelectHint": "캐릭터의 분위기를 선택하세요 (선택)",
   "successBirthInfoSaved": "정보가 저장되었습니다!",
   "successFriendInfoSaved": "친구 정보가 저장되었습니다! (띠: {zodiacSign})",
+  "favoriteAlreadySaved": "이미 즐겨찾기에 저장되었습니다.",
   "errorBirthInfoSaveFailed": "출생 정보 저장에 실패했습니다.",
   "errorFriendInfoSaveFailed": "친구 정보 저장에 실패했습니다.",
   "themeChangedMessage": "테마가 \"{theme}\"(으)로 변경되었습니다.",
@@ -358,5 +360,6 @@
   "experienceEntering": "체험 모드로 진입합니다.",
   "guest": "손님",
   "sajuInfo": "캐릭터 정보",
-  "sajuInfoInputPrompt": "캐릭터 정보를 입력해 주세요."
+  "sajuInfoInputPrompt": "캐릭터 정보를 입력해 주세요.",
+  "pushPixMessage" : "달빛이 이야기해주는 당신의 이야기를 들어보세요."
 }

@@ -570,9 +570,8 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                   return;
                                 }
                                 
-                                // 매일 알림 스케줄 등록
-                                await NotificationService.scheduleDailyFortuneNotification();
-                                print('=== 알림 스케줄 등록 완료 ===');
+                                // 스케줄은 updateNotificationTime에서 자동으로 재등록됨
+                                print('=== 알림 시간 저장 완료 ===');
 
                                 // 바텀 시트 닫기
                                 Navigator.pop(context);

@@ -8,6 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzdata;
+// import 'package:flutter_native_timezone/flutter_native_timezone.dart'; // Removed due to namespace issues
+import '../l10n/app_localizations.dart';
+import 'supabase_service.dart';
 
 class NotificationService {
   static const String _enabledKey = 'notifications_enabled';
@@ -16,69 +19,106 @@ class NotificationService {
   static const String _minuteKey = 'notification_minute';
   static final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
   static final ValueNotifier<bool> enabledNotifier = ValueNotifier<bool>(false);
+  
+  // 로컬라이징을 위한 GlobalKey
+  static GlobalKey<NavigatorState>? _navigatorKey;
 
-  // 알림 제목 (세련된 톤으로 통일)
-  static const String _dailyTitle = '별빛 소통';
+  // 알림 제목 (로컬라이징)
+  static String _getDailyTitle() {
+    if (_navigatorKey?.currentContext != null) {
+      final l10n = AppLocalizations.of(_navigatorKey!.currentContext!);
+      return l10n?.notificationTitle ?? 'Moonlight Chat';
+    }
+    return 'Moonlight Chat'; // 폴백
+  }
 
-  // 랜덤 바디 메시지 후보들
-  static const List<String> _dailyBodyCandidates = [
-    '기분 좋은 하루의 시작을 알려드릴게요',
-    '오늘의 이야기, 잠깐 확인해볼까요?',
-    '당신을 위한 작은 힌트가 도착했어요',
-    '오늘 당신은 살짝 미소짓고 있어요',
-    '별이 전하는 오늘의 메시지',
-    '행운의 타이밍, 지금 체크하세요',
-    '오늘 하루, 별자리 가이드 열렸어요',
-    '하루를 여는 작은 영감 한 스푼',
-    '오늘의 키워드, 지금 만나보세요',
-    '당신의 오늘, 별이 응원해요',
-    '오늘의 이야기 업데이트! 좋은 징조가 보여요',
-    '마음이 가벼워지는 오늘의 조언',
-    '행운 포인트가 깜빡! 확인해요',
-    '오늘 더 반짝이도록, 설레임 ON',
-    '하루의 흐름, 부드럽게 시작해요',
-    '지금, 당신을 위한 한 줄 운세',
-    '오늘의 길, 별이 살짝 비춰줘요',
-    '스스로에게 건네는 작은 행운',
-    '좋은 하루를 여는 열쇠, 여기요',
-    '오늘의 기분 전환, 행복 한 컵',
-    '오늘도 별이 당신 편이에요',
-    '별빛이 이야기해주는 당신의 이야기를 들어보세요',
-    '별빛이 들려주는 오늘의 작은 시 한 구절✨',
-    '당신을 위한 오늘의 짧은 이야기, 들어보실래요?',
-    '마음이 궁금해하는 오늘의 비밀을 알려드려요',
-    '오늘 하루를 위한 별빛의 편지가 도착했어요💌',
-    '별빛이 그려준 당신의 오늘, 지금 확인해보세요',
-    '당신만을 위한 이야기가 준비되어 있어요',
-    '오늘의 당신에게 딱 맞는 한 줄 시🌙',
-    '별빛이 속삭이는 오늘의 영감, 들어보세요',
-    '당신의 하루가 궁금해요, 별빛이 말해줄게요',
-    '오늘은 어떤 이야기가 펼쳐질까요? 🌠',
-    '별빛이 찾아낸 오늘의 작은 기쁨, 확인해보세요',
-    '당신을 위한 오늘의 작은 소설이 완성됐어요📖',
-    '하루를 밝히는 별빛의 조언을 들어보세요',
-    '오늘을 특별하게 만드는 메시지, 클릭!',
-    '별빛이 준비한 오늘의 감성 이야기✨',
-    '당신의 하루를 위한 한 편의 이야기',  
-    '오늘은 어떤 기분일까요? 별빛이 알려줄게요',
-    '당신만 아는 비밀스러운 한 줄 이야기🌌',
-    '별빛이 당신에게 건네는 따뜻한 인사',
-    '오늘의 기분을 위한 작은 선물🎁',
-    '마음을 포근하게 하는 별빛의 시 한 편',
-    '오늘의 당신을 위한 별빛 스토리 오픈!',
-    '별빛이 말하는 오늘의 키워드, 궁금하지 않나요?',
-    '하루를 시작하는 한 줄 영감✨',
-    '오늘은 어떤 별빛이 당신을 비출까요?',
-    '별빛이 준비한 오늘의 감정 이야기🌙', 
-    '오늘의 분위기에 어울리는 한 줄 소설',
-    '당신을 위한 특별한 오늘의 메시지 💫',
-    '별빛이 담아온 오늘의 한 장면, 지금 확인',
-    '당신의 마음을 위한 별빛 힌트 🌠',
-  ];
+  // 푸시 메시지 (로컬라이징)
+  static String _getPushPixMessage() {
+    if (_navigatorKey?.currentContext != null) {
+      final l10n = AppLocalizations.of(_navigatorKey!.currentContext!);
+      return l10n?.pushPixMessage ?? 'Listen to your story told by moonlight';
+    }
+    return 'Listen to your story told by moonlight'; // 폴백
+  }
+  
+  // GlobalKey 설정 함수
+  static void setNavigatorKey(GlobalKey<NavigatorState> key) {
+    _navigatorKey = key;
+  }
 
-  static String _pickDailyBody() {
+  // 랜덤 바디 메시지 후보들 (Supabase에서 가져오기)
+  static Future<List<String>> _getDailyBodyCandidates() async {
+    try {
+      // Supabase에서 알림 메시지 조회
+      final messages = await SupabaseService.getNotificationMessages();
+      
+      if (messages.isEmpty) {
+        // 폴백: 기본 메시지
+        return _getFallbackMessages();
+      }
+      
+      // 현재 언어 설정에 따라 메시지 선택
+      if (_navigatorKey?.currentContext != null) {
+        final locale = Localizations.localeOf(_navigatorKey!.currentContext!);
+        print('NotificationService: 현재 언어 코드: ${locale.languageCode}');
+        
+        // 모든 메시지를 하나의 배열로 합치기
+        List<String> allMessages = [];
+        for (var message in messages) {
+          String? languageMessages;
+          
+          switch (locale.languageCode) {
+            case 'ko':
+              languageMessages = message['ko_msg'] as String?;
+              break;
+            case 'en':
+              languageMessages = message['en_msg'] as String?;
+              break;
+            case 'ja':
+              languageMessages = message['ja_msg'] as String?;
+              break;
+            case 'zh':
+              languageMessages = message['zh_msg'] as String?;
+              break;
+            default:
+              languageMessages = message['en_msg'] as String?; // 기본값: 영어
+          }
+          
+          if (languageMessages != null && languageMessages.isNotEmpty) {
+            allMessages.addAll(SupabaseService.parseMessages(languageMessages));
+          }
+        }
+        
+        return allMessages.isNotEmpty ? allMessages : _getFallbackMessages();
+      }
+      
+      return _getFallbackMessages();
+    } catch (e) {
+      print('알림 메시지 조회 오류: $e');
+      return _getFallbackMessages();
+    }
+  }
+  
+  // 폴백 메시지 (오프라인 또는 오류 시)
+  static List<String> _getFallbackMessages() {
+    return [
+      '기분 좋은 하루의 시작을 알려드릴게요',
+      '오늘의 이야기, 잠깐 확인해볼까요?',
+      '당신을 위한 작은 힌트가 도착했어요',
+      '오늘 당신은 살짝 미소짓고 있어요',
+      '별이 전하는 오늘의 메시지',
+      '행운의 타이밍, 지금 체크하세요',
+      '오늘 하루, 별자리 가이드 열렸어요',
+      '하루를 여는 작은 영감 한 스푼',
+      '오늘의 키워드, 지금 만나보세요',
+      '당신의 오늘, 별이 응원해요',
+    ];
+  }
+
+  static Future<String> _pickDailyBody() async {
     final rand = Random();
-    return _dailyBodyCandidates[rand.nextInt(_dailyBodyCandidates.length)];
+    final candidates = await _getDailyBodyCandidates();
+    return candidates[rand.nextInt(candidates.length)];
   }
 
   static Future<void> init() async {
@@ -89,9 +129,8 @@ class NotificationService {
     const initSettings = InitializationSettings(android: androidInit, iOS: iosInit);
     await _plugin.initialize(initSettings);
 
-    // Timezone init for scheduling (default to Asia/Seoul)
-    tzdata.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
+    // Timezone init for scheduling (device local timezone)
+    await _setupLocalTimezone();
 
     // Ensure Android channel exists
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
@@ -150,6 +189,53 @@ class NotificationService {
     }
 
     print('NotificationService: 앱 초기화 완료');
+  }
+  static Future<void> _setupLocalTimezone() async {
+    try {
+      tzdata.initializeTimeZones();
+      
+      // Use device's local timezone by getting current DateTime offset
+      final now = DateTime.now();
+      final offset = now.timeZoneOffset;
+      final offsetHours = offset.inHours;
+      
+      // Convert offset to timezone name
+      String localTz;
+      if (offsetHours == 9) {
+        localTz = 'Asia/Seoul'; // Korea
+      } else if (offsetHours == -8) {
+        localTz = 'America/Los_Angeles'; // Pacific Time
+      } else if (offsetHours == -5) {
+        localTz = 'America/New_York'; // Eastern Time
+      } else if (offsetHours == 0) {
+        localTz = 'Europe/London'; // GMT
+      } else if (offsetHours == 1) {
+        localTz = 'Europe/Paris'; // Central European Time
+      } else if (offsetHours == 8) {
+        localTz = 'Asia/Shanghai'; // China Standard Time
+      } else if (offsetHours == -9) {
+        localTz = 'America/Anchorage'; // Alaska Time
+      } else if (offsetHours == -7) {
+        localTz = 'America/Denver'; // Mountain Time
+      } else if (offsetHours == -6) {
+        localTz = 'America/Chicago'; // Central Time
+      } else {
+        // For other offsets, use UTC as fallback
+        localTz = 'UTC';
+        print('NotificationService: 알 수 없는 시간대 오프셋 ($offsetHours), UTC 사용');
+      }
+      
+      tz.setLocalLocation(tz.getLocation(localTz));
+      print('NotificationService: 기기 시간대 적용: $localTz (오프셋: ${offsetHours}시간)');
+    } catch (e) {
+      // 실패 시 UTC 폴백
+      try {
+        tz.setLocalLocation(tz.getLocation('UTC'));
+        print('NotificationService: 시간대 감지 실패, UTC 폴백: ' + e.toString());
+      } catch (_) {
+        print('NotificationService: 시간대 설정 완전 실패');
+      }
+    }
   }
 
 
@@ -479,6 +565,8 @@ class NotificationService {
   // 앱이 포그라운드로 돌아왔을 때 호출할 함수
   static Future<void> onAppResumed() async {
     print('NotificationService: 앱이 포그라운드로 돌아옴 - 권한 상태 확인');
+      // 이동/여행 등으로 시간대가 달라졌을 수 있으므로 재설정
+      await _setupLocalTimezone();
     
     try {
       // 시스템에서 알림이 허용되어 있는지 확인
@@ -518,6 +606,12 @@ class NotificationService {
       await prefs.setInt(_hourKey, hour);
       await prefs.setInt(_minuteKey, minute);
       print('NotificationService: 알림 시간 업데이트: $hour:$minute');
+      
+      // 알림이 활성화되어 있으면 새로운 시간으로 스케줄 재등록
+      if (enabledNotifier.value) {
+        await scheduleDailyFortuneNotification();
+        print('NotificationService: 새로운 시간으로 스케줄 재등록 완료');
+      }
     } catch (e) {
       print('NotificationService: 알림 시간 저장 실패: $e');
     }
@@ -547,10 +641,11 @@ class NotificationService {
     );
     const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
+    final body = await _pickDailyBody();
     await _plugin.show(
       1002,
-      _dailyTitle,
-      '${_pickDailyBody()}\n별빛이 이야기해주는 당신의 이야기를 들어보세요',
+      _getDailyTitle(),
+      '$body\n별빛이 이야기해주는 당신의 이야기를 들어보세요',
       details,
     );
     print('NotificationService: 운세 알림 전송 완료');
@@ -558,6 +653,8 @@ class NotificationService {
 
   // 매일 지정 시간에 알림 스케줄
   static Future<void> scheduleDailyFortuneNotification() async {
+    // 스케줄 직전에 시간대 보장
+    await _setupLocalTimezone();
     final time = await getNotificationTime();
     final hour = time['hour'] ?? 9;
     final minute = time['minute'] ?? 0;
@@ -582,10 +679,11 @@ class NotificationService {
     );
     const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
+    final body = await _pickDailyBody();
     await _plugin.zonedSchedule(
       2001,
-      _dailyTitle,
-      '${_pickDailyBody()}\n별빛이 이야기해주는 당신의 이야기를 들어보세요',
+      _getDailyTitle(),
+        '$body\n${_getPushPixMessage()}', //pushPixMessage
       scheduled,
       details,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
