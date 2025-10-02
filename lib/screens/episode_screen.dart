@@ -117,16 +117,46 @@ class _EpisodeScreenState extends State<EpisodeScreen> {
       // 체험 모드: 더미 데이터 주입
       if (await SajuService.isExperienceMode()) {
         final locale = Localizations.localeOf(context).languageCode;
-        final bool isKorean = locale == 'ko';
-        final dummy = EpisodeResult(
-          title: isKorean ? '운명의 만남' : 'A Fateful Encounter',
-          content: isKorean 
-            ? '어느 화창한 아침, 작은 마을의 한 카페에서 한 여인이 커피를 마시며 창밖을 바라보고 있었다. 그 순간, 그녀의 시선이 한 남자와 마주쳤다. 남자는 책을 읽고 있었고, 그의 눈빛은 깊은 이야기를 담고 있었다. 여인은 그와의 대화가 운명처럼 느껴졌다. 서로의 취향에 대해 이야기하며, 두 사람은 마음의 벽을 허물기 시작했다. 오늘은 새로운 인연을 만날 수 있는 특별한 날임을 느끼며, 여인은 웃음을 지었다.'
-            : 'On a bright morning in a small village café, a woman sipped her coffee while gazing out the window. At that moment, her eyes met those of a man. He was reading a book, and his gaze seemed to hold a world of untold stories. The woman felt as though their conversation was meant to be. As they spoke about their tastes and interests, the walls around their hearts began to fade. Realizing that today was a special day to meet someone new, the woman smiled warmly.',
-          contentLength: isKorean ? 416 : 416,
-          summary: isKorean ? '운명적인 만남을 통해 새로운 인연을 발견하는 이야기입니다.' : 'A story about discovering a new connection through a fateful meeting.',
-          tomorrowSummary: isKorean ? '어제의 만남이 새로운 모험으로 이어지는 이야기를 들려드립니다.' : 'Tomorrow reveals how yesterday’s encounter blossoms into a new adventure.',
-        );
+        
+        EpisodeResult dummy;
+        switch (locale) {
+          case 'ko':
+            dummy = EpisodeResult(
+              title: '운명의 만남',
+              content: '어느 화창한 아침, 작은 마을의 한 카페에서 한 여인이 커피를 마시며 창밖을 바라보고 있었다. 그 순간, 그녀의 시선이 한 남자와 마주쳤다. 남자는 책을 읽고 있었고, 그의 눈빛은 깊은 이야기를 담고 있었다. 여인은 그와의 대화가 운명처럼 느껴졌다. 서로의 취향에 대해 이야기하며, 두 사람은 마음의 벽을 허물기 시작했다. 오늘은 새로운 인연을 만날 수 있는 특별한 날임을 느끼며, 여인은 웃음을 지었다.',
+              contentLength: 416,
+              summary: '운명적인 만남을 통해 새로운 인연을 발견하는 이야기입니다.',
+              tomorrowSummary: '어제의 만남이 새로운 모험으로 이어지는 이야기를 들려드립니다.',
+            );
+            break;
+          case 'ja':
+            dummy = EpisodeResult(
+              title: '運命の出会い',
+              content: 'ある晴れた朝、小さな村のカフェで女性がコーヒーを飲みながら窓の外を見つめていた。その瞬間、彼女の視線が一人の男性と出会った。男性は本を読んでいて、その眼差しには深い物語が込められていた。女性は彼との会話が運命のように感じられた。お互いの趣味について話しながら、二人は心の壁を取り除き始めた。今日は新しい縁を結ぶことができる特別な日であることを感じ、女性は微笑んだ。',
+              contentLength: 416,
+              summary: '運命的な出会いを通じて新しい縁を発見する物語です。',
+              tomorrowSummary: '昨日の出会いが新しい冒険へと続く物語をお届けします。',
+            );
+            break;
+          case 'zh':
+            dummy = EpisodeResult(
+              title: '命运般的相遇',
+              content: '在一个晴朗的早晨，小镇咖啡馆里，一位女子一边喝着咖啡一边凝视着窗外。就在那一刻，她的目光与一位男子相遇了。男子正在读书，他的眼神中似乎蕴含着深刻的故事。女子觉得与他的对话仿佛是命中注定的。在谈论彼此的兴趣爱好时，两人开始拆除心中的壁垒。感受到今天是能够遇见新缘分的特别日子，女子露出了微笑。',
+              contentLength: 416,
+              summary: '通过命运般的相遇发现新缘分的故事。',
+              tomorrowSummary: '明天将讲述昨天相遇如何发展成新冒险的故事。',
+            );
+            break;
+          default: // 영어 (en)
+            dummy = EpisodeResult(
+              title: 'A Fateful Encounter',
+              content: 'On a bright morning in a small village café, a woman sipped her coffee while gazing out the window. At that moment, her eyes met those of a man. He was reading a book, and his gaze seemed to hold a world of untold stories. The woman felt as though their conversation was meant to be. As they spoke about their tastes and interests, the walls around their hearts began to fade. Realizing that today was a special day to meet someone new, the woman smiled warmly.',
+              contentLength: 416,
+              summary: 'A story about discovering a new connection through a fateful meeting.',
+              tomorrowSummary: "Tomorrow reveals how yesterday's encounter blossoms into a new adventure.",
+            );
+        }
+        
         setState(() { _episode = dummy; _loading = false; });
         // 즐겨찾기 상태 확인 (체험 모드에서도 DB 반영 시 표시 유지)
         _checkFavoriteStatus();

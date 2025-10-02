@@ -117,17 +117,41 @@ class _PoetryScreenState extends State<PoetryScreen> {
     try {
       // 체험 모드: 더미 시 주입
       if (await SajuService.isExperienceMode()) {
-        final locale = Localizations.localeOf(context).languageCode;
-        final bool isKorean = locale == 'ko';
-        final dummy = PoetryResult(
-          title: isKorean ? '사랑의 여정을 기다리며' : 'Awaiting the Journey of Love',
-          content: isKorean 
-            ? '가을의 첫 숨결, \n온 세상이 황금빛으로 물들어가네.  \n내 마음의 깊은 곳,  \n사랑의 씨앗이 움트기를  \n조용히 바래며,  \n그 사람의 향기를 그려본다.  \n\n그리움의 나날,  \n고백할 수 없는 마음이,  \n파란 하늘 아래,  \n함께할 순간을 꿈꾸며  \n하늘의 별에 소원을 빌어본다.  \n\n이 길의 끝에,  \n마주칠 너를 위해,  \n내 마음의 준비를 다하고  \n한 걸음 더 나아간다.  \n\n사랑이 찾아오는 그 날,  \n내 마음에 피어나는  \n작은 꽃들이,  \n너와 나를 잇는  \n희망의 다리가 될 거야.'
-            : 'The first breath of autumn,  \nturning the whole world into shades of gold.  \nDeep within my heart,  \nI quietly wish for the seed of love to sprout,  \nas I picture the scent of that person.  \n\nDays filled with longing,  \na heart unable to confess,  \ndreaming of moments together  \nbeneath the blue sky,  \nwhispering my wish to the stars above.  \n\nAt the end of this path,  \nfor the moment I meet you,  \nI ready my heart  \nand take one more step forward.  \n\nOn the day love finally arrives,  \nsmall blossoms blooming in my heart  \nwill become a bridge of hope  \nthat connects you and me.'
-          ,
-          summary: isKorean ? '사랑의 기다림과 희망을 담은 시.' : 'A poem capturing the longing and hope for love.',
-          tomorrowHint: isKorean ? '내일은 새로운 만남의 가능성을 이야기합니다.' : 'Tomorrow speaks of the possibility of a new encounter.',
-        );
+        final lang = Localizations.localeOf(context).languageCode;
+        PoetryResult dummy;
+        switch (lang) {
+          case 'ko':
+            dummy = PoetryResult(
+              title: '사랑의 여정을 기다리며',
+              content: '가을의 첫 숨결, \n온 세상이 황금빛으로 물들어가네.  \n내 마음의 깊은 곳,  \n사랑의 씨앗이 움트기를  \n조용히 바래며,  \n그 사람의 향기를 그려본다.  \n\n그리움의 나날,  \n고백할 수 없는 마음이,  \n파란 하늘 아래,  \n함께할 순간을 꿈꾸며  \n하늘의 별에 소원을 빌어본다.  \n\n이 길의 끝에,  \n마주칠 너를 위해,  \n내 마음의 준비를 다하고  \n한 걸음 더 나아간다.  \n\n사랑이 찾아오는 그 날,  \n내 마음에 피어나는  \n작은 꽃들이,  \n너와 나를 잇는  \n희망의 다리가 될 거야.',
+              summary: '사랑의 기다림과 희망을 담은 시.',
+              tomorrowHint: '내일은 새로운 만남의 가능성을 이야기합니다.',
+            );
+            break;
+          case 'ja':
+            dummy = PoetryResult(
+              title: '愛の旅路を待ちながら',
+              content: '秋の最初の息吹、\n世界全体が黄金色に染まっていく。\n私の心の奥深く、\n愛の種が芽生えることを\n静かに願いながら、\nあの人の香りを思い描く。\n\n憧れの日々、\n告白できない心が、\n青い空の下、\n一緒にいる瞬間を夢見て\n空の星に願いを込める。\n\nこの道の終わりに、\n出会うあなたのために、\n心の準備を整えて\n一歩ずつ前進する。\n\n愛が訪れるその日、\n私の心に咲く\n小さな花たちが、\nあなたと私を繋ぐ\n希望の橋となるだろう。',
+              summary: '愛の待ち望みと希望を込めた詩。',
+              tomorrowHint: '明日は新しい出会いの可能性を語ります。',
+            );
+            break;
+          case 'zh':
+            dummy = PoetryResult(
+              title: '等待爱的旅程',
+              content: '秋天的第一缕气息，\n整个世界染成了金黄色。\n在我心灵的深处，\n静静地期盼着\n爱的种子发芽，\n描绘着那个人的香气。\n\n思念的日子，\n无法告白的心，\n在蓝天下，\n梦想着共度的时光，\n向天空的星星许愿。\n\n在这条路的尽头，\n为了遇见你，\n我准备好我的心，\n一步一步向前迈进。\n\n当爱到来的那一天，\n在我心中绽放的\n小花朵们，\n将成为连接你我的\n希望之桥。',
+              summary: '充满爱的等待和希望的诗。',
+              tomorrowHint: '明天将讲述新相遇的可能性。',
+            );
+            break;
+          default: // 영어 (en)
+            dummy = PoetryResult(
+              title: 'Awaiting the Journey of Love',
+              content: 'The first breath of autumn,  \nturning the whole world into shades of gold.  \nDeep within my heart,  \nI quietly wish for the seed of love to sprout,  \nas I picture the scent of that person.  \n\nDays filled with longing,  \na heart unable to confess,  \ndreaming of moments together  \nbeneath the blue sky,  \nwhispering my wish to the stars above.  \n\nAt the end of this path,  \nfor the moment I meet you,  \nI ready my heart  \nand take one more step forward.  \n\nOn the day love finally arrives,  \nsmall blossoms blooming in my heart  \nwill become a bridge of hope  \nthat connects you and me.',
+              summary: 'A poem capturing the longing and hope for love.',
+              tomorrowHint: 'Tomorrow speaks of the possibility of a new encounter.',
+            );
+        }
         setState(() { _poem = dummy; _loading = false; });
         // 즐겨찾기 상태 확인 (체험 모드에서도 DB 반영 시 표시 유지)
         _checkFavoriteStatus();

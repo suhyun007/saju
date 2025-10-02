@@ -49,7 +49,8 @@ platform :ios do
   	skip_metadata: true,
   	skip_screenshots: true,
   	skip_app_version_update: true,
-  	precheck_include_in_app_purchases: false
+  	precheck_include_in_app_purchases: false,
+  	force: true
    	)
   end
   
