@@ -76,7 +76,7 @@ class _GuideScreenState extends State<GuideScreen> {
       final birthYmdDebug = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
           '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
           '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
-      final expectedComposite = '$birthYmdDebug|${sajuInfo.gender}|${sajuInfo.loveStatus ?? ''}|$lastDate';
+      final expectedComposite = '$birthYmdDebug|${sajuInfo.gender}|${sajuInfo.tone ?? ''}|$lastDate';
       dev.log('[Guide cache check] today=$todayYmd lastDate=$lastDate lastFp=$lastFp expected=$expectedComposite lang=$locale lastLang=$lastLang expired=$expired', name: 'GuideScreen');
       if (!expired && cachedContent.isNotEmpty) {
         dev.log('바뀐 데이터 없음!! 서버 호출 안함!!', name: 'GuideScreen');
@@ -109,12 +109,12 @@ class _GuideScreenState extends State<GuideScreen> {
       // 타임존 오차 등으로 과거 날짜가 오면 오늘 날짜로 보정
       if (servedDate.compareTo(todayYmd) < 0) servedDate = todayYmd;
       sajuInfo.guide['lastFortuneDate'] = servedDate;
-      // 조합 지문: YYYYMMDD|gender|loveStatus|servedDate(YYYYMMDD)
+      // 조합 지문: YYYYMMDD|gender|tone|servedDate(YYYYMMDD)
       final birthYmd = '${sajuInfo.birthDate.year.toString().padLeft(4, '0')}'
           '${sajuInfo.birthDate.month.toString().padLeft(2, '0')}'
           '${sajuInfo.birthDate.day.toString().padLeft(2, '0')}';
-      final loveStatus = sajuInfo.loveStatus ?? '';
-      final compositeFingerprint = '$birthYmd|${sajuInfo.gender}|$loveStatus|${sajuInfo.guide['lastFortuneDate'] ?? ''}';
+      final tone = sajuInfo.tone ?? '';
+      final compositeFingerprint = '$birthYmd|${sajuInfo.gender}|$tone|${sajuInfo.guide['lastFortuneDate'] ?? ''}';
       sajuInfo.guide['lastRequestFingerprint'] = compositeFingerprint;
       sajuInfo.guide['lastLanguage'] = locale;
       await SajuService.saveSajuInfoContent(sajuInfo);

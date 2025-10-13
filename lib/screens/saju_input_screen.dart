@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../services/ad_ids.dart';
 // import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
 import '../models/saju_info.dart';
@@ -34,6 +36,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   String? _selectedCountry;
   String? _selectedEra;
   String? _selectedAgeGroup;
+  String? _selectedGrowthTheme;
+  String? _selectedLoveRelation;
+  String? _selectedWorldAction;
   
   // Google Maps API Key는 AndroidManifest.xml과 AppDelegate.swift에 설정됨
   // 현재 구현에서는 geolocator와 geocoding 패키지를 사용하므로 직접적인 API 키 사용 불필요
@@ -95,18 +100,19 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text('${l10n.name} ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: primary, fontFamily: 'NotoSansKR')),
+              Text('${l10n.name} ', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primary, fontFamily: 'NotoSansKR')),
             ],
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 0),
           TextFormField(
             controller: _nameController,
-            style: TextStyle(fontSize: 15, color: primary),
+            style: TextStyle(fontSize: 14, color: primary),
             decoration: InputDecoration(
               hintText: l10n.nameHint,
-              hintStyle: TextStyle(fontSize: 15, color: secondary),
+              hintStyle: TextStyle(fontSize: 14, color: secondary),
               filled: true,
               fillColor: cardBg,
+            isDense: true,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10), 
                 borderSide: BorderSide(
@@ -131,27 +137,30 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     : border
                 )
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 9),
 
           // 성별
           Row(
             children: [
               const SizedBox(width: 4),
-              Text('${l10n.gender} ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
+              Text('${l10n.gender} ', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 0),
           Row(
             children: [
               // 여성 (30%)
               Expanded(
                 flex: 30,
                 child:                 GestureDetector(
-                  onTap: () => setState(() => _selectedGender = 'female'),
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                    setState(() => _selectedGender = 'female');
+                  },
                   child: Container(
                     margin: const EdgeInsets.only(right: 2.5),
                     padding: const EdgeInsets.all(10),
@@ -172,7 +181,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               Expanded(
                 flex: 30,
                 child:                 GestureDetector(
-                  onTap: () => setState(() => _selectedGender = 'male'),
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                    setState(() => _selectedGender = 'male');
+                  },
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
                     padding: const EdgeInsets.all(10),
@@ -193,7 +205,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               Expanded(
                 flex: 40,
                 child:                 GestureDetector(
-                  onTap: () => setState(() => _selectedGender = 'nonBinary'),
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                    setState(() => _selectedGender = 'nonBinary');
+                  },
                   child: Container(
                     margin: const EdgeInsets.only(left: 2.5),
                     padding: const EdgeInsets.all(10),
@@ -213,20 +228,20 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             ],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 9),
           // Character Age (Decade groups)
           Row(
             children: [
               const SizedBox(width: 4),
-              Text('${l10n.birthDate} ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
+              Text('${l10n.birthDate} ', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 0),
           InkWell(
             onTap: _showAgeBottomSheet,
             child: Container(
               width: double.infinity,
-              height: 46,
+              height: 43,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
               decoration: BoxDecoration(
                 color: cardBg,
@@ -235,23 +250,46 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               ),
               child: Row(
                 children: [
-                  Expanded(
-                    child: Text(
-                      _selectedAgeGroup ?? _ageHintText(context),
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: _selectedAgeGroup != null ? primary : secondary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+          Expanded(
+            child: Text(
+              () {
+                if (_selectedAgeGroup == null) return l10n.notSelected;
+                // key → localized label
+                switch (_selectedAgeGroup) {
+                  case 'teens':
+                    return Localizations.localeOf(context).languageCode == 'en' ? 'Teens' : (Localizations.localeOf(context).languageCode == 'ja' ? '10代' : Localizations.localeOf(context).languageCode == 'zh' ? '10代' : '10대');
+                  case '20s':
+                    return Localizations.localeOf(context).languageCode == 'en' ? '20s' : (Localizations.localeOf(context).languageCode == 'ja' ? '20代' : Localizations.localeOf(context).languageCode == 'zh' ? '20代' : '20대');
+                  case '30s':
+                    return Localizations.localeOf(context).languageCode == 'en' ? '30s' : (Localizations.localeOf(context).languageCode == 'ja' ? '30代' : Localizations.localeOf(context).languageCode == 'zh' ? '30代' : '30대');
+                  case '40s':
+                    return Localizations.localeOf(context).languageCode == 'en' ? '40s' : (Localizations.localeOf(context).languageCode == 'ja' ? '40代' : Localizations.localeOf(context).languageCode == 'zh' ? '40代' : '40대');
+                  case '50s':
+                    return Localizations.localeOf(context).languageCode == 'en' ? '50s' : (Localizations.localeOf(context).languageCode == 'ja' ? '50代' : Localizations.localeOf(context).languageCode == 'zh' ? '50代' : '50대');
+                  case '60s':
+                    return Localizations.localeOf(context).languageCode == 'en' ? '60s' : (Localizations.localeOf(context).languageCode == 'ja' ? '60代' : Localizations.localeOf(context).languageCode == 'zh' ? '60代' : '60대');
+                  case '70s':
+                    return Localizations.localeOf(context).languageCode == 'en' ? '70s' : (Localizations.localeOf(context).languageCode == 'ja' ? '70代' : Localizations.localeOf(context).languageCode == 'zh' ? '70代' : '70대');
+                  case '80plus':
+                    return Localizations.localeOf(context).languageCode == 'en' ? '80+' : (Localizations.localeOf(context).languageCode == 'ja' ? '80代以上' : Localizations.localeOf(context).languageCode == 'zh' ? '80岁以上' : '80대 이상');
+                  default:
+                    return _selectedAgeGroup!;
+                }
+              }(),
+              style: TextStyle(
+                fontSize: 14,
+                color: _selectedAgeGroup != null ? primary : secondary,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
                   Icon(Icons.arrow_drop_down, color: secondary),
                 ],
               ),
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 9),
 
           // 캐릭터 배경 (Character's Era)
           /*
@@ -302,15 +340,15 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           Row(
             children: [
               const SizedBox(width: 4),
-              Text(l10n.birthRegion, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
+              Text(l10n.birthRegion, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primary)),
             ],
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 0),
           // 국가 선택 - 바텀시트
           InkWell(
             onTap: _showCountryBottomSheet,
             child: Container(
-              height: 46,
+              height: 43,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
               decoration: BoxDecoration(
                 color: cardBg,
@@ -321,52 +359,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      _selectedCountry ?? _countryHintText(context),
+                      _selectedCountry ?? l10n.notSelected,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 14,
                         color: _selectedCountry != null ? primary : secondary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Icon(Icons.keyboard_arrow_down_rounded, color: secondary, size: 24),
-                ],
-              ),
-            ),
-          ),
-          
-          
-
-          const SizedBox(height: 15),
-
-          // 상태
-          Row(children: [
-            const SizedBox(width: 4),
-            Text(l10n.loveStatus, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
-          ]),
-          const SizedBox(height: 3),
-          InkWell(
-            onTap: _showStatusBottomSheet,
-            child: Container(
-              width: double.infinity,
-              height: 46,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-              decoration: BoxDecoration(
-                color: cardBg,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: border),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      () {
-                        final idx = statusKeys.indexOf(_selectedLoveStatus ?? '');
-                        return idx >= 0 ? statuses[idx] : l10n.statusSelectHint;
-                      }(),
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: _selectedLoveStatus != null ? primary : secondary,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -378,6 +374,226 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                 ],
               ),
             ),
+          ),
+
+          const SizedBox(height: 9),
+
+          // 상태, 세상/행동 - Row로 2개 필드 배치
+          Row(
+            children: [
+              // 왼쪽 필드 (50%) - 상태
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      const SizedBox(width: 4),
+                      Text(l10n.tone, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primary)),
+                    ]),
+                    const SizedBox(height: 0),
+                    InkWell(
+                      onTap: _showStatusBottomSheet,
+                      child: Container(
+                        width: double.infinity,
+                        height: 43,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: border),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                () {
+                                  if (_selectedLoveStatus == null) return l10n.notSelected;
+                                  final idx = statusKeys.indexOf(_selectedLoveStatus!);
+                                  return idx >= 0 ? statuses[idx] : l10n.statusSelectHint;
+                                }(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: _selectedLoveStatus != null ? primary : secondary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              color: secondary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(width: 7),
+              
+              // 오른쪽 필드 (50%) - 세상/행동
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      const SizedBox(width: 4),
+                      Text(l10n.worldActionTitle, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primary)),
+                    ]),
+                    const SizedBox(height: 0),
+                    InkWell(
+                      onTap: _showWorldActionBottomSheet,
+                      child: Container(
+                        width: double.infinity,
+                        height: 43,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: border),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                () {
+                                  if (_selectedWorldAction == null) return l10n.notSelected;
+                                  final keys = ['adventure', 'justice', 'creativity', 'knowledge', 'survival', 'diplomacy', 'rebellion', 'exploration', 'legacy', 'redemption', 'discovery', 'balance'];
+                                  final labels = [l10n.worldAction1, l10n.worldAction2, l10n.worldAction3, l10n.worldAction4, l10n.worldAction5, l10n.worldAction6, l10n.worldAction7, l10n.worldAction8, l10n.worldAction9, l10n.worldAction10, l10n.worldAction11, l10n.worldAction12];
+                                  final idx = keys.indexOf(_selectedWorldAction!);
+                                  return idx >= 0 ? labels[idx] : l10n.notSelected;
+                                }(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: _selectedWorldAction != null ? primary : secondary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              color: secondary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 9),
+
+          // 사랑/관계, 성장 - Row로 2개 필드 배치
+          Row(
+            children: [
+              // 왼쪽 필드 (50%) - 사랑/관계
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      const SizedBox(width: 4),
+                      Text(l10n.loveRelationTitle, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primary)),
+                    ]),
+                    const SizedBox(height: 0),
+                    InkWell(
+                      onTap: _showLoveRelationBottomSheet,
+                      child: Container(
+                        width: double.infinity,
+                        height: 43,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: border),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                () {
+                                  if (_selectedLoveRelation == null) return l10n.notSelected;
+                                  final keys = ['romanticLove', 'friendship', 'familyBonds', 'selfLove', 'unrequitedLove', 'healingFromHeartbreak', 'rediscoveringLove', 'platonicConnection'];
+                                  final labels = [l10n.loveRelation1, l10n.loveRelation2, l10n.loveRelation3, l10n.loveRelation4, l10n.loveRelation5, l10n.loveRelation6, l10n.loveRelation7, l10n.loveRelation8];
+                                  final idx = keys.indexOf(_selectedLoveRelation!);
+                                  return idx >= 0 ? labels[idx] : l10n.notSelected;
+                                }(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: _selectedLoveRelation != null ? primary : secondary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              color: secondary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(width: 7),
+              
+              // 오른쪽 필드 (50%) - 성장
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      const SizedBox(width: 4),
+                      Text(l10n.growthThemeTitle, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: primary)),
+                    ]),
+                    const SizedBox(height: 0),
+                    InkWell(
+                      onTap: _showGrowthThemeBottomSheet,
+                      child: Container(
+                        width: double.infinity,
+                        height: 43,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: border),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                () {
+                                  if (_selectedGrowthTheme == null) return l10n.notSelected;
+                                  final keys = ['selfDiscovery', 'overcomingChallenges', 'buildingRelationships', 'learningSkills', 'achievingGoals', 'findingPurpose', 'healingTrauma', 'developingIdentity', 'pursuingDreams', 'embracingChange'];
+                                  final labels = [l10n.growth1, l10n.growth2, l10n.growth3, l10n.growth4, l10n.growth5, l10n.growth6, l10n.growth7, l10n.growth8, l10n.growth9, l10n.growth10];
+                                  final idx = keys.indexOf(_selectedGrowthTheme!);
+                                  return idx >= 0 ? labels[idx] : l10n.notSelected;
+                                }(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: _selectedGrowthTheme != null ? primary : secondary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              color: secondary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -481,7 +697,11 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
   void _showCountryBottomSheet() {
-    final all = _countryOptions(context);
+    FocusScope.of(context).unfocus();
+    final l10n = AppLocalizations.of(context)!;
+    
+    final baseCountries = _countryOptions(context);
+    final all = [l10n.notSelected, ...baseCountries];
     final controller = TextEditingController();
     List<String> options = List.of(all);
     showModalBottomSheet(
@@ -508,7 +728,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                       ),
                       Text(
                         AppLocalizations.of(context)!.birthRegion,
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: onSurface),
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: onSurface),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(ctx),
@@ -542,10 +762,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     itemCount: options.length,
                     itemBuilder: (_, i) {
                       final c = options[i];
-                      final isSelected = _selectedCountry == c;
+                      final isSelected = (c == l10n.notSelected && _selectedCountry == null) || _selectedCountry == c;
                       return InkWell(
                         onTap: () {
-                          setState(() => _selectedCountry = c);
+                          setState(() => _selectedCountry = c == l10n.notSelected ? null : c);
                           Navigator.pop(ctx);
                         },
                         child: Container(
@@ -590,33 +810,27 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     );
   }
 
-  String _ageHintText(BuildContext context) {
-    switch (Localizations.localeOf(context).languageCode) {
-      case 'ko':
-        return '연령대를 선택하세요 (선택)';
-      case 'ja':
-        return '年代を選択（任意）';
-      case 'zh':
-        return '选择年龄段（可选）';
-      default:
-        return 'Choose an age group (optional)';
-    }
-  }
-
   void _showAgeBottomSheet() {
-    List<String> options;
+    FocusScope.of(context).unfocus();
+    // localized labels + english keys
+    List<String> labels;
+    List<String?> keys;
     switch (Localizations.localeOf(context).languageCode) {
       case 'ko':
-        options = ['10대', '20대', '30대', '40대', '50대 이상', '선택 안함'];
+        labels = ['선택 안함','10대','20대','30대','40대','50대','60대','70대','80대 이상'];
+        keys   = [null,'teens','20s','30s','40s','50s','60s','70s','80plus'];
         break;
       case 'ja':
-        options = ['10代', '20代', '30代', '40代', '50代以上', '選択しない'];
+        labels = ['選択しない','10代','20代','30代','40代','50代','60代','70代','80代以上'];
+        keys   = [null,'teens','20s','30s','40s','50s','60s','70s','80plus'];
         break;
       case 'zh':
-        options = ['10代', '20代', '30代', '40代', '50岁以上', '不选择'];
+        labels = ['不选择','10代','20代','30代','40代','50代','60代','70代','80岁以上'];
+        keys   = [null,'teens','20s','30s','40s','50s','60s','70s','80plus'];
         break;
       default:
-        options = ['Teens (13–19)', '20s', '30s', '40s', '50+', 'Prefer not to say'];
+        labels = ['None','Teens','20s','30s','40s','50s','60s','70s','80+'];
+        keys   = [null,'teens','20s','30s','40s','50s','60s','70s','80plus'];
     }
 
     showModalBottomSheet(
@@ -624,9 +838,10 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (ctx) {
         final onSurface = Theme.of(ctx).colorScheme.onSurface;
+        final l10n = AppLocalizations.of(context)!;
         return SafeArea(
           child: SizedBox(
-            height: 320,
+            height: 420,
             child: Column(
               children: [
                 Padding(
@@ -634,22 +849,28 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
-                      const Text('Character Age', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK')),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx), 
+                        child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
+                      ),
+                      const Text('Character Age', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx), 
+                        child: Text(l10n.confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
                     ],
                   ),
                 ),
                 const Divider(height: 15),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: options.length,
+                    itemCount: labels.length,
                     itemBuilder: (_, i) {
-                      final e = options[i];
-                      final isSelected = _selectedAgeGroup == e;
+                      final e = labels[i];
+                      final isSelected = (i == 0 && _selectedAgeGroup == null) || _selectedAgeGroup == keys[i];
                       return InkWell(
                         onTap: () {
-                          setState(() => _selectedAgeGroup = e);
+                          setState(() => _selectedAgeGroup = keys[i]);
                           Navigator.pop(ctx);
                         },
                         child: Container(
@@ -692,6 +913,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     );
   }
   void _showEraBottomSheet() {
+    FocusScope.of(context).unfocus();
     final l10n = AppLocalizations.of(context)!;
     // 로컬라이징된 Era 옵션
     List<String> options;
@@ -766,7 +988,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                       ),
                       Text(
                         l10n.characterEra,
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: onSurface),
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: onSurface),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(ctx),
@@ -848,7 +1070,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           (index) => Center(
             child: Text(
               '${1900 + index}',
-              style: TextStyle(fontSize: 18, color: onSurface),
+              style: TextStyle(fontSize: 17, color: onSurface),
             ),
           ),
         ),
@@ -871,7 +1093,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           (index) => Center(
             child: Text(
               '${index + 1}',
-              style: TextStyle(fontSize: 18, color: onSurface),
+              style: TextStyle(fontSize: 17, color: onSurface),
             ),
           ),
         ),
@@ -894,7 +1116,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           (index) => Center(
             child: Text(
               '${index + 1}',
-              style: TextStyle(fontSize: 18, color: onSurface),
+              style: TextStyle(fontSize: 17, color: onSurface),
             ),
           ),
         ),
@@ -914,7 +1136,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           _selectedGender = friendInfo.gender; // 영어 키값으로 저장
           _selectedDate = friendInfo.birthDate;
           _regionController.text = friendInfo.region;
-          _selectedLoveStatus = friendInfo.loveStatus; // 영어 키값으로 저장
+          _selectedLoveStatus = friendInfo.tone; // 영어 키값으로 저장
         });
       }
     } else {
@@ -924,11 +1146,14 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           _nameController.text = sajuInfo.name;
           _selectedGender = sajuInfo.gender; // 영어 키값으로 저장
           _selectedDate = sajuInfo.birthDate;
-          _selectedLoveStatus = sajuInfo.loveStatus; // 영어 키값으로 저장
+          _selectedLoveStatus = sajuInfo.tone; // 영어 키값으로 저장
           // New: map saved preferences back into pickers
           _selectedCountry = sajuInfo.world;
           _selectedEra = sajuInfo.era;
           _selectedAgeGroup = sajuInfo.ageGroup;
+          _selectedGrowthTheme = sajuInfo.growthTheme; // 영어 키값으로 저장
+          _selectedLoveRelation = sajuInfo.loveRelation; // 영어 키값으로 저장
+          _selectedWorldAction = sajuInfo.worldAction; // 영어 키값으로 저장
         });
       }
     }
@@ -965,7 +1190,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
 
   Widget _buildMainContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+      padding: const EdgeInsets.fromLTRB(20, 7, 20, 40),
       child: Form(
         key: _formKey,
         child: Column(
@@ -973,15 +1198,16 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             // 안내 메시지
             _buildInfoMessage(),
             
-            const SizedBox(height: 10),
+            const SizedBox(height: 3),
             
             // 통합 입력 카드
             _buildUnifiedFormCard(),
             
-            const SizedBox(height: 20),
-            
+            const SizedBox(height: 5),
             // 저장 버튼
             _buildSaveButton(),
+            const SizedBox(height: 5),
+            const _CharacterSaveBanner(),
             
             // 하단 여백 추가 (오버플로우 방지)
             const SizedBox(height: 50),
@@ -1029,8 +1255,20 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   await SajuService.enableExperienceMode();
                   if (!mounted) return;
                   final l10n2 = AppLocalizations.of(context)!;
+                  final bool nowDark = Theme.of(context).brightness == Brightness.dark;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n2.experienceEntering)),
+                    SnackBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      behavior: SnackBarBehavior.floating,
+                      content: Center(
+                        child: Text(
+                          l10n2.experienceEntering,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: nowDark ? Colors.white : Colors.black),
+                        ),
+                      ),
+                    ),
                   );
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -1066,24 +1304,24 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
 
   Widget _buildInfoMessage() {
     final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.onSurface;
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
       child: Column(
         children: [
-          Icon(
-            Icons.info_outline,
-            color: isDark ? Colors.amber : const Color(0xFF3D4B91),
-            size: 50,
+          Image.asset(
+            'assets/icons/sett.png',
+            width: 55,
+            height: 55,
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 0),
           Text(
             l10n.infoMessage,
             style: TextStyle(
               fontSize: Localizations.localeOf(context).languageCode == 'en' ? 17 : 18,
               fontWeight: FontWeight.w500,
               color: primary,
+              height: 1.3,
             ),
             textAlign: TextAlign.center,
           ),
@@ -1100,7 +1338,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
 
     return SizedBox(
       width: double.infinity,
-      height: 55,
+      height: 45,
       child: ElevatedButton(
         onPressed: isFormValid ? _saveSajuInfo : null,
         style: ElevatedButton.styleFrom(
@@ -1122,116 +1360,12 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         child: Text(
           widget.isFriendInfo ? l10n.saveFriendInfo : l10n.saveBirthInfo,
           style: TextStyle(
-            fontSize: Localizations.localeOf(context).languageCode == 'en' ? 20 : 21,
-            fontWeight: FontWeight.bold,
+            fontSize: Localizations.localeOf(context).languageCode == 'en' ? 20  : 19,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
     );
-  }
-
-  // unused
-  Future<void> _selectDate() async {
-    final DateTime initial = _selectedDate ?? DateTime.now();
-    int tempYear = initial.year;
-    int tempMonth = initial.month;
-    int tempDay = initial.day;
-    final locale = Localizations.localeOf(context);
-    final l10n = AppLocalizations.of(context)!;
-
-    final DateTime? picked = await showModalBottomSheet<DateTime>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      builder: (ctx) {
-        final onSurface = Theme.of(ctx).colorScheme.onSurface;
-        return SafeArea(
-          child: SizedBox(
-            height: 320,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, DateTime(tempYear, tempMonth, tempDay)),
-                        child: Text(l10n.confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1),
-                // 언어에 따른 라벨 순서
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: locale.languageCode == 'en' 
-                      ? [
-                          Text('Month', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
-                          Text('Day', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
-                          Text('Year', style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
-                        ]
-                      : [
-                          Text(l10n.year, style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
-                          Text(l10n.month, style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
-                          Text(l10n.day, style: TextStyle(fontSize: 16, color: onSurface.withOpacity(0.7))),
-                        ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    children: locale.languageCode == 'en' 
-                      ? [
-                          // 영어: 월, 일, 년도 순서
-                          _buildMonthPicker(tempMonth, (month) {
-                            tempMonth = month;
-                            int maxDay = DateTime(tempYear, tempMonth + 1, 0).day;
-                            if (tempDay > maxDay) tempDay = maxDay;
-                          }, onSurface),
-                          _buildDayPicker(tempDay, (day) => tempDay = day, onSurface),
-
-                          _buildYearPicker(tempYear, (year) {
-                            tempYear = year;
-                            int maxDay = DateTime(tempYear, tempMonth + 1, 0).day;
-                            if (tempDay > maxDay) tempDay = maxDay;
-                          }, onSurface),
-                        ]
-                      : [
-                          // 다른 언어: 년도, 월, 일 순서
-                          _buildYearPicker(tempYear, (year) {
-                            tempYear = year;
-                            int maxDay = DateTime(tempYear, tempMonth + 1, 0).day;
-                            if (tempDay > maxDay) tempDay = maxDay;
-                          }, onSurface),
-                          _buildMonthPicker(tempMonth, (month) {
-                            tempMonth = month;
-                            int maxDay = DateTime(tempYear, tempMonth + 1, 0).day;
-                            if (tempDay > maxDay) tempDay = maxDay;
-                          }, onSurface),
-                          _buildDayPicker(tempDay, (day) => tempDay = day, onSurface),
-                        ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    if (picked != null) {
-      setState(() {
-        _selectedDate = picked;
-      });
-
-    }
   }
 
   void _saveSajuInfo() async {
@@ -1263,7 +1397,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         birthMinute: 0,
         gender: _selectedGender ?? 'female',
         region: '',
-        loveStatus: _selectedLoveStatus,
+        tone: _selectedLoveStatus,
         zodiacSign: zodiacSign,
       );
 
@@ -1291,11 +1425,14 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         birthMinute: 0,
         gender: _selectedGender ?? 'female',
         region: '',
-        loveStatus: _selectedLoveStatus,
+        tone: _selectedLoveStatus,
         zodiacSign: zodiacSign,
         // New persisted preferences
         world: _selectedCountry,
         ageGroup: _selectedAgeGroup,
+        growthTheme: _selectedGrowthTheme,
+        loveRelation: _selectedLoveRelation,
+        worldAction: _selectedWorldAction,
       );
 
       // 내 정보 저장
@@ -1351,9 +1488,12 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   }
 
   void _showStatusBottomSheet() {
+    FocusScope.of(context).unfocus();
     final l10n = AppLocalizations.of(context)!;
+    
     // Character's Tone - localized labels and english keys
     final statuses = [
+      l10n.notSelected,
       l10n.toneWarm,
       l10n.toneCalm,
       l10n.toneLovely,
@@ -1365,7 +1505,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       l10n.tonePassionate,
       l10n.toneFutureOriented,
     ];
-    final statusKeys = ['warm','calm','lovely','urban','positive','funny','emotional','hopeful','passionate','futureOriented'];
+    final statusKeys = [null,'warm','calm','lovely','urban','positive','funny','emotional','hopeful','passionate','futureOriented'];
 
     showModalBottomSheet(
       context: context,
@@ -1388,9 +1528,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                         child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
                       ),
                       Text(
-                        l10n.loveStatus,
+                        l10n.tone,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 17,
                           fontWeight: FontWeight.bold,
                           color: onSurface,
                         ),
@@ -1408,7 +1548,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     children: statuses.asMap().entries.map((entry) {
                       final index = entry.key;
                       final status = entry.value;
-                      final isSelected = _selectedLoveStatus == statusKeys[index];
+                      final isSelected = (statusKeys[index] == null && _selectedLoveStatus == null) || _selectedLoveStatus == statusKeys[index];
                       
                       return InkWell(
                         onTap: () {
@@ -1466,22 +1606,377 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     );
   }
 
+  void _showGrowthThemeBottomSheet() {
+    FocusScope.of(context).unfocus();
+    final l10n = AppLocalizations.of(context)!;
+    
+    final options = [
+      l10n.notSelected,
+      l10n.growth1,
+      l10n.growth2,
+      l10n.growth3,
+      l10n.growth4,
+      l10n.growth5,
+      l10n.growth6,
+      l10n.growth7,
+      l10n.growth8,
+      l10n.growth9,
+      l10n.growth10,
+    ];
+    
+    // 영어 키값 리스트
+    final growthKeys = [null, 'selfDiscovery', 'overcomingChallenges', 'buildingRelationships', 'learningSkills', 'achievingGoals', 'findingPurpose', 'healingTrauma', 'developingIdentity', 'pursuingDreams', 'embracingChange'];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (ctx) {
+        final onSurface = Theme.of(ctx).colorScheme.onSurface;
+        return SafeArea(
+          child: SizedBox(
+            height: 420,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
+                      ),
+                      Text(
+                        l10n.growthThemeTitle,
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: onSurface),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(l10n.confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 15),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: options.length,
+                    itemBuilder: (_, i) {
+                      final e = options[i];
+                      final isSelected = _selectedGrowthTheme == growthKeys[i];
+                      return InkWell(
+                        onTap: () {
+                          setState(() => _selectedGrowthTheme = growthKeys[i]);
+                          Navigator.pop(ctx);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          color: isSelected 
+                            ? (Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.amber.withOpacity(0.1) 
+                                : Colors.blue.withOpacity(0.08))
+                            : Colors.transparent,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  e,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: isSelected 
+                                      ? (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black)
+                                      : onSurface,
+                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(Icons.check, size: 20, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLoveRelationBottomSheet() {
+    FocusScope.of(context).unfocus();
+    final l10n = AppLocalizations.of(context)!;
+    
+    final options = [
+      l10n.notSelected,
+      l10n.loveRelation1,
+      l10n.loveRelation2,
+      l10n.loveRelation3,
+      l10n.loveRelation4,
+      l10n.loveRelation5,
+      l10n.loveRelation6,
+      l10n.loveRelation7,
+      l10n.loveRelation8,
+    ];
+    
+    // 영어 키값 리스트
+    final loveKeys = [null, 'romanticLove', 'friendship', 'familyBonds', 'selfLove', 'unrequitedLove', 'healingFromHeartbreak', 'rediscoveringLove', 'platonicConnection'];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (ctx) {
+        final onSurface = Theme.of(ctx).colorScheme.onSurface;
+        return SafeArea(
+          child: SizedBox(
+            height: 380,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
+                      ),
+                      Text(
+                        l10n.loveRelationTitle,
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: onSurface),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(l10n.confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 15),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: options.length,
+                    itemBuilder: (_, i) {
+                      final e = options[i];
+                      final isSelected = _selectedLoveRelation == loveKeys[i];
+                      return InkWell(
+                        onTap: () {
+                          setState(() => _selectedLoveRelation = loveKeys[i]);
+                          Navigator.pop(ctx);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          color: isSelected 
+                            ? (Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.amber.withOpacity(0.1) 
+                                : Colors.blue.withOpacity(0.08))
+                            : Colors.transparent,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  e,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: isSelected 
+                                      ? (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black)
+                                      : onSurface,
+                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(Icons.check, size: 20, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showWorldActionBottomSheet() {
+    FocusScope.of(context).unfocus();
+    final l10n = AppLocalizations.of(context)!;
+    
+    final options = [
+      l10n.notSelected,
+      l10n.worldAction1,
+      l10n.worldAction2,
+      l10n.worldAction3,
+      l10n.worldAction4,
+      l10n.worldAction5,
+      l10n.worldAction6,
+      l10n.worldAction7,
+      l10n.worldAction8,
+      l10n.worldAction9,
+      l10n.worldAction10,
+      l10n.worldAction11,
+      l10n.worldAction12,
+    ];
+    
+    // 영어 키값 리스트
+    final worldKeys = [null, 'adventure', 'justice', 'creativity', 'knowledge', 'survival', 'diplomacy', 'rebellion', 'exploration', 'legacy', 'redemption', 'discovery', 'balance'];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (ctx) {
+        final onSurface = Theme.of(ctx).colorScheme.onSurface;
+        return SafeArea(
+          child: SizedBox(
+            height: 420,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
+                      ),
+                      Text(
+                        l10n.worldActionTitle,
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: onSurface),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(l10n.confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 15),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: options.length,
+                    itemBuilder: (_, i) {
+                      final e = options[i];
+                      final isSelected = _selectedWorldAction == worldKeys[i];
+                      return InkWell(
+                        onTap: () {
+                          setState(() => _selectedWorldAction = worldKeys[i]);
+                          Navigator.pop(ctx);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          color: isSelected 
+                            ? (Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.amber.withOpacity(0.1) 
+                                : Colors.blue.withOpacity(0.08))
+                            : Colors.transparent,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  e,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: isSelected 
+                                      ? (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black)
+                                      : onSurface,
+                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(Icons.check, size: 20, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _showSnackBar(String message) {
+    final bool nowDark = Theme.of(context).brightness == Brightness.dark;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          message,
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        content: Center(
+          child: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              color: nowDark ? Colors.white : Colors.black,
+            ),
           ),
         ),
-        backgroundColor: Colors.amber,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
       ),
+    );
+  }
+}
+
+class _CharacterSaveBanner extends StatefulWidget {
+  const _CharacterSaveBanner();
+
+  @override
+  State<_CharacterSaveBanner> createState() => _CharacterSaveBannerState();
+}
+
+class _CharacterSaveBannerState extends State<_CharacterSaveBanner> {
+  BannerAd? _ad;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ad = BannerAd(
+      size: AdSize.banner,
+      adUnitId: AdIds.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) => setState(() => _ready = true),
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _ad?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_ready || _ad == null) return const SizedBox.shrink();
+    return SizedBox(
+      height: _ad!.size.height.toDouble(),
+      width: _ad!.size.width.toDouble(),
+      child: AdWidget(ad: _ad!),
     );
   }
 }

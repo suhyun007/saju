@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
+import '../widgets/skeletons.dart';
+import '../widgets/ad_native.dart';
 import '../l10n/app_localizations.dart';
 import '../services/poetry_api_service.dart';
 import '../services/saju_service.dart';
 import '../services/favorite_service.dart';
 import '../models/saju_info.dart';
+import '../services/ad_service.dart';
 
 class PoetryScreen extends StatefulWidget {
   final ValueNotifier<int>? activeTab;
@@ -172,7 +175,7 @@ class _PoetryScreenState extends State<PoetryScreen> {
       final lastFp = (sajuInfo.poetry['lastRequestFingerprint'] ?? '').toString();
       final lastLang = (sajuInfo.poetry['lastLanguage'] ?? '').toString();
       final todayYmd = sajuInfo.currentTodayDate;
-      final expectedComposite = '${sajuInfo.gender}|${sajuInfo.loveStatus ?? ''}|${sajuInfo.world ?? ''}|${sajuInfo.ageGroup ?? ''}|$todayYmd';
+      final expectedComposite = '${sajuInfo.gender}|${sajuInfo.tone ?? ''}|${sajuInfo.world ?? ''}|${sajuInfo.ageGroup ?? ''}|$todayYmd';
       dev.log('[Poetry cache check] today=$todayYmd lastDate=$lastDate lastFp=$lastFp expected=$expectedComposite lang=$lang lastLang=$lastLang expired=$expired', name: 'PoetryScreen');
       if (!expired && cachedContent.isNotEmpty) {
         dev.log('바뀐 데이터 없음!! 서버 호출 안함!!', name: 'PoetryScreen');
@@ -191,6 +194,9 @@ class _PoetryScreenState extends State<PoetryScreen> {
       // 만료 시 호출 - 이때만 로딩 표시
       dev.log('바뀐 데이터 있음!! 서버 호출!!!', name: 'PoetryScreen');
       setState(() { _loading = true; });
+      // 네트워크 대기 시간 동안 전면 광고 1회 노출 시도 (세션/간격 정책 적용)
+      await Future.delayed(const Duration(milliseconds: 100));
+      AdService.maybeShowInterstitial(context);
       final result = await PoetryApiService.fetchPoetry(
         sajuInfo: sajuInfo,
         language: lang,
@@ -203,9 +209,9 @@ class _PoetryScreenState extends State<PoetryScreen> {
       sajuInfo.poetry['serverResponse'] = 'ok';
       final servedDate = (result.servedDate ?? '').replaceAll('-', '');
       sajuInfo.poetry['lastPoetryDate'] = servedDate.isNotEmpty ? servedDate : sajuInfo.currentTodayDate;
-      // 조합 지문: gender|loveStatus|world|ageGroup|servedDate(YYYYMMDD)
-      final loveStatus = sajuInfo.loveStatus ?? '';
-      final compositeFingerprint = '${sajuInfo.gender}|$loveStatus|${sajuInfo.world ?? ''}|${sajuInfo.ageGroup ?? ''}|${sajuInfo.poetry['lastPoetryDate'] ?? ''}';
+      // 조합 지문: gender|tone|world|ageGroup|servedDate(YYYYMMDD)
+      final tone = sajuInfo.tone ?? '';
+      final compositeFingerprint = '${sajuInfo.gender}|$tone|${sajuInfo.world ?? ''}|${sajuInfo.ageGroup ?? ''}|${sajuInfo.poetry['lastPoetryDate'] ?? ''}';
       sajuInfo.poetry['lastRequestFingerprint'] = compositeFingerprint;
       sajuInfo.poetry['lastLanguage'] = lang;
       await SajuService.saveSajuInfoContent(sajuInfo);
@@ -346,11 +352,10 @@ class _PoetryScreenState extends State<PoetryScreen> {
   
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20, right: 20),
+        padding: const EdgeInsets.only(top: 5, bottom: 25, left: 20, right: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -360,14 +365,6 @@ class _PoetryScreenState extends State<PoetryScreen> {
               padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 20),
               child: Column(
                 children: [
-                  if (isDark) ...[
-                    const Icon(
-                      Icons.record_voice_over,
-                      color: Color(0xFFB3B3FF),
-                      size: 40,
-                    ),
-                    const SizedBox(height: 3),
-                  ],
                   FutureBuilder<bool>(
                     future: SajuService.isExperienceMode(),
                     builder: (context, snap) {
@@ -432,7 +429,9 @@ class _PoetryScreenState extends State<PoetryScreen> {
                 child: _buildBody(context),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 0),
+            const AdNative(),
+            const SizedBox(height: 0),
             // 즐겨찾기와 공유 버튼
             Center(
               child: Row(
@@ -494,7 +493,7 @@ class _PoetryScreenState extends State<PoetryScreen> {
   Widget _buildBody(BuildContext context) {
     final onText = Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF1A1A1A);
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const PoetrySkeleton();
     }
     if (_error == 'no_saju') {
       return Center(
@@ -612,7 +611,6 @@ class _HeartAnimationWidgetState extends State<HeartAnimationWidget>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _bounceAnimation;
   late Animation<double> _opacityAnimation;
 
   @override

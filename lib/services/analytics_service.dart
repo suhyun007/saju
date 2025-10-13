@@ -16,13 +16,13 @@ class AnalyticsService {
   
   // 서버 베이스 URL
   static String get _baseUrl {
-    if (kDebugMode) {
+    /*if (kDebugMode) {
       // 개발 환경
       if (Platform.isAndroid) {
         return 'http://10.0.2.2:3000/api';
       }
       return 'http://localhost:3000/api';
-    }
+    }*/
     // 프로덕션 환경
     return 'https://saju-server-j9ti.vercel.app/api';
   }

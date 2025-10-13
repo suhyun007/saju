@@ -10,9 +10,24 @@ import 'services/language_service.dart';
 import 'package:provider/provider.dart';
 import 'services/supabase_service.dart';
 import 'l10n/app_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'services/ad_service.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // iOS: ATT 권한을 우선 요청해 광고 초기화 전에 사용자 선택을 반영
+  try {
+    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    if (status == TrackingStatus.notDetermined) {
+      await AppTrackingTransparency.requestTrackingAuthorization();
+    }
+  } catch (_) {}
+
+  // Initialize Google Mobile Ads (ATT 응답 이후 초기화)
+  await MobileAds.instance.initialize();
+  AdService.preloadInterstitial();
+  AdService.preloadNative();
   // Initialize sqflite for desktop platforms
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     sqfliteFfiInit();

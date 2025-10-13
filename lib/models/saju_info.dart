@@ -5,12 +5,15 @@ class SajuInfo {
   final int birthMinute;
   final String gender;
   final String region;
-  final String? loveStatus;
+  final String? tone;
   final String? zodiacSign;
   final DateTime createdAt;
   final String? world;     // Character's World (country)
   final String? era;       // Character's Era (not persisted)
   final String? ageGroup;  // Character Age group
+  final String? growthTheme;  // 성장 테마 (영어 키값)
+  final String? loveRelation; // 사랑/관계 (영어 키값)
+  final String? worldAction;  // 세상/행동 (영어 키값)
 
   SajuInfo({
     required this.name,
@@ -19,11 +22,14 @@ class SajuInfo {
     required this.birthMinute,
     required this.gender,
     required this.region,
-    this.loveStatus,
+    this.tone,
     this.zodiacSign,
     this.world,
     this.era,
     this.ageGroup,
+    this.growthTheme,
+    this.loveRelation,
+    this.worldAction,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -38,13 +44,15 @@ class SajuInfo {
   String get currentMonthDate => '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}';
   String get currentYearDate => '${DateTime.now().year}';
 
-  // 서버 요청에 사용되는 사용자 출생정보의 지문값
+  // 서버 요청에 사용되는 사용자 출생정보의 지문값 (이름/성별 제외)
   // 시간(birthHour/minute)은 비교에서 제외하여 시간만 바뀌면 서버 재호출하지 않음
   String get currentRequestFingerprint => [
-    gender,
-    loveStatus ?? '',
+    tone ?? '',
     world ?? '',
     ageGroup ?? '',
+    growthTheme ?? '',
+    loveRelation ?? '',
+    worldAction ?? '',
   ].join('|');
 
   // 날짜 비교 메서드들
@@ -59,9 +67,9 @@ class SajuInfo {
     final lastDate = guide['lastFortuneDate'] ?? '';
     final lastFp = guide['lastRequestFingerprint'] ?? '';
     final lastLang = guide['lastLanguage'] ?? '';
-    // 조합 지문과 비교: gender|loveStatus|world|ageGroup|servedDate
+    // 조합 지문과 비교: tone|world|ageGroup|growthTheme|loveRelation|worldAction|servedDate
     final todayYmd = currentTodayDate;
-    final expectedComposite = '$gender|${loveStatus ?? ''}|${world ?? ''}|${ageGroup ?? ''}|$lastDate';
+    final expectedComposite = [currentRequestFingerprint, lastDate].join('|');
     return lastDate != todayYmd || lastFp != expectedComposite || lastLang != languageCode;
   }
 
@@ -77,9 +85,9 @@ class SajuInfo {
     final lastDate = episode['lastEpisodeDate'] ?? '';
     final lastFp = episode['lastRequestFingerprint'] ?? '';
     final lastLang = episode['lastLanguage'] ?? '';
-    // 조합 지문과 비교: gender|loveStatus|world|ageGroup|servedDate
+    // 조합 지문과 비교: tone|world|ageGroup|growthTheme|loveRelation|worldAction|servedDate
     final todayYmd = currentTodayDate;
-    final expectedComposite = '$gender|${loveStatus ?? ''}|${world ?? ''}|${ageGroup ?? ''}|$todayYmd';
+    final expectedComposite = [currentRequestFingerprint, todayYmd].join('|');
     return lastDate != todayYmd || lastFp != expectedComposite || lastLang != languageCode;
   }
 
@@ -94,9 +102,9 @@ class SajuInfo {
     final lastDate = poetry['lastPoetryDate'] ?? '';
     final lastFp = poetry['lastRequestFingerprint'] ?? '';
     final lastLang = poetry['lastLanguage'] ?? '';
-    // 조합 지문과 비교: gender|loveStatus|world|ageGroup|servedDate
+    // 조합 지문과 비교: tone|world|ageGroup|growthTheme|loveRelation|worldAction|servedDate
     final todayYmd = currentTodayDate;
-    final expectedComposite = '$gender|${loveStatus ?? ''}|${world ?? ''}|${ageGroup ?? ''}|$todayYmd';
+    final expectedComposite = [currentRequestFingerprint, todayYmd].join('|');
     return lastDate != todayYmd || lastFp != expectedComposite || lastLang != languageCode;
   }
 
@@ -106,10 +114,13 @@ class SajuInfo {
       'name': name,
       'gender': gender,
       // region removed from persisted payload
-      'loveStatus': loveStatus,
+      'tone': tone,
       'world': world,
       // 'era': era, // no longer persisted
       'ageGroup': ageGroup,
+      'growthTheme': growthTheme,
+      'loveRelation': loveRelation,
+      'worldAction': worldAction,
       'createdAt': createdAt.toIso8601String(),
       'guide': guide,
       'episode': episode,
@@ -126,11 +137,14 @@ class SajuInfo {
       birthMinute: json['birthMinute'] ?? 0,
       gender: json['gender'] ?? '',
       region: '',
-      loveStatus: json['loveStatus'] ?? json['status'],
+      tone: json['tone'] ?? json['status'],
       zodiacSign: json['zodiacSign'],
       world: json['world'],
       era: json['era'],
       ageGroup: json['ageGroup'],
+      growthTheme: json['growthTheme'],
+      loveRelation: json['loveRelation'],
+      worldAction: json['worldAction'],
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
     );
     

@@ -210,17 +210,17 @@ abstract class AppLocalizations {
   /// **'Search Region Again'**
   String get searchRegionAgain;
 
-  /// No description provided for @loveStatus.
+  /// No description provided for @tone.
   ///
   /// In en, this message translates to:
   /// **'Character’s Tone'**
-  String get loveStatus;
+  String get tone;
 
-  /// No description provided for @loveStatusHint.
+  /// No description provided for @toneHint.
   ///
   /// In en, this message translates to:
-  /// **'Choose a character tone (optional)'**
-  String get loveStatusHint;
+  /// **'Select mood (optional)'**
+  String get toneHint;
 
   /// No description provided for @toneWarm.
   ///
@@ -342,6 +342,12 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get confirm;
 
+  /// No description provided for @notSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get notSelected;
+
   /// No description provided for @year.
   ///
   /// In en, this message translates to:
@@ -423,13 +429,13 @@ abstract class AppLocalizations {
   /// No description provided for @validationStatusRequired.
   ///
   /// In en, this message translates to:
-  /// **'Choose a character tone (optional)'**
+  /// **'Select mood (optional)'**
   String get validationStatusRequired;
 
   /// No description provided for @statusSelectHint.
   ///
   /// In en, this message translates to:
-  /// **'Choose a character tone (optional)'**
+  /// **'Select mood (optional)'**
   String get statusSelectHint;
 
   /// No description provided for @successBirthInfoSaved.
@@ -1487,6 +1493,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Right now, a special story is waiting for you.'**
   String get pushPixMessage;
+
+  /// No description provided for @growthThemeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth'**
+  String get growthThemeTitle;
+
+  /// No description provided for @lifePurposeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Life Purpose'**
+  String get lifePurposeTitle;
+
+  /// No description provided for @loveRelationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Love'**
+  String get loveRelationTitle;
+
+  /// No description provided for @worldActionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get worldActionTitle;
+
+  /// No description provided for @growth1.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding my true self'**
+  String get growth1;
+
+  /// No description provided for @growth2.
+  ///
+  /// In en, this message translates to:
+  /// **'Loving myself'**
+  String get growth2;
+
+  /// No description provided for @growth3.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgiving yesterday'**
+  String get growth3;
+
+  /// No description provided for @growth4.
+  ///
+  /// In en, this message translates to:
+  /// **'Overcoming fear'**
+  String get growth4;
+
+  /// No description provided for @growth5.
+  ///
+  /// In en, this message translates to:
+  /// **'Living authentically'**
+  String get growth5;
+
+  /// No description provided for @growth6.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding my voice'**
+  String get growth6;
+
+  /// No description provided for @growth7.
+  ///
+  /// In en, this message translates to:
+  /// **'Embracing change'**
+  String get growth7;
+
+  /// No description provided for @growth8.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepting the present'**
+  String get growth8;
+
+  /// No description provided for @growth9.
+  ///
+  /// In en, this message translates to:
+  /// **'Walking my own path'**
+  String get growth9;
+
+  /// No description provided for @growth10.
+  ///
+  /// In en, this message translates to:
+  /// **'Growing a little each day'**
+  String get growth10;
+
+  /// No description provided for @loveRelation1.
+  ///
+  /// In en, this message translates to:
+  /// **'Understanding love'**
+  String get loveRelation1;
+
+  /// No description provided for @loveRelation2.
+  ///
+  /// In en, this message translates to:
+  /// **'Protecting loved ones'**
+  String get loveRelation2;
+
+  /// No description provided for @loveRelation3.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressing my heart'**
+  String get loveRelation3;
+
+  /// No description provided for @loveRelation4.
+  ///
+  /// In en, this message translates to:
+  /// **'Believing in destiny'**
+  String get loveRelation4;
+
+  /// No description provided for @loveRelation5.
+  ///
+  /// In en, this message translates to:
+  /// **'Laughing together'**
+  String get loveRelation5;
+
+  /// No description provided for @loveRelation6.
+  ///
+  /// In en, this message translates to:
+  /// **'Loving again'**
+  String get loveRelation6;
+
+  /// No description provided for @loveRelation7.
+  ///
+  /// In en, this message translates to:
+  /// **'Healing wounds'**
+  String get loveRelation7;
+
+  /// No description provided for @loveRelation8.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepting farewells'**
+  String get loveRelation8;
+
+  /// No description provided for @worldAction1.
+  ///
+  /// In en, this message translates to:
+  /// **'Traveling the world'**
+  String get worldAction1;
+
+  /// No description provided for @worldAction2.
+  ///
+  /// In en, this message translates to:
+  /// **'Inspiring others'**
+  String get worldAction2;
+
+  /// No description provided for @worldAction3.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing the world'**
+  String get worldAction3;
+
+  /// No description provided for @worldAction4.
+  ///
+  /// In en, this message translates to:
+  /// **'Speaking through art'**
+  String get worldAction4;
+
+  /// No description provided for @worldAction5.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening new paths'**
+  String get worldAction5;
+
+  /// No description provided for @worldAction6.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing sincerity'**
+  String get worldAction6;
+
+  /// No description provided for @worldAction7.
+  ///
+  /// In en, this message translates to:
+  /// **'Dreaming of peace'**
+  String get worldAction7;
+
+  /// No description provided for @worldAction8.
+  ///
+  /// In en, this message translates to:
+  /// **'Living in harmony with nature'**
+  String get worldAction8;
+
+  /// No description provided for @worldAction9.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaving a better me behind'**
+  String get worldAction9;
+
+  /// No description provided for @worldAction10.
+  ///
+  /// In en, this message translates to:
+  /// **'Living freely'**
+  String get worldAction10;
+
+  /// No description provided for @worldAction11.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding beauty'**
+  String get worldAction11;
+
+  /// No description provided for @worldAction12.
+  ///
+  /// In en, this message translates to:
+  /// **'Defining happiness'**
+  String get worldAction12;
 }
 
 class _AppLocalizationsDelegate

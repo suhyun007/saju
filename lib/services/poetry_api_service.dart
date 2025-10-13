@@ -6,13 +6,12 @@ import '../models/saju_info.dart';
 
 class PoetryApiService {
   // 서버 베이스 URL (디버그는 로컬, 릴리즈는 Vercel)
+  // NOTE:
+  //  - 디버그에서 localhost 충돌 시 Vercel 고정을 고려하세요
+  //    예) static String get _baseUrl => 'https://saju-server-j9ti.vercel.app/api';
   static String get _devBaseUrl {
-    // Android 에뮬레이터에서는 호스트의 localhost가 10.0.2.2로 매핑됩니다.
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3000/api';
-    }
-    // iOS 시뮬레이터/데스크탑은 localhost 사용
-    return 'http://localhost:3000/api';
+    // 디버그에서도 Vercel 고정 사용 (로컬 3000 충돌 회피)
+    return 'https://saju-server-j9ti.vercel.app/api';
   }
 
   static String get _baseUrl => kDebugMode
@@ -50,7 +49,10 @@ class PoetryApiService {
       'ageGroup': sajuInfo.ageGroup ?? '13',
       'gender': sajuInfo.gender, // 서버 현재 제약 대응
       'world': sajuInfo.world ?? 'none',
-      'loveStatus': sajuInfo.loveStatus ?? 'warm',
+      'tone': sajuInfo.tone ?? 'warm',
+      'growthTheme': sajuInfo.growthTheme,
+      'loveRelation': sajuInfo.loveRelation,
+      'worldAction': sajuInfo.worldAction,
       'currentDate': currentDateStr,
       'prompt': prompt,
       'language': _normalizeLanguage(language),

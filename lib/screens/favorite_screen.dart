@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../services/ad_ids.dart';
+// import '../services/ad_service.dart';
 import '../l10n/app_localizations.dart';
 import '../services/favorite_service.dart';
 import '../services/saju_service.dart';
@@ -65,7 +68,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       return const Center(child: CircularProgressIndicator());
     }
     
-    return _buildMainContent(l10n);
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: _buildMainContent(l10n),
+    );
   }
 
   Widget _buildMainContent(AppLocalizations l10n) {
@@ -74,17 +80,21 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     }
     
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       child: Column(
         children: [
           _buildExperienceModeBadge(),
-          const SizedBox(height: 10),
+          const SizedBox(height: 4),
           // 즐겨찾기 목록 표시
           ..._favorites.map((favorite) => _buildFavoriteItem(favorite)),
+          // 리스트 바로 아래 배너 (여분 간격 없이)
+          const _FavoritesTopBanner(),
         ],
       ),
     );
   }
+
+// _FavoritesTopBanner will be defined after the state class
 
   Widget _buildFavoriteItem(Favorite favorite) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -114,7 +124,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       onTap: () => _showFavoriteDetail(favorite),
       child: Container(
         height: 120,
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 6),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: isDark 
@@ -289,12 +299,15 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     final secondary = primary.withOpacity(0.7);
     
     return Container(
+      width: double.infinity,
+      alignment: Alignment.center,
       padding: const EdgeInsets.all(40),
       child: Column(
+       //mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildExperienceModeBadge(),
           const SizedBox(height: 12),
-          const SizedBox(height: 20),
           Text(
             l10n.favoritesEmptyTitle,
             style: TextStyle(
@@ -340,6 +353,50 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         }
         return const SizedBox.shrink();
       },
+    );
+  }
+}
+
+class _FavoritesTopBanner extends StatefulWidget {
+  const _FavoritesTopBanner();
+
+  @override
+  State<_FavoritesTopBanner> createState() => _FavoritesTopBannerState();
+}
+
+class _FavoritesTopBannerState extends State<_FavoritesTopBanner> {
+  BannerAd? _ad;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ad = BannerAd(
+      size: AdSize.banner,
+      adUnitId: AdIds.favoriteBanner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) => setState(() => _ready = true),
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _ad?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_ready || _ad == null) return const SizedBox.shrink();
+    return SizedBox(
+      height: _ad!.size.height.toDouble(),
+      width: _ad!.size.width.toDouble(),
+      child: AdWidget(ad: _ad!),
     );
   }
 }

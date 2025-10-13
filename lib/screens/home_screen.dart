@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:math';
 // import '../widgets/feature_button.dart';
 import '../screens/favorite_screen.dart';
 import '../screens/episode_screen.dart';
@@ -13,6 +14,7 @@ import '../models/saju_info.dart';
 import '../models/user_model.dart';
 import '../screens/myPage.dart';
 import '../l10n/app_localizations.dart';
+import '../services/ad_service.dart';
 
 class SpeechBubblePainter extends CustomPainter {
   @override
@@ -158,6 +160,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+      extendBody: true,
       backgroundColor: isDark ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
       body: Container(
         decoration: BoxDecoration(
@@ -171,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
         child: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             // 헤더
@@ -190,19 +194,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         ),
       ),
-      /*bottomNavigationBar: SajuNavigator(
-        currentTabIndex: _currentTabIndex,
-        onTap: (index) {
-          if (index == 0) {
-            _handleTabTap(0);
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MyPage()),
-            );
-          }
-        },
-      ),*/
     );
   }
 
@@ -225,9 +216,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           transform: Matrix4.translationValues(0, -4, 0),
           child: Row(
             children: [
-              // 에피소드 탭
+              // 즐겨찾기 탭 (index 0)
               Expanded(
-                flex: 1, // 더 크게
+                flex: 1,
                 child: GestureDetector(
                   onTap: () => _handleTabTap(0),
                   behavior: HitTestBehavior.opaque,
@@ -236,13 +227,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     child: Column(
                       children: [
                         Text(
-                          AppLocalizations.of(context)?.tabEpisode ?? '에피소드',
+                          AppLocalizations.of(context)?.tabFavorites ?? '즐겨찾기',
                           style: GoogleFonts.notoSans(
                             fontSize: _currentTabIndex == 0 ? 18 : 17,
                             fontWeight: _currentTabIndex == 0 ? FontWeight.w600 : FontWeight.w500,
                             color: _currentTabIndex == 0
                                 ? Theme.of(context).colorScheme.onSurface
                                 : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                            letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
                           ),
                           strutStyle: StrutStyle(
                             fontSize: _currentTabIndex == 0 ? 18 : 17,
@@ -258,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                         if (_currentTabIndex == 0)
                           Container(
-                            margin: const EdgeInsets.only(top: 12),  // 에피소드 탭 라인바 위치 조정
+                            margin: const EdgeInsets.only(top: 12),
                             height: 2,
                             decoration: BoxDecoration(
                               color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
@@ -267,22 +259,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           )
                         else
                           Container(
-                            margin: const EdgeInsets.only(top: 13),  // 선택되지 않은 탭 라인바 위치 조정
+                            margin: const EdgeInsets.only(top: 13),
                             height: 1,
                             decoration: BoxDecoration(
                               color: isDark ? const Color(0xFF666666) : const Color(0xFFA09D91),
                               borderRadius: BorderRadius.circular(999),
                             ),
                           )
-
                       ],
                     ),
                   ),
                 ),
               ),
-              // 시 낭독 탭
+              // 시 낭독 탭 (index 1)
               Expanded(
-                flex: 1, // 더 크게
+                flex: 1,
                 child: GestureDetector(
                   onTap: () => _handleTabTap(1),
                   behavior: HitTestBehavior.opaque,
@@ -313,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                         if (_currentTabIndex == 1)
                           Container(
-                            margin: const EdgeInsets.only(top: 12),  // 시 낭독 탭 라인바 위치 조정
+                            margin: const EdgeInsets.only(top: 12),
                             height: 2,
                             decoration: BoxDecoration(
                               color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
@@ -322,22 +313,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           )
                         else
                           Container(
-                            margin: const EdgeInsets.only(top: 13),  // 선택되지 않은 탭 라인바 위치 조정
+                            margin: const EdgeInsets.only(top: 13),
                             height: 1,
                             decoration: BoxDecoration(
                               color: isDark ? const Color(0xFF666666) : const Color(0xFFA09D91),
                               borderRadius: BorderRadius.circular(999),
                             ),
                           )
-
                       ],
                     ),
                   ),
                 ),
               ),
-              // 오늘의 가이드 탭 (더 작게)
+              // 에피소드 탭 (index 2)
               Expanded(
-                flex: 1, // 더 작게
+                flex: 1,
                 child: GestureDetector(
                   onTap: () => _handleTabTap(2),
                   behavior: HitTestBehavior.opaque,
@@ -346,14 +336,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     child: Column(
                       children: [
                         Text(
-                          AppLocalizations.of(context)?.tabFavorites ?? '즐겨찾기',
+                          AppLocalizations.of(context)?.tabEpisode ?? '에피소드',
                           style: GoogleFonts.notoSans(
                             fontSize: _currentTabIndex == 2 ? 18 : 17,
                             fontWeight: _currentTabIndex == 2 ? FontWeight.w600 : FontWeight.w500,
                             color: _currentTabIndex == 2
                                 ? Theme.of(context).colorScheme.onSurface
                                 : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                            letterSpacing: Localizations.localeOf(context).languageCode == 'en' ? -0.1 : 0,
                           ),
                           strutStyle: StrutStyle(
                             fontSize: _currentTabIndex == 2 ? 18 : 17,
@@ -369,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                         if (_currentTabIndex == 2)
                           Container(
-                            margin: const EdgeInsets.only(top: 12),  // 가이드 탭 라인바 위치 조정
+                            margin: const EdgeInsets.only(top: 12),
                             height: 2,
                             decoration: BoxDecoration(
                               color: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1A1A1A),
@@ -378,14 +367,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           )
                         else
                           Container(
-                            margin: const EdgeInsets.only(top: 13),  // 선택되지 않은 탭 라인바 위치 조정
+                            margin: const EdgeInsets.only(top: 13),
                             height: 1,
                             decoration: BoxDecoration(
                               color: isDark ? const Color(0xFF666666) : const Color(0xFFA09D91),
                               borderRadius: BorderRadius.circular(999),
                             ),
                           )
-
                       ],
                     ),
                   ),
@@ -403,9 +391,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       controller: _tabController,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        EpisodeScreen(activeTab: _activeTab, tabIndex: 0),
-        PoetryScreen(activeTab: _activeTab, tabIndex: 1),
         FavoriteScreen(),
+        PoetryScreen(activeTab: _activeTab, tabIndex: 1),
+        EpisodeScreen(activeTab: _activeTab, tabIndex: 2),
         // MonthScreen(),
         // YearScreen(),
       ],
@@ -610,13 +598,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     String menuType = '';
     switch (index) {
       case 0:
-        menuType = 'episode'; // 에피소드
+        menuType = 'favorites'; // 즐겨찾기
         break;
       case 1:
         menuType = 'poetry'; // 시 낭독
         break;
       case 2:
-        menuType = 'favorites'; // 즐겨찾기
+        menuType = 'episode'; // 에피소드
         break;
     }
     AnalyticsService.logMenuClick(menuType);
@@ -629,6 +617,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _currentTabIndex = index;
     });
     _activeTab.value = index; // 선택된 탭 알림
+    // 탭 전환 시 전면 광고 시도 (2분 쿨다운 정책 적용)
+    // 확률 기반으로 시도 (30%)
+    const double probability = 0.30;
+    if (Random().nextDouble() < probability) {
+      AdService.maybeShowInterstitial(context);
+    }
     
     // WebView 표시 여부 설정
     if (index == 0) {

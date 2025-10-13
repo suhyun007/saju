@@ -63,10 +63,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchRegionAgain => '지역 다시 검색';
 
   @override
-  String get loveStatus => '캐릭터 분위기';
+  String get tone => '캐릭터 분위기';
 
   @override
-  String get loveStatusHint => '캐릭터의 분위기를 선택하세요 (선택)';
+  String get toneHint => '분위기 선택 (선택)';
 
   @override
   String get toneWarm => '따뜻한';
@@ -129,6 +129,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get confirm => '확인';
 
   @override
+  String get notSelected => '선택 안함';
+
+  @override
   String get year => '년';
 
   @override
@@ -168,10 +171,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get validationRegionRequired => '출생 지역을 검색하고 선택해주세요.';
 
   @override
-  String get validationStatusRequired => '캐릭터의 분위기를 선택하세요 (선택)';
+  String get validationStatusRequired => '분위기 선택 (선택)';
 
   @override
-  String get statusSelectHint => '캐릭터의 분위기를 선택하세요 (선택)';
+  String get statusSelectHint => '분위기 선택 (선택)';
 
   @override
   String get successBirthInfoSaved => '정보가 저장되었습니다!';
@@ -733,4 +736,106 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pushPixMessage => '달빛이 이야기해주는 당신의 이야기를 들어보세요.';
+
+  @override
+  String get growthThemeTitle => '성장';
+
+  @override
+  String get lifePurposeTitle => '삶의 의미';
+
+  @override
+  String get loveRelationTitle => '사랑';
+
+  @override
+  String get worldActionTitle => '행동';
+
+  @override
+  String get growth1 => '진짜 나를 찾기';
+
+  @override
+  String get growth2 => '스스로를 사랑하기';
+
+  @override
+  String get growth3 => '어제를 용서하기';
+
+  @override
+  String get growth4 => '두려움을 넘어서기';
+
+  @override
+  String get growth5 => '나답게 살기';
+
+  @override
+  String get growth6 => '내 목소리를 내기';
+
+  @override
+  String get growth7 => '변화에 익숙해지기';
+
+  @override
+  String get growth8 => '지금을 받아들이기';
+
+  @override
+  String get growth9 => '나의 길을 걷기';
+
+  @override
+  String get growth10 => '매일 조금씩 나아가기';
+
+  @override
+  String get loveRelation1 => '사랑을 이해하기';
+
+  @override
+  String get loveRelation2 => '소중한 사람을 지키기';
+
+  @override
+  String get loveRelation3 => '마음을 전하기';
+
+  @override
+  String get loveRelation4 => '인연을 믿기';
+
+  @override
+  String get loveRelation5 => '함께 웃기';
+
+  @override
+  String get loveRelation6 => '다시 사랑하기';
+
+  @override
+  String get loveRelation7 => '상처를 치유하기';
+
+  @override
+  String get loveRelation8 => '헤어짐을 받아들이기';
+
+  @override
+  String get worldAction1 => '세상을 여행하기';
+
+  @override
+  String get worldAction2 => '다른 이들에게 영감을 주기';
+
+  @override
+  String get worldAction3 => '세상을 바꾸기';
+
+  @override
+  String get worldAction4 => '예술로 말하기';
+
+  @override
+  String get worldAction5 => '새로운 길을 열기';
+
+  @override
+  String get worldAction6 => '진심을 나누기';
+
+  @override
+  String get worldAction7 => '평화를 꿈꾸기';
+
+  @override
+  String get worldAction8 => '자연과 조화롭게 살기';
+
+  @override
+  String get worldAction9 => '더 나은 나로 남기';
+
+  @override
+  String get worldAction10 => '자유롭게 살기';
+
+  @override
+  String get worldAction11 => '아름다움을 찾기';
+
+  @override
+  String get worldAction12 => '행복을 정의하기';
 }

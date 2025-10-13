@@ -63,10 +63,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchRegionAgain => 'Search Region Again';
 
   @override
-  String get loveStatus => 'Character’s Tone';
+  String get tone => 'Character’s Tone';
 
   @override
-  String get loveStatusHint => 'Choose a character tone (optional)';
+  String get toneHint => 'Select mood (optional)';
 
   @override
   String get toneWarm => 'Warm';
@@ -129,6 +129,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirm => 'Confirm';
 
   @override
+  String get notSelected => 'None';
+
+  @override
   String get year => 'Year';
 
   @override
@@ -170,10 +173,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please search and select your birth region.';
 
   @override
-  String get validationStatusRequired => 'Choose a character tone (optional)';
+  String get validationStatusRequired => 'Select mood (optional)';
 
   @override
-  String get statusSelectHint => 'Choose a character tone (optional)';
+  String get statusSelectHint => 'Select mood (optional)';
 
   @override
   String get successBirthInfoSaved => 'Information has been saved!';
@@ -752,4 +755,106 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pushPixMessage => 'Right now, a special story is waiting for you.';
+
+  @override
+  String get growthThemeTitle => 'Growth';
+
+  @override
+  String get lifePurposeTitle => 'Life Purpose';
+
+  @override
+  String get loveRelationTitle => 'Love';
+
+  @override
+  String get worldActionTitle => 'Actions';
+
+  @override
+  String get growth1 => 'Finding my true self';
+
+  @override
+  String get growth2 => 'Loving myself';
+
+  @override
+  String get growth3 => 'Forgiving yesterday';
+
+  @override
+  String get growth4 => 'Overcoming fear';
+
+  @override
+  String get growth5 => 'Living authentically';
+
+  @override
+  String get growth6 => 'Finding my voice';
+
+  @override
+  String get growth7 => 'Embracing change';
+
+  @override
+  String get growth8 => 'Accepting the present';
+
+  @override
+  String get growth9 => 'Walking my own path';
+
+  @override
+  String get growth10 => 'Growing a little each day';
+
+  @override
+  String get loveRelation1 => 'Understanding love';
+
+  @override
+  String get loveRelation2 => 'Protecting loved ones';
+
+  @override
+  String get loveRelation3 => 'Expressing my heart';
+
+  @override
+  String get loveRelation4 => 'Believing in destiny';
+
+  @override
+  String get loveRelation5 => 'Laughing together';
+
+  @override
+  String get loveRelation6 => 'Loving again';
+
+  @override
+  String get loveRelation7 => 'Healing wounds';
+
+  @override
+  String get loveRelation8 => 'Accepting farewells';
+
+  @override
+  String get worldAction1 => 'Traveling the world';
+
+  @override
+  String get worldAction2 => 'Inspiring others';
+
+  @override
+  String get worldAction3 => 'Changing the world';
+
+  @override
+  String get worldAction4 => 'Speaking through art';
+
+  @override
+  String get worldAction5 => 'Opening new paths';
+
+  @override
+  String get worldAction6 => 'Sharing sincerity';
+
+  @override
+  String get worldAction7 => 'Dreaming of peace';
+
+  @override
+  String get worldAction8 => 'Living in harmony with nature';
+
+  @override
+  String get worldAction9 => 'Leaving a better me behind';
+
+  @override
+  String get worldAction10 => 'Living freely';
+
+  @override
+  String get worldAction11 => 'Finding beauty';
+
+  @override
+  String get worldAction12 => 'Defining happiness';
 }

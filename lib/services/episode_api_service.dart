@@ -6,13 +6,13 @@ import '../models/saju_info.dart';
 
 class EpisodeApiService {
   // 서버 베이스 URL (디버그는 로컬, 릴리즈는 Vercel)
+  // NOTE:
+  //  - 디버그에서 localhost:3000이 다른 프로젝트에 점유되면 404/ECONNREFUSED 발생
+  //  - 그런 경우 Vercel 고정을 고려: _baseUrl에서 kDebugMode 분기 제거
+  //    예) static String get _baseUrl => 'https://saju-server-j9ti.vercel.app/api';
   static String get _devBaseUrl {
-    // Android 에뮬레이터에서는 호스트의 localhost가 10.0.2.2로 매핑됩니다.
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3000/api';
-    }
-    // iOS 시뮬레이터/데스크탑은 localhost 사용
-    return 'http://localhost:3000/api';
+    // 디버그에서도 Vercel 고정 사용 (로컬 3000 충돌 회피)
+    return 'https://saju-server-j9ti.vercel.app/api';
   }
 
   static String get _baseUrl => kDebugMode
@@ -32,7 +32,10 @@ class EpisodeApiService {
       'ageGroup': sajuInfo.ageGroup ?? '13',
       'gender': sajuInfo.gender,
       'world': sajuInfo.world ?? 'none',
-      'loveStatus': sajuInfo.loveStatus ?? 'warm',
+      'tone': sajuInfo.tone ?? 'warm',
+      'growthTheme': sajuInfo.growthTheme,
+      'loveRelation': sajuInfo.loveRelation,
+      'worldAction': sajuInfo.worldAction,
       'currentDate': currentDateStr,
       // 서버에서 장르/날씨/아이템/플롯을 결정
       'language': _normalizeLanguage(language),
@@ -81,7 +84,7 @@ class EpisodeApiService {
 
   // moved to SajuService during save/load normalization
   static String _normalizeGender(String gender) => gender;
-  static String? _normalizeLoveStatus(String? status) => status;
+  static String? _normalizetone(String? status) => status;
 }
 
 class EpisodeResult {

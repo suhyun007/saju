@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
+import 'supabase_service.dart';
 
 class AuthService {
   static UserModel? _currentUser;
@@ -35,6 +36,9 @@ class AuthService {
         provider: 'google',
       );
 
+      // Supabase users_kpop 테이블에 사용자 정보 저장 또는 업데이트
+      await _saveUserToSupabase(userModel);
+
       // 로컬에 사용자 정보 저장
       await _saveUserToLocal(userModel);
       
@@ -63,6 +67,35 @@ class AuthService {
     }
   }
 
+  // 계정 탈퇴 (is_active를 false로 업데이트)
+  static Future<bool> deleteAccount() async {
+    try {
+      if (_currentUser == null) {
+        print('탈퇴 실패: 로그인된 사용자가 없습니다.');
+        return false;
+      }
+
+      // Supabase users_kpop 테이블에서 is_active를 false로 업데이트
+      await SupabaseService.client
+          .from('users_kpop')
+          .update({
+            'is_active': false,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('email', _currentUser!.email);
+
+      print('계정 탈퇴 완료: ${_currentUser!.email} (is_active = false)');
+
+      // 로그아웃 처리
+      await signOut();
+      
+      return true;
+    } catch (e) {
+      print('계정 탈퇴 오류: $e');
+      return false;
+    }
+  }
+
   // 인증 상태 리스너 추가
   static void addAuthStateListener(Function(UserModel?) listener) {
     _authStateListeners.add(listener);
@@ -77,6 +110,34 @@ class AuthService {
   static void _notifyAuthStateListeners() {
     for (final listener in _authStateListeners) {
       listener(_currentUser);
+    }
+  }
+
+  // Supabase users_kpop 테이블에 사용자 정보 저장
+  static Future<void> _saveUserToSupabase(UserModel user) async {
+    try {
+      final now = DateTime.now().toIso8601String();
+      
+      final userData = {
+        'email': user.email,
+        'provider': user.provider ?? 'google',
+        'provider_id': user.id,  // Google ID
+        'name': user.displayName,
+        'is_active': true,
+        'last_login_at': now,
+        'updated_at': now,
+      };
+
+      // users_kpop 테이블에 upsert (email 기준으로 있으면 업데이트, 없으면 삽입)
+      await SupabaseService.client
+          .from('users_kpop')
+          .upsert(userData, onConflict: 'email');
+      
+      print('Supabase users_kpop 테이블에 사용자 정보 저장 완료: ${user.email}');
+    } catch (e) {
+      print('Supabase 사용자 정보 저장 오류: $e');
+      print('오류 상세: $e');
+      // Supabase 저장 실패해도 앱은 계속 작동
     }
   }
 

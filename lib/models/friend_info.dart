@@ -5,7 +5,7 @@ class FriendInfo {
   final int birthMinute;
   final String gender;
   final String region;
-  final String? loveStatus;
+  final String? tone;
   final String? zodiacSign;
   final DateTime createdAt;
 
@@ -16,7 +16,7 @@ class FriendInfo {
     required this.birthMinute,
     required this.gender,
     required this.region,
-    this.loveStatus,
+    this.tone,
     this.zodiacSign,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
@@ -25,7 +25,7 @@ class FriendInfo {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'loveStatus': loveStatus,
+      'tone': tone,
       'gender': gender,
       // region removed from persisted payload
       'createdAt': createdAt.toIso8601String(),
@@ -41,7 +41,7 @@ class FriendInfo {
       birthMinute: json['birthMinute'] ?? 0,
       gender: json['gender'] ?? '',
       region: '',
-      loveStatus: json['loveStatus'] ?? json['status'],
+      tone: json['tone'] ?? json['status'],
       zodiacSign: json['zodiacSign'],
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
     );

@@ -2,6 +2,7 @@ import UIKit
 import Flutter
 import GooglePlaces
 import UserNotifications
+import google_mobile_ads
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -15,6 +16,12 @@ import UserNotifications
     }
 
     GeneratedPluginRegistrant.register(with: self)
+
+    // Register native ad factory
+    if let controller = window?.rootViewController as? FlutterViewController {
+      let factory = ListTileNativeAdFactory()
+      FLTGoogleMobileAdsPlugin.registerNativeAdFactory(self, factoryId: "listTile", nativeAdFactory: factory)
+    }
 
     // Ensure notifications show while app is in foreground (iOS 10+)
     UNUserNotificationCenter.current().delegate = self
@@ -50,5 +57,31 @@ import UserNotifications
                                               willPresent notification: UNNotification,
                                               withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
     completionHandler([.banner, .list, .sound, .badge])
+  }
+}
+
+class ListTileNativeAdFactory : FLTNativeAdFactory {
+  func createNativeAd(_ nativeAd: GADNativeAd, customOptions: [AnyHashable : Any]? = nil) -> GADNativeAdView? {
+    let adView = GADNativeAdView()
+    adView.backgroundColor = UIColor.clear
+
+    let headlineLabel = UILabel()
+    headlineLabel.textColor = UIColor.white
+    headlineLabel.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+    adView.headlineView = headlineLabel
+    headlineLabel.text = nativeAd.headline
+    headlineLabel.textAlignment = .center
+
+    adView.addSubview(headlineLabel)
+    headlineLabel.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      headlineLabel.leadingAnchor.constraint(equalTo: adView.leadingAnchor, constant: 12),
+      headlineLabel.trailingAnchor.constraint(equalTo: adView.trailingAnchor, constant: -12),
+      headlineLabel.centerYAnchor.constraint(equalTo: adView.centerYAnchor),
+      adView.heightAnchor.constraint(equalToConstant: 38)
+    ])
+
+    adView.nativeAd = nativeAd
+    return adView
   }
 }

@@ -30,7 +30,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   String? _selectedGender;
   DateTime? _selectedDate;
   String? _selectedRegion;
-  String? _selectedLoveStatus;
+  String? _selectedtone;
   
   // Google Maps API Key는 AndroidManifest.xml과 AppDelegate.swift에 설정됨
   // 현재 구현에서는 geolocator와 geocoding 패키지를 사용하므로 직접적인 API 키 사용 불필요
@@ -291,7 +291,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           // 상태
           Row(children: [
             const SizedBox(width: 4),
-            Text(l10n.loveStatus, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
+            Text(l10n.tone, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: primary)),
           ]),
           const SizedBox(height: 3),
           InkWell(
@@ -309,12 +309,12 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      _selectedLoveStatus != null 
-                        ? statuses[statusKeys.indexOf(_selectedLoveStatus!)]
+                      _selectedtone != null 
+                        ? statuses[statusKeys.indexOf(_selectedtone!)]
                         : l10n.statusSelectHint,
                       style: TextStyle(
                         fontSize: 15,
-                        color: _selectedLoveStatus != null ? primary : secondary,
+                        color: _selectedtone != null ? primary : secondary,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -431,7 +431,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           _selectedDate = friendInfo.birthDate;
           _selectedRegion = friendInfo.region;
           _regionController.text = friendInfo.region;
-          _selectedLoveStatus = friendInfo.loveStatus; // 영어 키값으로 저장
+          _selectedtone = friendInfo.tone; // 영어 키값으로 저장
         });
       }
     } else {
@@ -443,7 +443,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
           _selectedDate = sajuInfo.birthDate;
           _selectedRegion = sajuInfo.region;
           _regionController.text = sajuInfo.region;
-          _selectedLoveStatus = sajuInfo.loveStatus; // 영어 키값으로 저장
+          _selectedtone = sajuInfo.tone; // 영어 키값으로 저장
         });
       }
     }
@@ -607,7 +607,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     final bool isFormValid = _nameController.text.trim().isNotEmpty &&
         _selectedGender != null &&
         _selectedDate != null;
-        // _selectedRegion과 _selectedLoveStatus는 선택사항이므로 제거
+        // _selectedRegion과 _selectedtone는 선택사항이므로 제거
 
     return SizedBox(
       width: double.infinity,
@@ -769,7 +769,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
     //   return;
     // }
 
-    // if (_selectedLoveStatus == null) {
+    // if (_selectedtone == null) {
     //   _showSnackBar(l10n.validationStatusRequired);
     //   return;
     // }
@@ -784,7 +784,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         birthMinute: 0, // 기본값으로 설정
         gender: _selectedGender!,
         region: _selectedRegion ?? '',
-        loveStatus: _selectedLoveStatus,
+        tone: _selectedtone,
         zodiacSign: zodiacSign,
       );
 
@@ -809,7 +809,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
         birthMinute: 0, // 기본값으로 설정
         gender: _selectedGender!,
         region: _selectedRegion ?? '',
-        loveStatus: _selectedLoveStatus,
+        tone: _selectedtone,
         zodiacSign: zodiacSign,
       );
 
@@ -857,7 +857,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                         child: Text(l10n.cancel, style: const TextStyle(fontSize: 16)),
                       ),
                       Text(
-                        l10n.loveStatus,
+                        l10n.tone,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -877,12 +877,12 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                     children: statuses.asMap().entries.map((entry) {
                       final index = entry.key;
                       final status = entry.value;
-                      final isSelected = _selectedLoveStatus == statusKeys[index];
+                      final isSelected = _selectedtone == statusKeys[index];
                       
                       return InkWell(
                         onTap: () {
                           setState(() {
-                            _selectedLoveStatus = statusKeys[index];
+                            _selectedtone = statusKeys[index];
                           });
                           Navigator.pop(ctx);
                         },

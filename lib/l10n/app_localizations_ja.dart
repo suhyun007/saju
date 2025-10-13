@@ -63,10 +63,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get searchRegionAgain => '地域を再検索';
 
   @override
-  String get loveStatus => 'キャラクターのトーン';
+  String get tone => 'キャラクターのトーン';
 
   @override
-  String get loveStatusHint => 'キャラクターのトーンを選んでください (可选)';
+  String get toneHint => '雰囲気を選択 (任意)';
 
   @override
   String get toneWarm => '暖かい';
@@ -129,6 +129,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get confirm => '確認';
 
   @override
+  String get notSelected => '選択しない';
+
+  @override
   String get year => '年';
 
   @override
@@ -168,10 +171,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get validationRegionRequired => '出生地を検索して選択してください。';
 
   @override
-  String get validationStatusRequired => 'キャラクターのトーンを選んでください (可选)';
+  String get validationStatusRequired => '雰囲気を選択 (任意)';
 
   @override
-  String get statusSelectHint => 'キャラクターのトーンを選んでください (可选)';
+  String get statusSelectHint => '雰囲気を選択 (任意)';
 
   @override
   String get successBirthInfoSaved => '情報が保存されました！';
@@ -733,4 +736,106 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pushPixMessage => '今、特別な物語があなたを待っています。';
+
+  @override
+  String get growthThemeTitle => '成長';
+
+  @override
+  String get lifePurposeTitle => '人生の意味';
+
+  @override
+  String get loveRelationTitle => '愛';
+
+  @override
+  String get worldActionTitle => '行動';
+
+  @override
+  String get growth1 => '本当の自分を見つける';
+
+  @override
+  String get growth2 => '自分を愛する';
+
+  @override
+  String get growth3 => '昨日を許す';
+
+  @override
+  String get growth4 => '恐怖を乗り越える';
+
+  @override
+  String get growth5 => '自分らしく生きる';
+
+  @override
+  String get growth6 => '自分の声を出す';
+
+  @override
+  String get growth7 => '変化に慣れる';
+
+  @override
+  String get growth8 => '今を受け入れる';
+
+  @override
+  String get growth9 => '自分の道を歩く';
+
+  @override
+  String get growth10 => '毎日少しずつ進む';
+
+  @override
+  String get loveRelation1 => '愛を理解する';
+
+  @override
+  String get loveRelation2 => '大切な人を守る';
+
+  @override
+  String get loveRelation3 => '心を伝える';
+
+  @override
+  String get loveRelation4 => '縁を信じる';
+
+  @override
+  String get loveRelation5 => '一緒に笑う';
+
+  @override
+  String get loveRelation6 => 'もう一度愛する';
+
+  @override
+  String get loveRelation7 => '傷を癒す';
+
+  @override
+  String get loveRelation8 => '別れを受け入れる';
+
+  @override
+  String get worldAction1 => '世界を旅する';
+
+  @override
+  String get worldAction2 => '他の人にインスピレーションを与える';
+
+  @override
+  String get worldAction3 => '世界を変える';
+
+  @override
+  String get worldAction4 => '芸術で語る';
+
+  @override
+  String get worldAction5 => '新しい道を開く';
+
+  @override
+  String get worldAction6 => '誠実さを分かち合う';
+
+  @override
+  String get worldAction7 => '平和を夢見る';
+
+  @override
+  String get worldAction8 => '自然と調和して生きる';
+
+  @override
+  String get worldAction9 => 'より良い自分を残す';
+
+  @override
+  String get worldAction10 => '自由に生きる';
+
+  @override
+  String get worldAction11 => '美しさを見つける';
+
+  @override
+  String get worldAction12 => '幸せを定義する';
 }

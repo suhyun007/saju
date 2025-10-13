@@ -6,15 +6,23 @@ import '../models/saju_info.dart';
 
 class SajuApiService {
   // 서버 베이스 URL (디버그는 로컬, 릴리즈는 Vercel)
+  // NOTE:
+  //  - 로컬 개발 시: 아래 _devBaseUrl 사용 (3000 포트에 sajuServer가 떠 있어야 함)
+  //  - 디버그에서도 Vercel로 강제하려면 _baseUrl에서 kDebugMode 분기를 제거하고
+  //    'https://saju-server-j9ti.vercel.app/api' 를 직접 반환하세요.
   static String get _devBaseUrl {
     // Android 에뮬레이터에서는 호스트의 localhost가 10.0.2.2로 매핑됩니다.
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3000/api';
-    }
+    // if (defaultTargetPlatform == TargetPlatform.android) {
+    //   return 'http://10.0.2.2:3000/api';
+    // }
     // iOS 시뮬레이터/데스크탑은 localhost 사용
-    return 'http://localhost:3000/api';
+    // return 'http://localhost:3000/api';
+    // 디버그에서도 Vercel 고정 사용 (로컬 충돌 회피)
+    return 'https://saju-server-j9ti.vercel.app/api';
   }
   // 서버 베이스 URL (디버그는 로컬, 릴리즈는 Vercel)
+  // 디버그에서 localhost 충돌(다른 서버 점유 등) 시 아래처럼 Vercel 고정을 권장:
+  // static String get _baseUrl => 'https://saju-server-j9ti.vercel.app/api';
   static String get _baseUrl => kDebugMode
       ? _devBaseUrl
       : 'https://saju-server-j9ti.vercel.app/api';
@@ -56,7 +64,7 @@ class SajuApiService {
       'birthDay': sajuInfo.birthDate.day,
       'gender': _normalizeGender(sajuInfo.gender),
       'location': sajuInfo.region ?? '',
-      'loveStatus': _normalizeLoveStatus(sajuInfo.loveStatus) ?? '',
+      'tone': _normalizetone(sajuInfo.tone) ?? '',
       'currentDate': currentDateStr,
       'language': _normalizeLanguage(language),
     };
@@ -104,7 +112,7 @@ class SajuApiService {
 
   // moved to SajuService during save/load normalization
   static String _normalizeGender(String gender) => gender;
-  static String? _normalizeLoveStatus(String? status) => status;
+  static String? _normalizetone(String? status) => status;
 }
 
 class GuideResult {

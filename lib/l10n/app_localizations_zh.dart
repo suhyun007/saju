@@ -63,10 +63,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get searchRegionAgain => '重新搜索地区';
 
   @override
-  String get loveStatus => '角色基调';
+  String get tone => '角色基调';
 
   @override
-  String get loveStatusHint => '选择角色风格 (可选)';
+  String get toneHint => '选择氛围（可选）';
 
   @override
   String get toneWarm => '温暖的';
@@ -129,6 +129,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get confirm => '确认';
 
   @override
+  String get notSelected => '不选择';
+
+  @override
   String get year => '年';
 
   @override
@@ -168,10 +171,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get validationRegionRequired => '请搜索并选择您的出生地区。';
 
   @override
-  String get validationStatusRequired => '选择角色风格';
+  String get validationStatusRequired => '选择氛围（可选）';
 
   @override
-  String get statusSelectHint => '选择角色风格';
+  String get statusSelectHint => '选择氛围（可选）';
 
   @override
   String get successBirthInfoSaved => '信息已保存！';
@@ -728,4 +731,106 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pushPixMessage => '此刻，一段特别的故事正等着你。';
+
+  @override
+  String get growthThemeTitle => '成长';
+
+  @override
+  String get lifePurposeTitle => '生命的意义';
+
+  @override
+  String get loveRelationTitle => '爱';
+
+  @override
+  String get worldActionTitle => '行动';
+
+  @override
+  String get growth1 => '找到真正的自己';
+
+  @override
+  String get growth2 => '爱自己';
+
+  @override
+  String get growth3 => '原谅昨天';
+
+  @override
+  String get growth4 => '克服恐惧';
+
+  @override
+  String get growth5 => '活出自我';
+
+  @override
+  String get growth6 => '发出自己的声音';
+
+  @override
+  String get growth7 => '适应变化';
+
+  @override
+  String get growth8 => '接受当下';
+
+  @override
+  String get growth9 => '走自己的路';
+
+  @override
+  String get growth10 => '每天进步一点点';
+
+  @override
+  String get loveRelation1 => '理解爱';
+
+  @override
+  String get loveRelation2 => '保护珍视的人';
+
+  @override
+  String get loveRelation3 => '表达心意';
+
+  @override
+  String get loveRelation4 => '相信缘分';
+
+  @override
+  String get loveRelation5 => '一起欢笑';
+
+  @override
+  String get loveRelation6 => '再次去爱';
+
+  @override
+  String get loveRelation7 => '治愈伤痛';
+
+  @override
+  String get loveRelation8 => '接受离别';
+
+  @override
+  String get worldAction1 => '环游世界';
+
+  @override
+  String get worldAction2 => '给他人带来启发';
+
+  @override
+  String get worldAction3 => '改变世界';
+
+  @override
+  String get worldAction4 => '用艺术表达';
+
+  @override
+  String get worldAction5 => '开辟新路';
+
+  @override
+  String get worldAction6 => '分享真诚';
+
+  @override
+  String get worldAction7 => '梦想和平';
+
+  @override
+  String get worldAction8 => '与自然和谐共处';
+
+  @override
+  String get worldAction9 => '留下更好的自己';
+
+  @override
+  String get worldAction10 => '自由地生活';
+
+  @override
+  String get worldAction11 => '寻找美';
+
+  @override
+  String get worldAction12 => '定义幸福';
 }

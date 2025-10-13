@@ -17,6 +17,8 @@ import '../l10n/app_localizations.dart';
 import 'saju_input_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'home_screen.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../services/ad_ids.dart';
 
 
 class MyPage extends StatefulWidget {
@@ -150,45 +152,6 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> _signIn() async {
-    final user = await AuthService.signInWithGoogle();
-    if (!mounted) return;
-    if (user != null) {
-      setState(() {
-        _user = user;
-      });
-      final l10n = AppLocalizations.of(context);
-      final welcomeMessage = l10n?.myPageWelcome(user.displayName ?? '') ?? '${user.displayName}님 환영합니다!';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(welcomeMessage)),
-      );
-    }
-  }
-
-  Future<void> _onSignIn(UserModel user) async {
-    if (!mounted) return;
-    setState(() {
-      _user = user;
-    });
-    final l10n = AppLocalizations.of(context);
-    final welcomeMessage = l10n?.myPageWelcome(user.displayName ?? '') ?? '${user.displayName}님 환영합니다!';
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(welcomeMessage)),
-    );
-    }
-
-  Future<void> _signOut() async {
-    await AuthService.signOut();
-    if (!mounted) return;
-    setState(() {
-      _user = null;
-    });
-    final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n?.myPageLogoutSuccess ?? '로그아웃 되었습니다.')),
-    );
-  }
-
   String _themeSubtitle() {
     final l10n = AppLocalizations.of(context);
     switch (ThemeService.currentMode) {
@@ -198,23 +161,6 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
         return l10n?.myPageThemeDark ?? '다크';
       case ThemeMode.system:
         return l10n?.myPageThemeSystem ?? '시스템';
-    }
-  }
-
-  String _formatBirthInfo(SajuInfo sajuInfo) {
-    final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context);
-    
-    // 영어일 때만 MM.DD.YYYY HH:MM 형식으로 변경 (12지신 제외)
-    if (locale.languageCode == 'en') {
-      final month = sajuInfo.monthText.replaceAll('월', '').padLeft(2, '0');
-      final day = sajuInfo.dayText.replaceAll('일', '').padLeft(2, '0');
-      final year = sajuInfo.yearText.replaceAll('년', '');
-      final time = sajuInfo.timeText.replaceAll('시', ':').replaceAll('분', '');
-      return '$month.$day.$year $time';
-    } else {
-      // 다른 언어는 기존 순서 유지 (년,월,일,시,12지신)
-      return '${sajuInfo.yearText} ${sajuInfo.monthText} ${sajuInfo.dayText} ${sajuInfo.timeText}${sajuInfo.zodiacSign != null ? ' • ${sajuInfo.zodiacSign}' : ''}';
     }
   }
 
@@ -265,7 +211,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
 
   String _formatCharacterSummary(SajuInfo sajuInfo) {
     final world = _englishWorldToLocalized(sajuInfo.world);
-    final tone = _toneLabel(sajuInfo.loveStatus);
+    final tone = _toneLabel(sajuInfo.tone);
     final parts = <String>[];
     if (world.isNotEmpty) parts.add(world);
     if (tone.isNotEmpty) parts.add(tone);
@@ -604,93 +550,6 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     );
   }
 
-
-
-  void _showLogoutSheet() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
-        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
-        final textColor = isDark ? Colors.white : Colors.black;
-        
-        return Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: border),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '로그아웃 하시겠습니까?',
-                style: GoogleFonts.notoSans(
-                  color: textColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[600],
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text(
-                        '닫기',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _signOut();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text(
-                        '로그아웃',
-                        style: GoogleFonts.notoSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   void _showThemePicker() {
     showModalBottomSheet(
       context: context,
@@ -733,8 +592,25 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
         setState(() {});
         Navigator.pop(context);
         final l10n = AppLocalizations.of(context);
+        final Color textColor = () {
+          if (mode == ThemeMode.dark) return Colors.white;
+          if (mode == ThemeMode.light) return Colors.black;
+          final bool sysDark = Theme.of(context).brightness == Brightness.dark;
+          return sysDark ? Colors.white : Colors.black;
+        }();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n?.themeChangedMessage(label) ?? '테마가 "$label"(으)로 변경되었습니다.')),
+          SnackBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            content: Center(
+              child: Text(
+                l10n?.themeChangedMessage(label) ?? '테마가 "$label"(으)로 변경되었습니다.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: textColor),
+              ),
+            ),
+          ),
         );
       },
       title: Text(
@@ -747,128 +623,6 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
       trailing: selected
           ? const Icon(Icons.check_circle, color: Colors.amber)
           : Icon(Icons.circle_outlined, color: unselectedIconColor),
-    );
-  }
-
-
-
-  Widget _buildAvatar({double size = 64}) {
-    final radius = size / 2;
-    if (_user?.photoURL != null && _user!.photoURL!.isNotEmpty) {
-      return CircleAvatar(
-        radius: size / 2,
-        backgroundImage: NetworkImage(_user!.photoURL!),
-        backgroundColor: Colors.white10,
-      );
-    }
-    final hasName = _user?.displayName.isNotEmpty == true;
-    final initial = hasName
-        ? _user!.displayName[0].toUpperCase()
-        : 'U';
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: Colors.white12,
-      child: Text(
-        initial,
-        style: GoogleFonts.notoSans(
-          color: Colors.white,
-          fontSize: radius,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  // 공용 AppBottomNavBar 사용으로 기존 구현 제거
-
-  void _showProfileSheet() {
-    if (_user == null) return;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
-        final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
-        final textColor = isDark ? Colors.white : Colors.black;
-        final subtitleColor = isDark ? Colors.white70 : Colors.black54;
-        
-        return Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: border),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  _buildAvatar(size: 56),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _user!.displayName,
-                          style: GoogleFonts.notoSans(
-                            color: textColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _user!.email,
-                          style: GoogleFonts.notoSans(color: subtitleColor, fontSize: 13),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _infoRow('로그인 제공자', (_user!.provider ?? 'unknown').toUpperCase()),
-              _infoRow('사용자 ID', _user!.id),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _infoRow(String label, String value) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? Colors.white.withOpacity(0.1) : Theme.of(context).colorScheme.surface.withOpacity(0.5);
-    final border = isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1);
-    final labelColor = isDark ? Colors.white70 : Colors.black54;
-    final valueColor = isDark ? Colors.white : Colors.black;
-    
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: border),
-      ),
-      child: Row(
-        children: [
-          Text(label, style: GoogleFonts.notoSans(color: labelColor, fontSize: 12)),
-          const Spacer(),
-          Flexible(
-            child: Text(
-              value,
-              style: GoogleFonts.notoSans(color: valueColor, fontSize: 12, fontWeight: FontWeight.w600),
-              textAlign: TextAlign.right,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -923,7 +677,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
 
             Expanded(
               child: Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
                 child: ListView(
                   children: [
                   const SizedBox(height: 0),
@@ -1004,16 +758,20 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                           );
                         },
                       ),
+                      const SizedBox(height: 2),
+                      const _MyPageBanner(),
                       
                       // LunaVerse 브랜드 로고
-                      const SizedBox(height: 60),
+                      const SizedBox(height: 30),
                       Center(
                         child: Column(
                           children: [
                             Icon(
                               Icons.auto_awesome,
                               size: 21,
-                              color: isDark ? const Color(0xFFB3B3FF) : const Color(0xFF8B8BFF),
+                              color: isDark 
+                                ? const Color(0xFFB3B3FF) // dark: 기존 색 유지
+                                : const Color(0xFFFFD700), // light: 금색
                             ),
                             const SizedBox(height: 2),
                             Text(
@@ -1048,6 +806,59 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
         ),
         ),
       ),
+    );
+  }
+}
+
+class _MyPageBanner extends StatefulWidget {
+  const _MyPageBanner();
+
+  @override
+  State<_MyPageBanner> createState() => _MyPageBannerState();
+}
+
+class _MyPageBannerState extends State<_MyPageBanner> {
+  BannerAd? _ad;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ad = BannerAd(
+      size: AdSize.banner,
+      adUnitId: AdIds.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) => setState(() => _ready = true),
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _ad?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double reservedHeight = 50.0;
+    final double reservedWidth = (_ad?.size.width.toDouble()) ?? AdSize.banner.width.toDouble();
+    return SizedBox(
+      height: reservedHeight,
+      width: double.infinity,
+      child: _ready && _ad != null
+          ? Center(
+              child: SizedBox(
+                height: reservedHeight,
+                width: reservedWidth,
+                child: AdWidget(ad: _ad!),
+              ),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }

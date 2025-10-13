@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       sajuInfo == null ||
       (isAllEmpty(sajuInfo.name) &&
        isAllEmpty(sajuInfo.gender) &&
-       isAllEmpty(sajuInfo.loveStatus) &&
+       isAllEmpty(sajuInfo.tone) &&
        isAllEmpty(sajuInfo.world) &&
        isAllEmpty(sajuInfo.era) &&
        isAllEmpty(sajuInfo.ageGroup))
