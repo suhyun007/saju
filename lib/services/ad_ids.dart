@@ -6,7 +6,7 @@ class AdIds {
   // 플랫폼 별 테스트 모드 스위치 (kDebugMode와 무관하게 수동 전환)
   // iOS 는 운영 유지, Android 만 테스트 광고 사용
   static const bool isIosTestMode = false;
-  static const bool isAndroidTestMode = true;
+  static const bool isAndroidTestMode = false; //ture testmode
 
   // iOS 운영용 단위 ID
   static const String iosBannerProd = 'ca-app-pub-8911842959624418/5167207632';
