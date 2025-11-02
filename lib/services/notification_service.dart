@@ -123,17 +123,28 @@ class NotificationService {
       await AndroidAlarmManager.initialize();
     }
     
+    // 권한 상태 확인 (초기화 전에 확인)
+    bool hasNotificationPermission = false;
+    if (Platform.isIOS || Platform.isMacOS) {
+      try {
+        final status = await Permission.notification.status;
+        hasNotificationPermission = status.isGranted;
+      } catch (e) {
+        hasNotificationPermission = false;
+      }
+    }
+    
     // Android 초기화 설정
     const androidInit = AndroidInitializationSettings('@drawable/ic_notification');
     
-    // iOS 초기화 설정
-    const iosInit = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
+    // iOS 초기화 설정 - 권한이 이미 있으면 요청하지 않음
+    final iosInit = DarwinInitializationSettings(
+      requestAlertPermission: !hasNotificationPermission,
+      requestBadgePermission: !hasNotificationPermission,
+      requestSoundPermission: !hasNotificationPermission,
     );
     
-    const initSettings = InitializationSettings(
+    final initSettings = InitializationSettings(
       android: androidInit,
       iOS: iosInit,
     );
@@ -182,26 +193,39 @@ class NotificationService {
       final systemPermission = await hasPermission();
       
       if (savedEnabled == null) {
-        // 처음 설치된 경우 - Android는 권한 요청, iOS는 시스템 권한 확인
+        // 처음 설치된 경우 - 권한 상태 확인 후 없을 때만 요청
         if (Platform.isAndroid) {
-          final granted = await Permission.notification.request();
-          
-          if (granted.isGranted) {
-            // 정확한 알람 권한 확인 및 요청 (Android 12+)
-            try {
-              final scheduleExactAlarmStatus = await Permission.scheduleExactAlarm.status;
-              if (!scheduleExactAlarmStatus.isGranted) {
-                await Permission.scheduleExactAlarm.request();
-              }
-            } catch (e) {
-              // 권한 요청 실패 무시
-            }
-            
+          // 이미 권한이 있는지 먼저 확인
+          final currentStatus = await Permission.notification.status;
+          print('NotificationService: init - Android 알림 권한 상태: $currentStatus');
+          if (currentStatus.isGranted) {
+            // 권한이 이미 있으면 요청하지 않음
+            print('NotificationService: init - 알림 권한 이미 허용됨, 요청하지 않음');
             await prefs.setBool(_enabledKey, true);
             enabledNotifier.value = true;
           } else {
-            await prefs.setBool(_enabledKey, false);
-            enabledNotifier.value = false;
+            // 권한이 없을 때만 요청
+            print('NotificationService: init - 알림 권한 없음, 요청 시작');
+            final granted = await Permission.notification.request();
+            print('NotificationService: init - 알림 권한 요청 결과: $granted');
+            
+            if (granted.isGranted) {
+              // 정확한 알람 권한 확인 및 요청 (Android 12+)
+              try {
+                final scheduleExactAlarmStatus = await Permission.scheduleExactAlarm.status;
+                if (!scheduleExactAlarmStatus.isGranted) {
+                  await Permission.scheduleExactAlarm.request();
+                }
+              } catch (e) {
+                // 권한 요청 실패 무시
+              }
+              
+              await prefs.setBool(_enabledKey, true);
+              enabledNotifier.value = true;
+            } else {
+              await prefs.setBool(_enabledKey, false);
+              enabledNotifier.value = false;
+            }
           }
         } else {
           // iOS는 시스템 권한에 따라 설정
@@ -217,11 +241,15 @@ class NotificationService {
         }
       } else {
         // 기존 설정 로드 후 시스템 권한 확인
+        print('NotificationService: init - 저장된 알림 설정: $savedEnabled, 시스템 권한: $systemPermission');
         if (savedEnabled && !systemPermission) {
           // 앱 내부는 켜져있지만 시스템 권한이 없는 경우 - 강제로 OFF
+          print('NotificationService: init - 앱 설정은 ON이지만 시스템 권한 없음, OFF로 변경');
           await prefs.setBool(_enabledKey, false);
           enabledNotifier.value = false;
         } else {
+          // 권한이 있으면 설정값 그대로 사용
+          print('NotificationService: init - 알림 설정 로드: $savedEnabled');
           enabledNotifier.value = savedEnabled;
         }
       }
@@ -282,6 +310,33 @@ class NotificationService {
         await prefs.setBool(_userDisabledKey, true);
       } else if (userAction && enable) {
         await prefs.setBool(_userDisabledKey, false);
+        
+        // 알림을 ON으로 켤 때 Android 12+ 정확한 알람 권한 확인 및 요청
+        if (Platform.isAndroid) {
+          try {
+            final scheduleExactAlarmStatus = await Permission.scheduleExactAlarm.status;
+            if (!scheduleExactAlarmStatus.isGranted) {
+              // 권한 요청
+              await Permission.scheduleExactAlarm.request();
+              // 다시 확인
+              final statusAfterRequest = await Permission.scheduleExactAlarm.status;
+              if (!statusAfterRequest.isGranted) {
+                // 권한이 없으면 알림 설정을 다시 OFF로 변경
+                print('NotificationService: setEnabled - SCHEDULE_EXACT_ALARM 권한 없음 - 알림 설정을 OFF로 변경');
+                enabledNotifier.value = false;
+                await prefs.setBool(_enabledKey, false);
+                return;
+              }
+            }
+            // 권한이 있으면 알림 스케줄링
+            await scheduleDailyFortuneNotification();
+          } catch (e) {
+            // 권한 확인 실패 시 알림 OFF
+            print('NotificationService: setEnabled - SCHEDULE_EXACT_ALARM 권한 확인 실패 - 알림 설정을 OFF로 변경: $e');
+            enabledNotifier.value = false;
+            await prefs.setBool(_enabledKey, false);
+          }
+        }
       }
     } catch (e) {
       // 저장 실패 무시
@@ -363,32 +418,32 @@ class NotificationService {
     return result.isGranted;
   }
 
-  static Future<void> showTestNotification() async {
-    try {
-      const androidDetails = AndroidNotificationDetails(
-        'test_channel',
-        'Test Notifications',
-        channelDescription: 'Channel for test notifications',
-        importance: Importance.max,
-        priority: Priority.high,
-      );
-      const iosDetails = DarwinNotificationDetails(
-        presentAlert: true,
-        presentSound: true,
-        presentBadge: true,
-      );
-      const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+  // static Future<void> showTestNotification() async {
+  //   try {
+  //     const androidDetails = AndroidNotificationDetails(
+  //       'test_channel',
+  //       'Test Notifications',
+  //       channelDescription: 'Channel for test notifications',
+  //       importance: Importance.max,
+  //       priority: Priority.high,
+  //     );
+  //     const iosDetails = DarwinNotificationDetails(
+  //       presentAlert: true,
+  //       presentSound: true,
+  //       presentBadge: true,
+  //     );
+  //     const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
-      await _plugin.show(
-        1001,
-        '🔔 알림 테스트',
-        '이것은 테스트 알림입니다.',
-        details,
-      );
-    } catch (e) {
-      // 테스트 알림 실패 무시
-    }
-  }
+  //     await _plugin.show(
+  //       1001,
+  //       '🔔 알림 테스트',
+  //       '이것은 테스트 알림입니다.',
+  //       details,
+  //     );
+  //   } catch (e) {
+  //     // 테스트 알림 실패 무시
+  //   }
+  // }
 
   static Future<void> refreshPermissionStatus() async {
     try {
@@ -519,6 +574,21 @@ class NotificationService {
       final systemEnabled = await isSystemNotificationEnabled();
       if (!systemEnabled) {
         await setEnabled(false, userAction: false);
+        return;
+      }
+      
+      // Android 12+ 정확한 알람 권한 확인
+      if (Platform.isAndroid) {
+        try {
+          final scheduleExactAlarmStatus = await Permission.scheduleExactAlarm.status;
+          if (!scheduleExactAlarmStatus.isGranted) {
+            // 권한이 없으면 알림 설정을 OFF로 변경
+            print('NotificationService: onAppResumed - SCHEDULE_EXACT_ALARM 권한 없음 - 알림 설정을 OFF로 변경');
+            await setEnabled(false, userAction: false);
+          }
+        } catch (e) {
+          // 권한 확인 실패 무시
+        }
       }
     } catch (e) {
       // 권한 확인 실패 무시
@@ -553,20 +623,20 @@ class NotificationService {
   static Future<void> showFortuneNotification() async {
     if (!enabledNotifier.value) return;
 
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       'fortune_channel',
       'Fortune Notifications',
       channelDescription: 'Channel for daily fortune notifications',
       importance: Importance.max,
       priority: Priority.high,
-      icon: '@drawable/push_icon',
+      icon: '@drawable/ic_push_icon', // 상단 작은 아이콘
     );
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentSound: true,
       presentBadge: true,
     );
-    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     final body = await _pickDailyBody();
     await _plugin.show(
@@ -583,10 +653,22 @@ class NotificationService {
       try {
         final scheduleExactAlarmStatus = await Permission.scheduleExactAlarm.status;
         if (!scheduleExactAlarmStatus.isGranted) {
+          // 권한 요청
           await Permission.scheduleExactAlarm.request();
+          // 다시 확인
+          final statusAfterRequest = await Permission.scheduleExactAlarm.status;
+          if (!statusAfterRequest.isGranted) {
+            // 권한이 없으면 알림 설정을 OFF로 변경
+            print('NotificationService: SCHEDULE_EXACT_ALARM 권한 없음 - 알림 설정을 OFF로 변경');
+            await setEnabled(false, userAction: false);
+            return; // 스케줄링 중단
+          }
         }
       } catch (e) {
-        // 알람 권한 확인 실패 무시
+        // 알람 권한 확인 실패 시 알림 설정 OFF
+        print('NotificationService: SCHEDULE_EXACT_ALARM 권한 확인 실패 - 알림 설정을 OFF로 변경: $e');
+        await setEnabled(false, userAction: false);
+        return; // 스케줄링 중단
       }
     }
     
@@ -602,20 +684,6 @@ class NotificationService {
       scheduled = scheduled.add(const Duration(days: 1));
     }
 
-    const androidDetails = AndroidNotificationDetails(
-      'fortune_channel',
-      'Fortune Notifications',
-      channelDescription: 'Channel for daily fortune notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentSound: true,
-      presentBadge: true,
-    );
-    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
-
     final body = await _pickDailyBody();
     
     final androidDetailsWithIcon = AndroidNotificationDetails(
@@ -624,7 +692,12 @@ class NotificationService {
       channelDescription: 'Channel for daily fortune notifications',
       importance: Importance.max,
       priority: Priority.high,
-      icon: '@drawable/push_icon',
+      icon: '@drawable/ic_push_icon', // 상단 작은 아이콘
+    );
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentSound: true,
+      presentBadge: true,
     );
     final detailsWithIcon = NotificationDetails(android: androidDetailsWithIcon, iOS: iosDetails);
     

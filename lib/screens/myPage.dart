@@ -287,25 +287,30 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
     final currentNotificationStatus = await Permission.notification.status;
     print('=== 현재 알림 권한: $currentNotificationStatus ===');
     
+    // 권한 요청 (권한이 없을 때만 요청)
+    if (!currentNotificationStatus.isGranted) {
+      print('=== 알림 권한 요청 시작 ===');
+      final notificationPermission = await Permission.notification.request();
+      print('=== 알림 권한 결과: $notificationPermission ===');
+    } else {
+      print('=== 알림 권한 이미 허용됨 ===');
+    }
+    
     if (Platform.isAndroid) {
       final currentScheduleStatus = await Permission.scheduleExactAlarm.status;
       print('=== 현재 SCHEDULE_EXACT_ALARM 권한: $currentScheduleStatus ===');
-    }
-    
-    // 권한 요청 (강제로 팝업 띄우기)
-    print('=== 알림 권한 요청 시작 ===');
-    final notificationPermission = await Permission.notification.request();
-    print('=== 알림 권한 결과: $notificationPermission ===');
-    
-    if (Platform.isAndroid) {
-      print('=== SCHEDULE_EXACT_ALARM 권한 요청 시작 ===');
-      final scheduleExactAlarmPermission = await Permission.scheduleExactAlarm.request();
-      print('=== SCHEDULE_EXACT_ALARM 권한 결과: $scheduleExactAlarmPermission ===');
+      if (!currentScheduleStatus.isGranted) {
+        print('=== SCHEDULE_EXACT_ALARM 권한 요청 시작 ===');
+        final scheduleExactAlarmPermission = await Permission.scheduleExactAlarm.request();
+        print('=== SCHEDULE_EXACT_ALARM 권한 결과: $scheduleExactAlarmPermission ===');
+      } else {
+        print('=== SCHEDULE_EXACT_ALARM 권한 이미 허용됨 ===');
+      }
     }
     
     // 즉시 테스트 알림 발송
-    print('=== 즉시 테스트 알림 발송 ===');
-    await NotificationService.showTestNotification();
+    // print('=== 즉시 테스트 알림 발송 ===');
+    // await NotificationService.showTestNotification();
     
     showModalBottomSheet(
       context: context,
@@ -385,7 +390,7 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                           }
                         },
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 2),
                       // 알림 시간 표시 (ON일 때만)
                       if (enabled)
                         Center(
@@ -393,91 +398,103 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                              Text(
-                                l10n?.myPageNotificationTime ?? '알림 시간 ',
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white, 
-                                  fontSize: 16
+                                Flexible(
+                                  child: InkWell(
+                                    onTap: () async {
+                                      final TimeOfDay? picked = await showTimePicker(
+                                        context: context,
+                                        initialTime: TimeOfDay(
+                                          hour: int.parse(_selectedHour),
+                                          minute: int.parse(_selectedMinute),
+                                        ),
+                                        builder: (BuildContext context, Widget? child) {
+                                          return Localizations.override(
+                                            context: context,
+                                            locale: Localizations.localeOf(context),
+                                            child: Theme(
+                                              data: Theme.of(context).copyWith(
+                                                colorScheme: ColorScheme.light(
+                                                  primary: Colors.amber,
+                                                  onPrimary: Colors.black,
+                                                  surface: Colors.white,
+                                                  onSurface: Colors.black,
+                                                ),
+                                              ),
+                                              child: child!,
+                                            ),
+                                          );
+                                        },
+                                      );
+                                      if (picked != null) {
+                                        setState(() {
+                                          _selectedHour = picked.hour.toString().padLeft(2, '0');
+                                          _selectedMinute = picked.minute.toString().padLeft(2, '0');
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.3),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.access_time,
+                                            color: isDark ? Colors.black87 : Colors.white70,
+                                            size: 18,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Flexible(
+                                            child: Text(
+                                              '${l10n?.myPageNotificationTime ?? '알림 시간'} ',
+                                              style: TextStyle(
+                                                color: isDark ? Colors.black : Colors.white,
+                                                fontSize: 13,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          Text(
+                                            '$_selectedHour:$_selectedMinute',
+                                            style: TextStyle(
+                                              color: isDark ? Colors.black : Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Icon(
+                                            Icons.arrow_drop_down,
+                                            color: isDark ? Colors.black54 : Colors.white70,
+                                            size: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              // 시간 선택 드롭다운
-                              Container(
-                                height: 32,
-                                decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: Colors.white.withOpacity(0.2)),
-                              ),
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-                                child: DropdownButton<String>(
-                                  value: _selectedHour,
-                                  dropdownColor: Colors.white,
-                                  style: const TextStyle(color: Colors.black, fontSize: 16),
-                                  underline: Container(),
-                                  menuMaxHeight: 130,
-                                  items: List.generate(24, (index) {
-                                    final hour = index.toString().padLeft(2, '0');
-                                    return DropdownMenuItem<String>(
-                                      value: hour,
-                                      child: Text(hour, style: const TextStyle(color: Colors.black)),
-                                    );
-                                  }),
-                                  onChanged: (String? value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        _selectedHour = value;
-                                      });
-                                    }
-                                  },
-                                ),
-                              ),
-                              Text(
-                                ' : ',
-                                style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white, fontSize: 16),
-                              ),
-                              // 분 선택 드롭다운
-                              Container(
-                                height: 32,
-                                decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: Colors.white.withOpacity(0.2)),
-                              ),
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-                                child: DropdownButton<String>(
-                                  value: _selectedMinute,
-                                  dropdownColor: Colors.white,
-                                  style: const TextStyle(color: Colors.black, fontSize: 16),
-                                  underline: Container(),
-                                  menuMaxHeight: 130,
-                                  items: List.generate(60, (index) {
-                                    final minute = index.toString().padLeft(2, '0');
-                                    return DropdownMenuItem<String>(
-                                      value: minute,
-                                      child: Text(minute, style: const TextStyle(color: Colors.black)),
-                                    );
-                                  }),
-                                  onChanged: (String? value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        _selectedMinute = value;
-                                      });
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          ),
-                        ),
-                      // 알림이 켜져있을 때만 확인 버튼 표시
-                      if (enabled)
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                              onPressed: () async {
+                                const SizedBox(width: 8),
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                    minimumSize: const Size(0, 36),
+                                    backgroundColor: Colors.black,
+                                    foregroundColor: Colors.white,
+                                    side: const BorderSide(color: Colors.grey, width: 1),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () async {
                                 // 알림 시간 저장
                                 await NotificationService.updateNotificationTime(
                                   int.parse(_selectedHour),
@@ -560,12 +577,16 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                                   );
                                 }
                               },
-                              icon: const Icon(Icons.check),
-                              label: Text(l10n?.myPageNotificationConfirmButton ?? '확인'),
+                                  icon: const Icon(Icons.check, size: 14),
+                                  label: Text(
+                                    l10n?.myPageNotificationConfirmButton ?? '확인',
+                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
                     ],
                   );
                 },
@@ -688,7 +709,6 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
                     },
                     icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
                   ),
-                  const SizedBox(width: 0),
                   Text(
                     l10n?.myPageTitle ?? '마이페이지',
                     style: GoogleFonts.notoSans(
