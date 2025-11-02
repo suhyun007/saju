@@ -104,6 +104,46 @@ class AdService {
     }
   }
 
+  // 서버 호출과 별개로 4분 쿨다운 체크 후 자동 표시
+  static Future<void> checkAndShowAutoInterstitial(BuildContext context) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    // 4분 쿨다운 체크
+    if (now - _lastShownMs < _minIntervalMs) return;
+    
+    final ad = _interstitial;
+    if (ad == null) {
+      preloadInterstitial();
+      return;
+    }
+    
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _interstitial = null;
+        preloadInterstitial();
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        ad.dispose();
+        _interstitial = null;
+        if (kDebugMode) {
+          debugPrint('Auto interstitial show failed: $error');
+        }
+        preloadInterstitial();
+      },
+    );
+    
+    try {
+      await ad.show();
+      _lastShownMs = now;
+      _interstitial = null;
+      preloadInterstitial();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Auto interstitial show error: $e');
+      }
+    }
+  }
+
   // 쿨다운 무시하고 즉시 노출 (서버 호출 확정 시 사용)
   static Future<void> forceShowInterstitial(BuildContext context) async {
     final ad = _interstitial;

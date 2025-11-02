@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -280,6 +281,32 @@ class _MyPageState extends State<MyPage> with WidgetsBindingObserver {
 
   void _showNotificationSheet() async {
     print('=== _showNotificationSheet 함수 호출됨 ===');
+    
+    // 권한 상태 확인 및 요청
+    print('=== 현재 권한 상태 확인 ===');
+    final currentNotificationStatus = await Permission.notification.status;
+    print('=== 현재 알림 권한: $currentNotificationStatus ===');
+    
+    if (Platform.isAndroid) {
+      final currentScheduleStatus = await Permission.scheduleExactAlarm.status;
+      print('=== 현재 SCHEDULE_EXACT_ALARM 권한: $currentScheduleStatus ===');
+    }
+    
+    // 권한 요청 (강제로 팝업 띄우기)
+    print('=== 알림 권한 요청 시작 ===');
+    final notificationPermission = await Permission.notification.request();
+    print('=== 알림 권한 결과: $notificationPermission ===');
+    
+    if (Platform.isAndroid) {
+      print('=== SCHEDULE_EXACT_ALARM 권한 요청 시작 ===');
+      final scheduleExactAlarmPermission = await Permission.scheduleExactAlarm.request();
+      print('=== SCHEDULE_EXACT_ALARM 권한 결과: $scheduleExactAlarmPermission ===');
+    }
+    
+    // 즉시 테스트 알림 발송
+    print('=== 즉시 테스트 알림 발송 ===');
+    await NotificationService.showTestNotification();
+    
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,

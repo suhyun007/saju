@@ -117,6 +117,14 @@ class _PoetryScreenState extends State<PoetryScreen> {
 
   Future<void> _load() async {
     setState(() { _error = null; });
+    // 탭 클릭 시 광고 표시 (서버 호출 여부와 무관, 날짜 기반 + 4분 쿨다운)
+    await Future.delayed(const Duration(milliseconds: 100));
+    final today = DateTime.now();
+    final dayHash = (today.year * 10000 + today.month * 100 + today.day) % 2;
+    // 날짜 해시가 1이면 시에서만 광고 표시 (쿨다운 체크 포함)
+    if (dayHash == 1) {
+      AdService.maybeShowInterstitial(context);
+    }
     try {
       // 체험 모드: 더미 시 주입
       if (await SajuService.isExperienceMode()) {
@@ -194,9 +202,6 @@ class _PoetryScreenState extends State<PoetryScreen> {
       // 만료 시 호출 - 이때만 로딩 표시
       dev.log('바뀐 데이터 있음!! 서버 호출!!!', name: 'PoetryScreen');
       setState(() { _loading = true; });
-      // 네트워크 대기 시간 동안 전면 광고 1회 노출 시도 (세션/간격 정책 적용)
-      await Future.delayed(const Duration(milliseconds: 100));
-      AdService.maybeShowInterstitial(context);
       final result = await PoetryApiService.fetchPoetry(
         sajuInfo: sajuInfo,
         language: lang,

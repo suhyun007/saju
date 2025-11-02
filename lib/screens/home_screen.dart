@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:math';
+import 'dart:async';
 // import '../widgets/feature_button.dart';
 import '../screens/favorite_screen.dart';
 import '../screens/episode_screen.dart';
@@ -68,7 +69,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, WidgetsBindingObserver {
 
   SajuInfo? _sajuInfo;
   // bool _isLoading = true; // 미사용
@@ -79,10 +80,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // subtitle animations removed
   int _currentTabIndex = 0;
   final ValueNotifier<int> _activeTab = ValueNotifier<int>(0);
+  Timer? _autoAdCheckTimer;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       setState(() {
@@ -92,11 +95,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _loadUserInfo();
     _loadSajuInfoAndAutoLoadFortune();
     AuthService.addAuthStateListener(_onAuthStateChanged);
+    _startAutoAdCheck();
     // subtitle animation removed
+  }
+
+  void _startAutoAdCheck() {
+    // 1분마다 4분 쿨다운 체크 및 자동 광고 표시 (30초에서 1분으로 변경하여 로그 감소)
+    _autoAdCheckTimer?.cancel();
+    _autoAdCheckTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (mounted && context.mounted) {
+        AdService.checkAndShowAutoInterstitial(context);
+      }
+    });
+  }
+
+  void _stopAutoAdCheck() {
+    _autoAdCheckTimer?.cancel();
+    _autoAdCheckTimer = null;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // 앱이 포그라운드로 돌아올 때 광고 체크
+      if (mounted && context.mounted) {
+        AdService.checkAndShowAutoInterstitial(context);
+      }
+      _startAutoAdCheck();
+    } else if (state == AppLifecycleState.paused) {
+      // 백그라운드로 가면 타이머 중지
+      _stopAutoAdCheck();
+    }
   }
 
   @override
   void dispose() {
+    _stopAutoAdCheck();
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     // subtitle controller removed
     AuthService.removeAuthStateListener(_onAuthStateChanged);

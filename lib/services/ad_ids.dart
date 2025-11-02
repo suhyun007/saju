@@ -2,11 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'dart:io' show Platform;
 
 class AdIds {
-  // 운영/개발 분리 스위치
-  // 플랫폼 별 테스트 모드 스위치 (kDebugMode와 무관하게 수동 전환)
-  // iOS 는 운영 유지, Android 만 테스트 광고 사용
-  static const bool isIosTestMode = false;
-  static const bool isAndroidTestMode = false; //ture testmode
 
   // iOS 운영용 단위 ID
   static const String iosBannerProd = 'ca-app-pub-8911842959624418/5167207632';
@@ -29,14 +24,15 @@ class AdIds {
   static const String androidInterstitialTest = 'ca-app-pub-3940256099942544/1033173712';
 
   // Getter: 현재 모드에 맞는 ID 제공
-  static String get iosBanner => isIosTestMode ? iosBannerTest : iosBannerProd;
-  static String get iosInterstitial => isIosTestMode ? iosInterstitialTest : iosInterstitialProd;
-  static String get iosNative => isIosTestMode ? iosNativeTest : iosNativeProd;
-  static String get iosFavoriteBanner => isIosTestMode ? iosBannerTest : iosFavoriteBannerProd;
-  static String get androidNative => isAndroidTestMode ? androidNativeTest : androidNativeProd;
-  static String get androidBanner => isAndroidTestMode ? androidBannerTest : androidBannerProd;
-  static String get androidFavoriteBanner => isAndroidTestMode ? androidBannerTest : androidFavoriteBannerProd;
-  static String get androidInterstitial => isAndroidTestMode ? androidInterstitialTest : androidInterstitialProd;
+  // 안드로이드/iOS 동일: 프로덕션 빌드가 아닐 때(디버그/프로파일/애뮬레이터)는 무조건 테스트 광고 사용
+  static String get iosBanner => !kReleaseMode ? iosBannerTest : iosBannerProd;
+  static String get iosInterstitial => !kReleaseMode ? iosInterstitialTest : iosInterstitialProd;
+  static String get iosNative => !kReleaseMode ? iosNativeTest : iosNativeProd;
+  static String get iosFavoriteBanner => !kReleaseMode ? iosBannerTest : iosFavoriteBannerProd;
+  static String get androidNative => !kReleaseMode ? androidNativeTest : androidNativeProd;
+  static String get androidBanner => !kReleaseMode ? androidBannerTest : androidBannerProd;
+  static String get androidFavoriteBanner => !kReleaseMode ? androidBannerTest : androidFavoriteBannerProd;
+  static String get androidInterstitial => !kReleaseMode ? androidInterstitialTest : androidInterstitialProd;
 
   // Cross-platform getter for Native ad unit
   static String get native {
@@ -60,8 +56,8 @@ class AdIds {
     return Platform.isAndroid ? androidInterstitial : iosInterstitial;
   }
 
-  // (옵션) 디버그 모드에서 자동 테스트 전환을 원하면 아래처럼 사용
-  // static String get iosBanner => kDebugMode ? iosBannerTest : iosBannerProd;
+  // 운영 버전이 아닐 때(디버그/프로파일/애뮬레이터)는 무조건 테스트 광고 ID 사용
+  // 안드로이드와 iOS 모두 동일하게 kReleaseMode로 판단
 }
 
 
