@@ -10,9 +10,10 @@ class AdService {
   // static int _shownCount = 0;
   static NativeAd? _preloadedNative;
   static bool _preloadedNativeLoaded = false;
+  static bool _isShowing = false; // 광고 표시 중 플래그
 
   // 정책: 최소 4분 간격 반복 허용
-  static const int _minIntervalMs = 240000;
+  static const int _minIntervalMs = 120000; // 4분 = 240,000ms
   
 
   static void preloadInterstitial() {
@@ -70,22 +71,38 @@ class AdService {
 
   static Future<void> maybeShowInterstitial(BuildContext context) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    // 2분 쿨다운만 적용
-    if (now - _lastShownMs < _minIntervalMs) return;
+    // 이미 광고 표시 중이면 무시
+    if (_isShowing) {
+      if (kDebugMode) {
+        debugPrint('AdService: 광고가 이미 표시 중입니다.');
+      }
+      return;
+    }
+    // 4분 쿨다운 체크
+    if (now - _lastShownMs < _minIntervalMs) {
+      if (kDebugMode) {
+        final remainingSeconds = ((_minIntervalMs - (now - _lastShownMs)) / 1000).round();
+        debugPrint('AdService: 쿨다운 중입니다. 남은 시간: ${remainingSeconds}초');
+      }
+      return;
+    }
     final ad = _interstitial;
     if (ad == null) {
       preloadInterstitial();
       return;
     }
+    _isShowing = true; // 광고 표시 시작
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
         _interstitial = null;
+        _isShowing = false; // 광고 표시 종료
         preloadInterstitial();
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
         ad.dispose();
         _interstitial = null;
+        _isShowing = false; // 광고 표시 종료
         if (kDebugMode) {
           debugPrint('Interstitial show failed: $error');
         }
@@ -96,8 +113,11 @@ class AdService {
       await ad.show();
       _lastShownMs = now;
       _interstitial = null;
-      preloadInterstitial();
+      if (kDebugMode) {
+        debugPrint('AdService: 광고 표시 완료. 다음 광고까지 4분 쿨다운');
+      }
     } catch (e) {
+      _isShowing = false; // 에러 발생 시 플래그 해제
       if (kDebugMode) {
         debugPrint('Interstitial show error: $e');
       }
@@ -107,8 +127,14 @@ class AdService {
   // 서버 호출과 별개로 4분 쿨다운 체크 후 자동 표시
   static Future<void> checkAndShowAutoInterstitial(BuildContext context) async {
     final now = DateTime.now().millisecondsSinceEpoch;
+    // 이미 광고 표시 중이면 무시
+    if (_isShowing) {
+      return;
+    }
     // 4분 쿨다운 체크
-    if (now - _lastShownMs < _minIntervalMs) return;
+    if (now - _lastShownMs < _minIntervalMs) {
+      return;
+    }
     
     final ad = _interstitial;
     if (ad == null) {
@@ -116,15 +142,18 @@ class AdService {
       return;
     }
     
+    _isShowing = true; // 광고 표시 시작
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
         _interstitial = null;
+        _isShowing = false; // 광고 표시 종료
         preloadInterstitial();
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
         ad.dispose();
         _interstitial = null;
+        _isShowing = false; // 광고 표시 종료
         if (kDebugMode) {
           debugPrint('Auto interstitial show failed: $error');
         }
@@ -136,8 +165,11 @@ class AdService {
       await ad.show();
       _lastShownMs = now;
       _interstitial = null;
-      preloadInterstitial();
+      if (kDebugMode) {
+        debugPrint('AdService: 자동 광고 표시 완료. 다음 광고까지 4분 쿨다운');
+      }
     } catch (e) {
+      _isShowing = false; // 에러 발생 시 플래그 해제
       if (kDebugMode) {
         debugPrint('Auto interstitial show error: $e');
       }
@@ -151,15 +183,18 @@ class AdService {
       preloadInterstitial();
       return;
     }
+    _isShowing = true; // 광고 표시 시작
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
         _interstitial = null;
+        _isShowing = false; // 광고 표시 종료
         preloadInterstitial();
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
         ad.dispose();
         _interstitial = null;
+        _isShowing = false; // 광고 표시 종료
         if (kDebugMode) {
           debugPrint('Interstitial show failed: $error');
         }
@@ -170,8 +205,11 @@ class AdService {
       await ad.show();
       _lastShownMs = DateTime.now().millisecondsSinceEpoch;
       _interstitial = null;
-      preloadInterstitial();
+      if (kDebugMode) {
+        debugPrint('AdService: 강제 광고 표시 완료');
+      }
     } catch (e) {
+      _isShowing = false; // 에러 발생 시 플래그 해제
       if (kDebugMode) {
         debugPrint('Interstitial show error: $e');
       }

@@ -100,9 +100,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
   }
 
   void _startAutoAdCheck() {
-    // 1분마다 4분 쿨다운 체크 및 자동 광고 표시 (30초에서 1분으로 변경하여 로그 감소)
+    // 5분마다 4분 쿨다운 체크 및 자동 광고 표시 (쿨다운이 4분이므로 5분 간격으로 체크)
     _autoAdCheckTimer?.cancel();
-    _autoAdCheckTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+    _autoAdCheckTimer = Timer.periodic(const Duration(minutes: 3), (timer) {
       if (mounted && context.mounted) {
         AdService.checkAndShowAutoInterstitial(context);
       }
