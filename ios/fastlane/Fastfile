@@ -8,13 +8,70 @@ app_store_connect_api_key(
 default_platform(:ios)
 
 platform :ios do
+  before_all do
+    # Flutter 프로젝트 루트 경로
+    project_root = File.expand_path("../..", File.dirname(__FILE__))
+    
+    puts "🧹 Flutter clean 및 의존성 정리 시작..."
+    
+    # Flutter clean && flutter pub get
+    sh("cd #{project_root} && flutter clean && flutter pub get")
+    
+    # Pods 및 Podfile.lock 삭제
+    pods_dir = File.join(project_root, "ios", "Pods")
+    podfile_lock = File.join(project_root, "ios", "Podfile.lock")
+    FileUtils.rm_rf(pods_dir) if File.exist?(pods_dir)
+    FileUtils.rm_f(podfile_lock) if File.exist?(podfile_lock)
+    
+    # pod install
+    ios_dir = File.join(project_root, "ios")
+    sh("cd #{ios_dir} && export LANG=en_US.UTF-8 && pod install")
+    
+    puts "✅ Flutter clean 및 의존성 정리 완료"
+  end
+  
   desc "Push a new release build to the App Store"
   lane :release do
+    # pubspec.yaml 버전 자동 증가
+    pubspec_path = File.expand_path("../pubspec.yaml", File.dirname(__FILE__))
+    pubspec_content = File.read(pubspec_path)
+    
+    # 현재 버전 추출 (예: version: 1.0.4+71)
+    version_match = pubspec_content.match(/^version:\s*(.+)$/)
+    if version_match
+      current_version = version_match[1].strip
+      version_parts = current_version.split('+')
+      app_version = version_parts[0]  # 1.0.4
+      build_number = version_parts[1].to_i  # 71
+      
+      # 버전 증가: 1.0.4 -> 1.0.5
+      version_numbers = app_version.split('.')
+      patch_version = version_numbers[2].to_i
+      patch_version += 1
+      new_app_version = "#{version_numbers[0]}.#{version_numbers[1]}.#{patch_version}"
+      
+      # 빌드 번호도 +1
+      new_build_number = build_number + 1
+      new_version = "#{new_app_version}+#{new_build_number}"
+      
+      # pubspec.yaml 업데이트
+      pubspec_content.gsub!(/^version:\s*.+$/, "version: #{new_version}")
+      File.write(pubspec_path, pubspec_content)
+      
+      puts "✅ 버전 자동 증가: #{current_version} → #{new_version}"
+    end
+    
     # 현재 빌드번호 보관 후 +1 (실패 시 원복)
     original_build = get_build_number(xcodeproj: "Runner.xcodeproj").to_i
     next_build = original_build + 1
     increment_build_number(xcodeproj: "Runner.xcodeproj", build_number: next_build)
 
+    # 원본 버전 보관 (실패 시 복구용)
+    original_pubspec_version = nil
+    if version_match
+      original_pubspec_version = current_version
+    end
+    
     success = false
     begin
       # 빌드 실행
@@ -31,19 +88,32 @@ platform :ios do
         }
       )
 
-      # App Store 업로드 (버전은 강제하지 않고 빌드번호만 업로드)
-      upload_to_app_store(
+      # App Store 업로드 (deliver 사용 - 더 안정적)
+      deliver(
         skip_metadata: true,
         skip_screenshots: true,
         skip_app_version_update: true,
-        precheck_include_in_app_purchases: false,
-        submit_for_review: false
+        force: true,
+        submit_for_review: false,
+        automatic_release: false,
+        run_precheck_before_submit: false,
+        precheck_include_in_app_purchases: false
       )
 
       success = true
     ensure
-      # 실패 시 빌드번호 원복
-      increment_build_number(xcodeproj: "Runner.xcodeproj", build_number: original_build) unless success
+      unless success
+        # 실패 시 빌드번호 원복
+        increment_build_number(xcodeproj: "Runner.xcodeproj", build_number: original_build)
+        
+        # 실패 시 pubspec.yaml 버전도 원복
+        if original_pubspec_version
+          pubspec_content = File.read(pubspec_path)
+          pubspec_content.gsub!(/^version:\s*.+$/, "version: #{original_pubspec_version}")
+          File.write(pubspec_path, pubspec_content)
+          puts "⚠️  버전 원복: #{new_version} → #{original_pubspec_version}"
+        end
+      end
     end
   end
 

@@ -40,7 +40,7 @@
 			</dict>
 		</array>
 		<key>CFBundleVersion</key>
-		<string>74</string>
+		<string>76</string>
 		<!-- Location permissions (commented out - not currently used)
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 		<string>분석을 위해 태어난 지역의 정확한 위치 정보가 필요합니다.</string>

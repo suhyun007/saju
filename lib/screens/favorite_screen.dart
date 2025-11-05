@@ -123,9 +123,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     return GestureDetector(
       onTap: () => _showFavoriteDetail(favorite),
       child: Container(
-        height: 120,
+        height: 95,
         margin: const EdgeInsets.only(bottom: 6),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: isDark 
               ? Colors.white.withOpacity(0.1)
@@ -139,8 +139,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           children: [
             // 삭제 아이콘 (오른쪽 상단)
             Positioned(
-              top: 8,
-              right: 8,
+              top: 5,
+              right: 5,
               child: GestureDetector(
                 onTap: () => _confirmAndDeleteFavorite(favorite),
                 child: Icon(
@@ -151,9 +151,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               ),
             ),
             Positioned(
-              top: 8,
-              left: 8,
-              right: 40, // 삭제 버튼 공간 확보
+              top: 4,
+              left: 4,
+              right: 30, // 삭제 버튼 공간 확보
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -162,7 +162,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(6),
@@ -170,13 +170,13 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 child: Text(
                   menuTypeText,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Text(
                 formattedDate,
                 style: TextStyle(
@@ -186,33 +186,33 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           // 제목
           Text(
             favorite.title,
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
               color: primaryColor,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 5),
           // 내용 미리보기 (한 줄만)
           Text(
             favorite.content.length > 45 
                 ? '${favorite.content.substring(0, 45)}...'
                 : favorite.content,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 13,
               color: secondaryColor,
-              height: 1.4,
+              height: 1.2,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ],
-              ),
-            ),
+        ),
+      ),
     ],
   ),
 ),
